@@ -11,7 +11,7 @@ Requires Node 20+ (https://nodejs.org).
 ```
 npm install
 npm run dev        # http://localhost:5173
-npm test           # unit tests (stats, search, Steam IDs, API client, matches, hero skins)
+npm test           # unit tests (stats, search, Steam IDs, API client, matches)
 npm run build      # typecheck + production build into dist/
 ```
 
@@ -19,6 +19,7 @@ npm run build      # typecheck + production build into dist/
 
 - **Builds hub** (`/builds`): every hero's builds in one place. Filter All / In-game / Community / Pro (Eternus), sort Popular / Trending / Newest / Win rate, pick a hero or search. Each card has a copyable build code and expands to the laning, mid and late item paths plus skill order.
 - **Top builds on every hero page**: Meta consensus, Highest win rate, Most popular and Pro · Eternus, each with items by phase (how many builds include them, average buy time, win rate), the skill order and the build code.
+- **Tier list** (`/tiers`): tier labels are flat amber-ticket plates (S+ amber, S orange, A green, B blue, C grey, D red) in the same shape as the orange kicker labels. Hero cards lift and glow on hover.
 - **Three themes**: Hidden King (amber), Archmother (blue) and Night Shift (near-black teal and orange), switched from the top bar.
 - **Win rate trend** on every hero page: chart with patch lines, green above 50% and red below, ALL / 4W / BY PATCH.
 - **Live matches** (`/matches`): games in progress with running clocks, teams, net worth lead and match id. **Livestreams** (`/streams`): who is streaming Deadlock, with an optional in-page Twitch player.
@@ -29,7 +30,6 @@ npm run build      # typecheck + production build into dist/
 - **Live Deadlock API data** (round 15): tier list, hero win / pick / ban rate and rank, matchups, lane synergy, win-rate history with patch lines, leaderboards, rank distribution, live matches and patch notes. The header chip shows Live / Sample / Offline and switches between them. Builds, skill order and guides are still labelled samples. See **API_GUIDE.md**.
 - **Leaderboard** (`/leaderboard`): a top-five feature (a #1 banner and four cards) above the table, per region or per hero, with avatar, W/L and win rate. 100 per page, five pages. Sample ladder until live data is on.
 - **Ranks** (`/ranks`): rank distribution chart across the 66 levels, with the current rank names and badge art from the Deadlock Wiki.
-- **Every hero has its own look** (round 16): each hero's page, a player's page (styled for their most-played hero) and a match report (styled for the player you picked) wear that hero's own palette, lettering, borders, background art, texture and card-hover motion. 44 skins, 43 open-licence typefaces. Holliday keeps the site's grainy ticket look. The **Hero style** switch turns it all off, and the player page has a **Page style** picker to try another hero's look. See `src/skin/` and DESIGN_NOTES.md.
 - **Match report** (`/match/:id?player=:accountId`): click any game on a player page. Souls-lead curve, highlights (damage, healing, souls, objectives), both teams with items, K/D/A, souls and damage, and a side panel for the selected player with their souls curve, final build, buy order and ability points. Handles Street Brawl, games with sparse data and unknown ids.
 - Search finds items as well as heroes and players.
 
@@ -45,7 +45,7 @@ npm run build      # typecheck + production build into dist/
 
 - `api-samples/` is tracked on purpose: the unit tests and the Sample-mode match page read it. `npm run probe:api` refreshes it.
 - Never commit `.env.local` (Twitch keys live there). `.env.example` is the template.
-- `src/assets/` holds Valve's hero art, fonts, rank badges and item icons taken from a game install. Keep the repository **private**, or check Valve's asset policy (and move those files out of git) before making it public. The 43 hero-skin typefaces are open-licence; see `src/assets/fonts/hero/LICENSES.md`.
+- `src/assets/` holds Valve's hero art, fonts, rank badges and item icons taken from a game install. Keep the repository **private**, or check Valve's asset policy (and move those files out of git) before making it public.
 - `dist/` and `dist-standalone/` are build output and are not tracked. `npm run build:standalone` rebuilds the single-file `index.html`.
 
 ## Data: read this before launch

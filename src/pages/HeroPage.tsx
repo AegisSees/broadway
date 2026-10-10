@@ -30,10 +30,7 @@ import TrendsPanel from '../components/TrendsPanel';
 import HeroStatsPanel from '../components/HeroStatsPanel';
 import { getHeroBg, getHeroStats } from '../data/heroStats';
 import { getHeroColor } from '../data/heroColors';
-import SkinScope, { SkinSwitch } from '../skin/SkinScope';
-import SectionHeading from '../skin/SectionHeading';
-import { getSkin } from '../skin/heroSkins';
-import { useSkinOn } from '../skin/pref';
+import SectionHeading from '../components/SectionHeading';
 
 function CopyChip({ id }: { id: string }) {
   const [done, setDone] = useState(false);
@@ -79,10 +76,7 @@ export default function HeroPage() {
   const builds = useAsync((signal) => (hero ? dataSource.heroBuilds(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank]);
   const [tab, setTab] = useState('overview');
   useTitle(hero?.name ?? 'Hero');
-  const skinOn = useSkinOn();
   if (!hero) return <NotFound />;
-  const skin = skinOn ? getSkin(hero.slug) : undefined;
-  const themed = !!skin && !skin.inherit;
 
   const abilities = getAbilities(hero.slug);
   const wordmark = getWordmark(hero.slug);
@@ -100,22 +94,22 @@ export default function HeroPage() {
   const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <SkinScope slug={hero.slug}>
+    <>
       <section className="hhero">
         <LaneBackdrop seed={hero.slug} />
         {getHeroBg(hero.slug) && <div className="hbg" style={{ backgroundImage: `url(${getHeroBg(hero.slug)})`, ['--hc' as string]: getHeroColor(hero.slug) } as React.CSSProperties} aria-hidden="true" />}
         <div className="wash" />
         {hero.art ? <img className="art" src={hero.art} alt="" /> : hero.render && <img className="render" src={hero.render} alt="" />}
         <div className="wrap inner">
-          <div className="crumbs"><span><Link to="/heroes">Heroes</Link> / {hero.name}</span><FavStar slug={hero.slug} name={hero.name} label /><SkinSwitch slug={hero.slug} /></div>
+          <div className="crumbs"><span><Link to="/heroes">Heroes</Link> / {hero.name}</span><FavStar slug={hero.slug} name={hero.name} label /></div>
           <div className="head">
             <div className={`portrait${getGloat(hero.slug) ? ' has-gloat' : ''}`} tabIndex={0} aria-label={hero.name}>
               {getGloat(hero.slug) && <img className="gloat" src={getGloat(hero.slug)} alt="" />}
               {hero.portrait || hero.icon ? <img src={(hero.portrait || hero.icon) as string} alt={hero.name} className={hero.portrait ? undefined : 'icon-fill'} /> : <div className="fallback" aria-hidden="true">{initials(hero.name)}</div>}
             </div>
             <div className="hero-name">
-              <Kicker key={hero.slug}>{isHaze ? 'The unseen threat' : hero.unreleased ? 'New hero' : skin?.copy?.kicker ?? 'Hero dossier'}</Kicker>
-              {wordmark && !themed ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
+              <Kicker key={hero.slug}>{isHaze ? 'The unseen threat' : hero.unreleased ? 'New hero' : 'Hero dossier'}</Kicker>
+              {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
               {abilities ? (
                 <div className="abil">
@@ -161,7 +155,7 @@ export default function HeroPage() {
           <Link to={`/leaderboard?view=heroes&hero=${hero.slug}`}>Leaderboard</Link>
         </nav>
 
-        <SectionHeading skin={skin} k="trend" id="overview" />
+        <SectionHeading id="overview" title="Win rate over time" />
         {trend.status === 'loading' && <p className="muted" role="status">Loading the trend…</p>}
         {trend.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load the trend</h3><p>{trend.message}.</p></div>}
         {trend.status === 'ready' && (trend.value
@@ -179,7 +173,7 @@ export default function HeroPage() {
 
         {!brawl && (
           <>
-            <SectionHeading skin={skin} k="builds" id="builds" />
+            <SectionHeading id="builds" title="Top builds" />
             {builds.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
             {builds.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load builds</h3><p>{builds.message}.</p></div>}
             {builds.status === 'ready' && builds.value?.some((b) => b.illustrative) && overview?.provenance === 'live' && (
@@ -206,7 +200,7 @@ export default function HeroPage() {
 
             {overview && (
               <>
-                <SectionHeading skin={skin} k="matchups" id="matchups" />
+                <SectionHeading id="matchups" title="Know your matchups" />
                 <p className="muted" style={{ marginTop: -6, marginBottom: 14, fontSize: 13 }}>
                   Pick columns show the opponent's win rate over whole matches, not lane results. Lane synergy and lane deficit use the first nine minutes.
                 </p>
@@ -233,6 +227,6 @@ export default function HeroPage() {
         {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} />}
         <SiteFooter />
       </div>
-    </SkinScope>
+    </>
   );
 }

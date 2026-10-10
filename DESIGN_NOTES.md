@@ -167,7 +167,7 @@ Request: check the install for newer assets, start pulling API data, and add a S
 - Not done: builds, skill order, guides, damage and high rolls are still samples; Streams stay sample without the proxy; Initiate / Acolyte / Obscurus badge art is still drawn stand-ins; `.lane-card` shadows are still soft.
 
 
-## Round 16: a look for every hero
+## Round 16: a look for every hero (hero styles removed again in round 17; the match page, click-through, trend fix and card hover stayed)
 
 Request: a friend's idea. Make each page match the hero it is about (including a player's page, which takes the hero they play) so Holliday's grain and ticket stubs stay Holliday's and everyone else gets a look of their own; make the hero cards visibly react on hover; let a player's games open the whole match.
 
@@ -181,3 +181,13 @@ Request: a friend's idea. Make each page match the hero it is about (including a
 - **Fonts.** 43 display faces, Latin subsets, from Fontsource (40 SIL OFL 1.1, 3 Apache 2.0: Ultra, Permanent Marker, Special Elite). Licences and copyright lines in `src/assets/fonts/hero/LICENSES.md`, credit on the About page. About 1 MB in all; the browser fetches only the face a page uses.
 - **Honest limits.** Lane colours on the match page assume `assigned_lane` 1 / 4 / 6 = York / Broadway / Greenwich (about 80% sure). In Sample mode every match id shows the one saved real game, with generated player names. Fixed-position wallpaper shows black below the first screen in full-page screenshots; it is a capture artifact, the live page is fine.
 - Not done: builds, skill order and guides are still samples; the four unreleased heroes' skins will want a second pass once their kits are published.
+
+## Round 17: back to one look, and tier tags
+
+Feedback: the per-hero styles did not work well and undermined Deadlock (the hero name lettering from the game was replaced by plain text), so go back to the previous look and fix from there. Suggested tier labels in the style of an amber S+ ticket.
+
+- **Removed**: the whole skin engine (`src/skin/`), its six stylesheets, the 43 per-hero typefaces and their licence file, the two generator scripts, the Hero style switch, the player page's Page style picker, the fixed wallpaper and the per-hero card motions. Hero pages show the game's own name lettering again, and section titles are the plain ones.
+- **Checked against the previous build**: the same 11 pages (home, heroes, tier list, four hero pages, player, leaderboard, builds, ranks) rendered from the previous standalone file and from this build with the same mock API and compared pixel by pixel. Page heights match exactly; the hero directory and tier list are identical; the other differences are the orange kicker label's random tilt, the random home-page spotlight hero, and the new arrow on player game rows.
+- **Kept**: the match page (`/match/:id`) and clicking a game on the player page, the trend's partial-day fix, and visible card hover. The hover is now one motion for every hero (lift, glow in the hero's colour, portrait push-in) in `hero-cards.css`; reduced motion gets a small lift.
+- **Tier tags** (`TierTag.tsx`, `tier-tags.css`): flat plates in the label-plate shape with the hard shadow and Valve Pulp lettering, used on the tier list (rows and table). S+ is the amber (#fbbf24) of the label that was sent; S orange, A green, B blue, C grey, D red. The winged emblem (`TierBadge`) is still used on hero pages and the home table; switching those is a one-line change each.
+- `broadway-skin-v1` may still sit in a browser's localStorage from round 16; nothing reads it now.

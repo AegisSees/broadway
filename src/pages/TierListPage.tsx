@@ -1,9 +1,8 @@
-import { getSkin } from '../skin/heroSkins';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Controls from '../components/Controls';
 import { HeroFace } from '../components/HeroFace';
-import TierBadge from '../components/TierBadge';
+import TierTag from '../components/TierTag';
 import { SiteFooter } from '../components/Shell';
 import { getHeroColor } from '../data/heroColors';
 import { getHero, initials } from '../data/roster';
@@ -23,7 +22,7 @@ function HeroCard({ r, query }: { r: TierRow; query: string }) {
   const h = getHero(r.slug);
   if (!h) return null;
   return (
-    <Link to={`/hero/${h.slug}${query}`} className="tl-card" data-hover={getSkin(h.slug)?.hover ?? 'lift'} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+    <Link to={`/hero/${h.slug}${query}`} className="tl-card" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
       <span className="pic">{h.portrait ? <img src={h.portrait} alt="" loading="lazy" /> : h.icon ? <img className="icon-pic" src={h.icon} alt="" loading="lazy" /> : initials(h.name)}</span>
       <b>{h.name}</b>
       <small>{fmtPct(r.winRate)}</small><small className="pr">{fmtPct(r.pickRate)} pick</small>
@@ -88,7 +87,7 @@ export default function TierListPage() {
             const list = shown.filter((r) => r.tier === t).sort((a, b) => b.score - a.score);
             return (
               <section className={`tl-row t-${t.toLowerCase().replace('+', 'p')}`} key={t} aria-label={`${t} tier`}>
-                <div className="tl-cap"><TierBadge tier={t} size="md" /><b>{t}</b><small>{TIER_NOTES[t]}</small></div>
+                <div className="tl-cap"><TierTag tier={t} size="lg" /><small>{TIER_NOTES[t]}</small><em>{list.length} {list.length === 1 ? 'hero' : 'heroes'}</em></div>
                 <div className="tl-heroes">
                   {list.length ? list.map((r) => <HeroCard key={r.slug} r={r} query={query} />) : <span className="tl-empty">{q ? 'No match' : 'Nobody here'}</span>}
                 </div>
@@ -104,7 +103,7 @@ export default function TierListPage() {
               {sorted.map((r) => { const h = getHero(r.slug); return (
                 <tr key={r.slug}>
                   <td><span className="hn">{h && <HeroFace hero={h} />}<Link to={`/hero/${r.slug}${query}`}>{h?.name ?? r.slug}</Link></span></td>
-                  <td className="tiercell"><TierBadge tier={r.tier} size="sm" /></td>
+                  <td className="tiercell"><TierTag tier={r.tier} size="sm" /></td>
                   <td><span className="score">{r.score.toFixed(1)}</span></td>
                   <td className="good">{fmtPct(r.winRate)}</td>
                   {r.delta === undefined ? <td className="muted">–</td> : <td className={r.delta > 0 ? 'good' : r.delta < 0 ? 'bad' : 'muted'}>{r.delta > 0 ? '+' : r.delta < 0 ? '−' : ''}{Math.abs(r.delta).toFixed(1)}</td>}

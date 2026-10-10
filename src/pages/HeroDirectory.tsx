@@ -1,4 +1,3 @@
-import { getSkin } from '../skin/heroSkins';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SiteFooter } from '../components/Shell';
@@ -41,7 +40,7 @@ export default function HeroDirectory() {
       )}
       <div className="dir-grid">
         {list.map((h) => (
-          <Link key={h.slug} to={`/hero/${h.slug}`} className="dir-card" data-hover={getSkin(h.slug)?.hover ?? 'lift'} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+          <Link key={h.slug} to={`/hero/${h.slug}`} className="dir-card" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
             <FavStar slug={h.slug} name={h.name} />
             <div className="pic">{h.portrait ? <img src={h.portrait} alt="" loading="lazy" /> : h.icon ? <img className="icon-pic" src={h.icon} alt="" loading="lazy" /> : initials(h.name)}{h.unreleased && <span className="new-flag">New</span>}</div>
             <div className="nm">{h.name}</div>

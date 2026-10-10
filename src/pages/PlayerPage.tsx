@@ -23,11 +23,7 @@ import { fmtInt } from '../lib/stats';
 import { useTitle } from '../lib/useTitle';
 import PlayerLookup from './PlayerLookup';
 import Avatar from '../components/Avatar';
-import SkinScope, { SkinSwitch } from '../skin/SkinScope';
-import SectionHeading from '../skin/SectionHeading';
-import { getSkin } from '../skin/heroSkins';
-import { useSkinOn } from '../skin/pref';
-import type { HeroSkin } from '../skin/types';
+import SectionHeading from '../components/SectionHeading';
 
 const n0 = (n: number) => n.toLocaleString('en-US');
 const souls = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(Math.round(n)));
@@ -51,33 +47,10 @@ function HeroLine({ slug }: { slug: string }) {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-// Page style: the page wears the skin of a hero. By default that is the player's most played one.
-// ---------------------------------------------------------------------------------------------------------
-
-function StylePicker({ heroes, value, onPick }: { heroes: PlayerHeroLine[]; value: string | undefined; onPick: (slug: string | 'site') => void }) {
-  const on = useSkinOn();
-  const options = heroes.slice(0, 4).map((h) => getHero(h.slug)).filter((h): h is NonNullable<ReturnType<typeof getHero>> => !!h && !!getSkin(h.slug));
-  if (!options.length) return null;
-  if (!on) return <div className="pl-style"><span>Page style</span><SkinSwitch slug={options[0].slug} label="Hero styles" /></div>;
-  return (
-    <div className="pl-style" role="group" aria-label="Page style">
-      <span>Page style</span>
-      {options.map((h, i) => (
-        <button key={h.slug} type="button" className="chip pl-sty" aria-pressed={value === h.slug} onClick={() => onPick(h.slug)} title={getSkin(h.slug)?.concept}>
-          <HeroFace hero={h} />{h.name}{i === 0 ? <small>most played</small> : null}
-        </button>
-      ))}
-      <button type="button" className="chip pl-sty" aria-pressed={value === undefined} onClick={() => onPick('site')} title="The site’s own look">Site theme</button>
-      <SkinSwitch slug={value} label="Hero styles" />
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------------------------------------
 // Header: the dossier
 // ---------------------------------------------------------------------------------------------------------
 
-function Dossier({ core, lastSeen, skin }: { core: PlayerCore; lastSeen?: number; skin?: HeroSkin }) {
+function Dossier({ core, lastSeen }: { core: PlayerCore; lastSeen?: number }) {
   const top = core.heroes[0]?.slug;
   const bg = getHeroBg(top);
   const hero = getHero(top);
@@ -92,7 +65,7 @@ function Dossier({ core, lastSeen, skin }: { core: PlayerCore; lastSeen?: number
       {art && <img className="pl-art" src={art} alt="" loading="lazy" />}
       <div className="pl-av"><Avatar src={core.avatar} size={120} /></div>
       <div className="pl-info">
-        <Kicker>{skin?.copy?.dossier ?? 'Player dossier'}</Kicker>
+        <Kicker>Player dossier</Kicker>
         <h1>{core.name}</h1>
         <div className="pl-ids">
           <CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" />
@@ -327,8 +300,6 @@ export default function PlayerPage() {
   const [sp] = useSearchParams();
   const id = param ? toAccountId(param) : null;
   const [tries, setTries] = useState(0);
-  const [style, setStyle] = useState<string | 'site' | null>(() => sp.get('style'));
-  const skinOn = useSkinOn();
   const core = useAsync((signal) => (id ? dataSource.player(id, signal) : Promise.resolve(null)), [id, tries]);
   const history = useAsync((signal) => (id ? dataSource.playerMatches(id, signal) : Promise.resolve(null)), [id, tries]);
   const mates = useAsync((signal) => (id ? dataSource.playerMates(id, signal) : Promise.resolve([])), [id, tries]);
@@ -338,11 +309,6 @@ export default function PlayerPage() {
   useEffect(() => {
     if (c && !c.empty && !c.illustrative) rememberPlayer({ accountId: c.accountId, name: c.name, avatar: c.avatar });
   }, [c]);
-
-  // The page wears the skin of the chosen hero, by default the most played one; "site" keeps the site's own theme.
-  const topSlug = c?.heroes[0]?.slug;
-  const styleSlug = !c || c.empty || style === 'site' ? undefined : getSkin(style ?? undefined) ? style ?? undefined : topSlug;
-  const skin = skinOn ? getSkin(styleSlug) : undefined;
 
   const alt = useMemo(() => (sp.get('alt') ?? '').split(',').map((s) => Number(s)).filter((n) => Number.isInteger(n) && n > 0), [sp]);
 
@@ -354,63 +320,60 @@ export default function PlayerPage() {
   const now = Math.floor(Date.now() / 1000);
 
   return (
-    <SkinScope slug={styleSlug}>
-    <div className="wrap pl">
-      {core.status === 'loading' && (
-        <div className="panel pl-head pl-skeleton" aria-busy="true" role="status"><div className="pl-av"><span className="ph" /></div><div className="pl-info"><h1>Pulling the file…</h1><small>Steam ID {toSteam64(id)}</small></div></div>
-      )}
-      {core.status === 'error' && (
-        <div className="panel empty" role="alert">
-          <h3>Couldn’t load this player</h3>
-          <p>{core.message}. The Deadlock API may be busy.</p>
-          <p><button type="button" className="chip" onClick={() => setTries((n) => n + 1)}>Try again</button> <Link className="chip" to="/player">Look up someone else</Link></p>
+  <div className="wrap pl">
+    {core.status === 'loading' && (
+      <div className="panel pl-head pl-skeleton" aria-busy="true" role="status"><div className="pl-av"><span className="ph" /></div><div className="pl-info"><h1>Pulling the file…</h1><small>Steam ID {toSteam64(id)}</small></div></div>
+    )}
+    {core.status === 'error' && (
+      <div className="panel empty" role="alert">
+        <h3>Couldn’t load this player</h3>
+        <p>{core.message}. The Deadlock API may be busy.</p>
+        <p><button type="button" className="chip" onClick={() => setTries((n) => n + 1)}>Try again</button> <Link className="chip" to="/player">Look up someone else</Link></p>
+      </div>
+    )}
+    {c && c.empty && (
+      <>
+        <div className="panel empty">
+          <h3>No record for this account</h3>
+          <p>The Deadlock API has no profile, rank or games for account {id}. The ID may be mistyped, or the player hasn’t played a tracked match yet.</p>
+          <p><Link className="chip" to="/player">Look up someone else</Link></p>
         </div>
-      )}
-      {c && c.empty && (
-        <>
-          <div className="panel empty">
-            <h3>No record for this account</h3>
-            <p>The Deadlock API has no profile, rank or games for account {id}. The ID may be mistyped, or the player hasn’t played a tracked match yet.</p>
-            <p><Link className="chip" to="/player">Look up someone else</Link></p>
+      </>
+    )}
+    {c && !c.empty && (
+      <>
+        {c.illustrative && <div className="notice"><b>Illustrative player.</b> Name, rank and games are invented from the account number for design review. Switch to live data in the header to see the real record.</div>}
+        {alt.length > 0 && <AltAccounts ids={alt} self={c.accountId} />}
+        <Dossier core={c} lastSeen={matches?.matches[0]?.start} />
+        <Tickets core={c} />
+
+        <div className="pl-grid">
+          <div className="pl-main">
+            <SectionHeading title="Rank over time" />
+            {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
+            {history.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load the match history</h3><p>{history.message}.</p></div>}
+            {matches && <RankHistory points={matches.history} illustrative={c.illustrative} />}
+
+            <SectionHeading title="Heroes" />
+            <Heroes heroes={c.heroes} />
+
+            <SectionHeading title="Recent matches" />
+            {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
+            {matches && <Matches data={matches} accountId={c.accountId} />}
           </div>
-        </>
-      )}
-      {c && !c.empty && (
-        <>
-          {c.illustrative && <div className="notice"><b>Illustrative player.</b> Name, rank and games are invented from the account number for design review. Switch to live data in the header to see the real record.</div>}
-          {alt.length > 0 && <AltAccounts ids={alt} self={c.accountId} />}
-          <StylePicker heroes={c.heroes} value={styleSlug} onPick={(slug) => setStyle(slug)} />
-          <Dossier core={c} lastSeen={matches?.matches[0]?.start} skin={skin} />
-          <Tickets core={c} />
-
-          <div className="pl-grid">
-            <div className="pl-main">
-              <SectionHeading skin={skin} title="Rank over time" />
-              {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
-              {history.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load the match history</h3><p>{history.message}.</p></div>}
-              {matches && <RankHistory points={matches.history} illustrative={c.illustrative} />}
-
-              <SectionHeading skin={skin} title="Heroes" />
-              <Heroes heroes={c.heroes} />
-
-              <SectionHeading skin={skin} k="matches" />
-              {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
-              {matches && <Matches data={matches} accountId={c.accountId} />}
-            </div>
-            <aside className="pl-aside" aria-label="Form and teammates">
-              {matches && <Form matches={matches.matches} />}
-              {matches && <Recent30 matches={matches.matches} now={now} />}
-              {mates.status === 'ready' && <Mates mates={mates.value} />}
-              <p className="muted pl-fine">
-                Records are all-time and cover every queue. Win rate counts a game as won when the player’s team won. Data from the Deadlock API
-                {c.illustrative ? '.' : `; ${fmtInt(c.totals?.matches ?? 0)} games on record.`}
-              </p>
-            </aside>
-          </div>
-        </>
-      )}
-      <SiteFooter />
-    </div>
-    </SkinScope>
+          <aside className="pl-aside" aria-label="Form and teammates">
+            {matches && <Form matches={matches.matches} />}
+            {matches && <Recent30 matches={matches.matches} now={now} />}
+            {mates.status === 'ready' && <Mates mates={mates.value} />}
+            <p className="muted pl-fine">
+              Records are all-time and cover every queue. Win rate counts a game as won when the player’s team won. Data from the Deadlock API
+              {c.illustrative ? '.' : `; ${fmtInt(c.totals?.matches ?? 0)} games on record.`}
+            </p>
+          </aside>
+        </div>
+      </>
+    )}
+    <SiteFooter />
+  </div>
   );
 }

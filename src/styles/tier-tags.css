@@ -1,0 +1,26 @@
+/* ==========================================================================================================
+   Round 17 · tier labels
+   Flat plates in the same shape as the orange kicker and the black tape (--plate), with the hard offset shadow and
+   heavy lettering. S+ is the amber of the label the design was taken from; the rest step down in colour.
+   ========================================================================================================== */
+
+.tier-tag { --tg: #fbbf24; position: relative; isolation: isolate; display: inline-grid; place-items: center; color: #140a04; line-height: 1; filter: drop-shadow(var(--hard)); flex: none; }
+.tier-tag::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--tg); clip-path: var(--plate); }
+.tier-tag b { font: 700 1em/1 var(--display); letter-spacing: 0.01em; display: inline-flex; align-items: baseline; padding-top: 0.06em; }
+.tier-tag b i { font-style: normal; font-size: 0.74em; margin-left: 0.04em; transform: translateY(-0.04em); }
+.tier-tag.lg { width: 116px; height: 80px; font-size: 54px; }
+.tier-tag.md { width: 78px; height: 54px; font-size: 36px; }
+.tier-tag.sm { width: 54px; height: 37px; font-size: 25px; }
+
+.tier-tag.t-sp { --tg: #fbbf24; } .tier-tag.t-s { --tg: #f48a4a; } .tier-tag.t-a { --tg: #a3d65c; }
+.tier-tag.t-b { --tg: #5bc0d9; } .tier-tag.t-c { --tg: #a2adbb; } .tier-tag.t-d { --tg: #db6b5c; }
+
+/* the row captions take the same colours */
+.tl-row.t-sp { --tier: #fbbf24; } .tl-row.t-s { --tier: #f48a4a; } .tl-row.t-a { --tier: #a3d65c; }
+.tl-row.t-b { --tier: #5bc0d9; } .tl-row.t-c { --tier: #a2adbb; } .tl-row.t-d { --tier: #db6b5c; }
+.tl-row { border-left: 3px solid var(--tier, var(--line)); }
+.tl-cap { gap: 10px; }
+.tl-cap em { font: 600 11px var(--ui); font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim, var(--muted)); }
+.tl-table .tier-tag.sm { margin: 3px 0; }
+
+@media (max-width: 720px) { .tl-cap .tier-tag.lg { width: 78px; height: 54px; font-size: 36px; } .tl-cap { gap: 12px; } }

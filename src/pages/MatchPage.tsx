@@ -20,11 +20,7 @@ import { dataSource } from '../data/source';
 import { useAsync } from '../data/useAsync';
 import { fmtInt } from '../lib/stats';
 import { useTitle } from '../lib/useTitle';
-import SectionHeading from '../skin/SectionHeading';
-import { getSkin } from '../skin/heroSkins';
-import { useSkinOn } from '../skin/pref';
-import SkinScope, { SkinSwitch } from '../skin/SkinScope';
-import type { HeroSkin } from '../skin/types';
+import SectionHeading from '../components/SectionHeading';
 
 const k1 = (n: number | undefined) => (n === undefined ? '–' : n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 1 : 2).replace(/\.?0+$/, '')}K` : String(Math.round(n)));
 const clock = (s: number) => fmtDuration(s);
@@ -64,7 +60,7 @@ function SideScore({ t, brawl }: { t: TeamTotals; brawl: boolean }) {
   );
 }
 
-function Head({ m, skin }: { m: MatchDetail; skin?: HeroSkin }) {
+function Head({ m }: { m: MatchDetail }) {
   const brawl = m.kind === 'brawl';
   const [hk, am] = m.teams;
   const when = m.start ? new Date(m.start * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : null;
@@ -72,7 +68,7 @@ function Head({ m, skin }: { m: MatchDetail; skin?: HeroSkin }) {
   return (
     <section className="mt-head panel paint" aria-label="Match summary">
       <div className="mt-title">
-        <Kicker>{skin?.copy?.matches && skin.copy.matches !== 'Recent matches' ? skin.copy.matches : 'Match report'}</Kicker>
+        <Kicker>Match report</Kicker>
         <h1>{QUEUE_LABEL[m.kind]} · {SIDE_SHORT[m.winner]} win</h1>
         <div className="mt-meta">
           <span className="chip static">{fmtDuration(m.durationS)}</span>
@@ -375,8 +371,6 @@ export default function MatchPage() {
 
   const wanted = Number(sp.get('player'));
   const selected = m ? m.players.find((p) => p.accountId === wanted) ?? m.players.find((p) => p.mvp === 1) ?? m.players[0] : undefined;
-  const skinOn = useSkinOn();
-  const skin = skinOn ? getSkin(selected?.heroSlug) : undefined;
   useTitle(m ? `${QUEUE_LABEL[m.kind]} match ${m.id}` : 'Match');
 
   const pick = (p: MatchPlayer) => {
@@ -389,48 +383,45 @@ export default function MatchPage() {
   const notFound = state.status === 'error' && /404|not found/i.test(state.message);
 
   return (
-    <SkinScope slug={selected?.heroSlug}>
-      <div className="wrap mt">
-        <div className="crumbs">
-          <span><Link to={back}>{wanted > 0 ? 'Player' : 'Matches'}</Link> / Match {id ?? matchId}</span>
-          <SkinSwitch slug={selected?.heroSlug} />
-        </div>
-
-        {state.status === 'loading' && <div className="panel mt-head mt-skeleton" role="status" aria-busy="true"><h1>Pulling the match file…</h1><small>Match {id}</small></div>}
-        {state.status === 'error' && (
-          <div className="panel empty" role="alert">
-            <h3>{id === null ? 'That isn’t a match number' : notFound ? 'No record of this match' : 'Couldn’t load this match'}</h3>
-            <p>{id === null ? 'Match numbers are plain digits, like the one in a match link on a player page.' : notFound ? `The Deadlock API has no match ${id}. Games from the last few minutes can take a while to show up, and private lobbies are never recorded.` : `${state.message}. The Deadlock API may be busy.`}</p>
-            <p><Link className="chip" to={back}>Go back</Link></p>
-          </div>
-        )}
-
-        {m && selected && (
-          <>
-            {m.illustrative && <div className="notice"><b>Sample game.</b> Sample mode shows one saved real game for every match link, with generated player names. Switch to live data in the header to open the real match.</div>}
-            <Head m={m} skin={skin} />
-            <Highlights m={m} names={names} onPick={pick} />
-            <LeadChart m={m} />
-
-            <SectionHeading skin={skin} title="The two teams" />
-            <div className="mt-grid">
-              <div className="mt-teams">
-                <p className="mt-hint muted">Pick a player to see their build; this page wears the style of the hero they played.</p>
-                {m.teams.map((t) => <TeamPanel key={t.side} t={t} names={names} selected={selected.accountId} maxDmg={maxDmg} onPick={pick} brawl={m.kind === 'brawl'} />)}
-                <LobbyItems m={m} />
-              </div>
-              <aside className="mt-aside panel" ref={detailRef} aria-label="Selected player" aria-live="polite">
-                <Detail p={selected} m={m} names={names} />
-              </aside>
-            </div>
-            <p className="muted mt-fine">
-              From the Deadlock API. Lane names follow the API’s lane numbers, which are the best reading of the game’s lane colours. The sold or upgraded items are components used to build bigger ones.
-            </p>
-          </>
-        )}
-        <SiteFooter />
+    <div className="wrap mt">
+      <div className="crumbs">
+        <span><Link to={back}>{wanted > 0 ? 'Player' : 'Matches'}</Link> / Match {id ?? matchId}</span>
       </div>
-    </SkinScope>
+
+      {state.status === 'loading' && <div className="panel mt-head mt-skeleton" role="status" aria-busy="true"><h1>Pulling the match file…</h1><small>Match {id}</small></div>}
+      {state.status === 'error' && (
+        <div className="panel empty" role="alert">
+          <h3>{id === null ? 'That isn’t a match number' : notFound ? 'No record of this match' : 'Couldn’t load this match'}</h3>
+          <p>{id === null ? 'Match numbers are plain digits, like the one in a match link on a player page.' : notFound ? `The Deadlock API has no match ${id}. Games from the last few minutes can take a while to show up, and private lobbies are never recorded.` : `${state.message}. The Deadlock API may be busy.`}</p>
+          <p><Link className="chip" to={back}>Go back</Link></p>
+        </div>
+      )}
+
+      {m && selected && (
+        <>
+          {m.illustrative && <div className="notice"><b>Sample game.</b> Sample mode shows one saved real game for every match link, with generated player names. Switch to live data in the header to open the real match.</div>}
+          <Head m={m} />
+          <Highlights m={m} names={names} onPick={pick} />
+          <LeadChart m={m} />
+
+          <SectionHeading title="The two teams" />
+          <div className="mt-grid">
+            <div className="mt-teams">
+              <p className="mt-hint muted">Pick a player to see their build, items and ability order.</p>
+              {m.teams.map((t) => <TeamPanel key={t.side} t={t} names={names} selected={selected.accountId} maxDmg={maxDmg} onPick={pick} brawl={m.kind === 'brawl'} />)}
+              <LobbyItems m={m} />
+            </div>
+            <aside className="mt-aside panel" ref={detailRef} aria-label="Selected player" aria-live="polite">
+              <Detail p={selected} m={m} names={names} />
+            </aside>
+          </div>
+          <p className="muted mt-fine">
+            From the Deadlock API. Lane names follow the API’s lane numbers, which are the best reading of the game’s lane colours. The sold or upgraded items are components used to build bigger ones.
+          </p>
+        </>
+      )}
+      <SiteFooter />
+    </div>
   );
 }
 

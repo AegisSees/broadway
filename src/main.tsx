@@ -7,14 +7,9 @@ import './styles/shell.css';
 import './styles/pages.css';
 import './styles/city.css';
 import './styles/player.css';
-import './styles/skin-fonts.css';
-import './styles/skin-fx.css';
-import './styles/skin-tex.css';
-import './styles/skins.css';
-import './styles/skin-frames.css';
-import './styles/skin-parts.css';
 import './styles/hero-cards.css';
 import './styles/match.css';
+import './styles/tier-tags.css';
 import { initTheme } from './lib/theme';
 import { loadLiveHeroColors } from './data/heroColors';
 
