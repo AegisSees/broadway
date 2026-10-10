@@ -1,0 +1,187 @@
+[
+ {
+  "name": "Abrams",
+  "slug": "abrams",
+  "file": "assets/heroes/abrams.png"
+ },
+ {
+  "name": "Apollo",
+  "slug": "apollo",
+  "file": "assets/heroes/apollo.png"
+ },
+ {
+  "name": "Bebop",
+  "slug": "bebop",
+  "file": "assets/heroes/bebop.png"
+ },
+ {
+  "name": "Billy",
+  "slug": "billy",
+  "file": "assets/heroes/billy.png"
+ },
+ {
+  "name": "Calico",
+  "slug": "calico",
+  "file": "assets/heroes/calico.png"
+ },
+ {
+  "name": "Drifter",
+  "slug": "drifter",
+  "file": "assets/heroes/drifter.png"
+ },
+ {
+  "name": "Dynamo",
+  "slug": "dynamo",
+  "file": "assets/heroes/dynamo.png"
+ },
+ {
+  "name": "Grey Talon",
+  "slug": "grey-talon",
+  "file": "assets/heroes/grey-talon.png"
+ },
+ {
+  "name": "Haze",
+  "slug": "haze",
+  "file": "assets/heroes/haze.png"
+ },
+ {
+  "name": "Holliday",
+  "slug": "holliday",
+  "file": "assets/heroes/holliday.png"
+ },
+ {
+  "name": "Infernus",
+  "slug": "infernus",
+  "file": "assets/heroes/infernus.png"
+ },
+ {
+  "name": "Ivy",
+  "slug": "ivy",
+  "file": "assets/heroes/ivy.png"
+ },
+ {
+  "name": "Kelvin",
+  "slug": "kelvin",
+  "file": "assets/heroes/kelvin.png"
+ },
+ {
+  "name": "Lady Geist",
+  "slug": "lady-geist",
+  "file": "assets/heroes/lady-geist.png"
+ },
+ {
+  "name": "Lash",
+  "slug": "lash",
+  "file": "assets/heroes/lash.png"
+ },
+ {
+  "name": "McGinnis",
+  "slug": "mcginnis",
+  "file": "assets/heroes/mcginnis.png"
+ },
+ {
+  "name": "Mina",
+  "slug": "mina",
+  "file": "assets/heroes/mina.png"
+ },
+ {
+  "name": "Mirage",
+  "slug": "mirage",
+  "file": "assets/heroes/mirage.png"
+ },
+ {
+  "name": "Mo & Krill",
+  "slug": "mo-and-krill",
+  "file": "assets/heroes/mo-and-krill.png"
+ },
+ {
+  "name": "Paige",
+  "slug": "paige",
+  "file": "assets/heroes/paige.png"
+ },
+ {
+  "name": "Paradox",
+  "slug": "paradox",
+  "file": "assets/heroes/paradox.png"
+ },
+ {
+  "name": "Pocket",
+  "slug": "pocket",
+  "file": "assets/heroes/pocket.png"
+ },
+ {
+  "name": "Rem",
+  "slug": "rem",
+  "file": "assets/heroes/rem.png"
+ },
+ {
+  "name": "Seven",
+  "slug": "seven",
+  "file": "assets/heroes/seven.png"
+ },
+ {
+  "name": "Shiv",
+  "slug": "shiv",
+  "file": "assets/heroes/shiv.png"
+ },
+ {
+  "name": "Silver (Transformed)",
+  "slug": "silver-transformed",
+  "file": "assets/heroes/silver-transformed.png"
+ },
+ {
+  "name": "Sinclair",
+  "slug": "sinclair",
+  "file": "assets/heroes/sinclair.png"
+ },
+ {
+  "name": "The Doorman",
+  "slug": "the-doorman",
+  "file": "assets/heroes/the-doorman.png"
+ },
+ {
+  "name": "Victor",
+  "slug": "victor",
+  "file": "assets/heroes/victor.png"
+ },
+ {
+  "name": "Vindicta",
+  "slug": "vindicta",
+  "file": "assets/heroes/vindicta.png"
+ },
+ {
+  "name": "Viscous",
+  "slug": "viscous",
+  "file": "assets/heroes/viscous.png"
+ },
+ {
+  "name": "Vyper",
+  "slug": "vyper",
+  "file": "assets/heroes/vyper.png"
+ },
+ {
+  "name": "Warden",
+  "slug": "warden",
+  "file": "assets/heroes/warden.png"
+ },
+ {
+  "name": "Wraith",
+  "slug": "wraith",
+  "file": "assets/heroes/wraith.png"
+ },
+ {
+  "name": "Yamato",
+  "slug": "yamato",
+  "file": "assets/heroes/yamato.png"
+ },
+ {
+  "name": "Graves",
+  "slug": "graves",
+  "file": "assets/heroes/graves.png"
+ },
+ {
+  "name": "Silver",
+  "slug": "silver",
+  "file": "assets/heroes/silver.png"
+ }
+]

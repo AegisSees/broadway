@@ -1,0 +1,1322 @@
+{
+ "abrams": {
+  "role": "Hard-hitting close-range bruiser who thrives in melee engagements",
+  "abilities": [
+   {
+    "name": "Siphon Life",
+    "desc": "Drains nearby enemies for spirit damage over a few seconds and heals Abrams for a large share of it against heroes.",
+    "cooldown": 42,
+    "stats": "22 DPS over 4s; 70% hero lifesteal; 8m range"
+   },
+   {
+    "name": "Shoulder Charge",
+    "desc": "Barrels forward, dragging enemies along and stunning those he slams into a wall.",
+    "cooldown": 33,
+    "stats": "30 spirit damage; 0.3s wall stun; ~17.5m travel"
+   },
+   {
+    "name": "Infernal Resilience",
+    "desc": "Passive that gives constant minor regeneration and extra temporary regen after taking damage.",
+    "cooldown": null,
+    "stats": "1 HP/s permanent regen; regen equal to 13% of health lost over 20s"
+   },
+   {
+    "name": "Seismic Impact",
+    "desc": "Leaps high, then crashes down to damage and stun enemies in a wide area.",
+    "cooldown": 215,
+    "stats": "100 spirit damage; 1.6s stun; 9m radius"
+   }
+  ],
+  "released": true
+ },
+ "apollo": {
+  "role": "Highly skilled fencer combining finesse and mobility with precise strikes",
+  "abilities": [
+   {
+    "name": "Disengaging Sigil",
+    "desc": "Draws a sigil that detonates, damaging and slowing nearby foes while knocking Apollo backward.",
+    "cooldown": 12,
+    "stats": "85 spirit damage; -24% move speed for 4s; 6.5m radius"
+   },
+   {
+    "name": "Riposte",
+    "desc": "Readies a parry; a successful block makes Apollo briefly invulnerable and dashes him to an enemy hero, stunning them and lowering melee resistance.",
+    "cooldown": 22,
+    "stats": "0.8s stun; -25% melee resist for 3s; 35m cast range"
+   },
+   {
+    "name": "Flawless Advance",
+    "desc": "Performs up to three piercing lunges; holding to time the strike increases damage.",
+    "cooldown": 26,
+    "stats": "25 base, 40 held, 65 perfect-timing spirit damage; 3 lunges within 4s"
+   },
+   {
+    "name": "Itani Lo Sahn",
+    "desc": "Channels briefly, then slashes a long line, trapping hit enemies in slow motion before dealing heavy damage, with bonus damage to low-health targets.",
+    "cooldown": 145,
+    "stats": "200 spirit damage; 1.5s channel; 1.8s slow-motion"
+   }
+  ],
+  "released": true
+ },
+ "baba": {
+  "role": "Control-focused spirit stealer with hexing abilities",
+  "abilities": [
+   {
+    "name": "Threadsap",
+    "desc": "Sends a thread that tracks the crosshair and bursts along its path, damaging enemies and stealing their Spirit.",
+    "cooldown": 26,
+    "stats": "50 damage; 35m cast range; up to 45 Spirit stolen; 22s debuff"
+   },
+   {
+    "name": "Granny Long Legs",
+    "desc": "Extends bench legs for speed, jump height and resistances, enabling kicks and a ground pound.",
+    "cooldown": 30,
+    "stats": "+5 m/s speed; 30% debuff resist; 30% melee resist; 75 heavy melee damage"
+   },
+   {
+    "name": "Baba's Brew",
+    "desc": "Channels to throw tea that can become a barrier, a silence, or a burning damage-over-time effect.",
+    "cooldown": 25,
+    "stats": "100 barrier; 3s silence; 12 burn DPS; 6m radius; 8s duration"
+   },
+   {
+    "name": "Feed The Birds",
+    "desc": "Channels to coat targets in bread, then a pigeon flock attacks and hexes the victim into a pigeon.",
+    "cooldown": 150,
+    "stats": "450 max damage; 2.75s max hex; 32% max slow; 18m cast range"
+   }
+  ],
+  "released": true
+ },
+ "bebop": {
+  "role": "Scrap golem with a big heart and a bigger extendable arm",
+  "abilities": [
+   {
+    "name": "Exploding Uppercut",
+    "desc": "Launches nearby enemies skyward; they take damage on landing and have their fire rate reduced.",
+    "cooldown": 22,
+    "stats": "63 melee / 75 spirit damage"
+   },
+   {
+    "name": "Sticky Bomb",
+    "desc": "Sticks a bomb to an enemy that detonates after a delay, growing stronger with hero hits and kills.",
+    "cooldown": 18,
+    "stats": "85 damage; 3.5s fuse; 8m radius; up to +60% bonus damage"
+   },
+   {
+    "name": "Grapple Arm",
+    "desc": "Fires a mechanical hand that yanks the first target hit back to Bebop and briefly slows it.",
+    "cooldown": 23,
+    "stats": "44 melee damage; 30m range"
+   },
+   {
+    "name": "Hyper Beam",
+    "desc": "Channels a long, powerful beam that continuously damages and slows enemies, weaker at point-blank range.",
+    "cooldown": 120,
+    "stats": "160 DPS; up to 11s; 70m long, 2.9m wide; -25% damage within ~9m"
+   }
+  ],
+  "released": true
+ },
+ "billy": {
+  "role": "Chaotic front-liner who never backs down from a challenge",
+  "abilities": [
+   {
+    "name": "Bashdown",
+    "desc": "Slams the ground, pulling enemies down and creating a shockwave that damages and knocks them up.",
+    "cooldown": 35,
+    "stats": "4m range"
+   },
+   {
+    "name": "Rising Ram",
+    "desc": "Charges into an enemy, launching both Billy and the target upward; cooldown is halved on a hit.",
+    "cooldown": 32,
+    "stats": "40 spirit damage; 50% cooldown refund on hit"
+   },
+   {
+    "name": "Blasted",
+    "desc": "Melee hits restore ammo and inflict wrecked; the active boosts bullets against wrecked foes and grants max health per melee hit.",
+    "cooldown": 27,
+    "stats": "Wrecked 7s; +70 max health per melee hit; 8s duration"
+   },
+   {
+    "name": "Chain Gang",
+    "desc": "Tethers nearby enemies, blocking their movement abilities and slowing them, then yanks them to Billy.",
+    "cooldown": 175,
+    "stats": "12m range; 2.8s tether; 120 spirit damage"
+   }
+  ],
+  "released": true
+ },
+ "calico": {
+  "role": "Tricksy, slippery burst-damage hero",
+  "abilities": [
+   {
+    "name": "Gloom Bombs",
+    "desc": "Throws a cluster of delayed bombs; enemies hit by several take sharply reduced damage from the extras.",
+    "cooldown": 14,
+    "stats": "45 spirit damage per bomb; 4 bombs; 3m radius; 65% reduction on repeat hits"
+   },
+   {
+    "name": "Leaping Slash",
+    "desc": "Dashes forward and slashes in a circle, healing on hero hit.",
+    "cooldown": 13,
+    "stats": "60.4 melee damage; 40 heal; 9m cast range"
+   },
+   {
+    "name": "Ava",
+    "desc": "Possesses her cat for growing move speed and minimap concealment; taking damage resets the speed bonus.",
+    "cooldown": 30,
+    "stats": "+30% to +65% move speed; 15s; 4s to max"
+   },
+   {
+    "name": "Return to Shadows",
+    "desc": "Becomes untargetable with bonus speed, damaging enemies on departure and again when she returns after a delay.",
+    "cooldown": 115,
+    "stats": "150 spirit damage per hit; +20% move speed; 3s delay"
+   }
+  ],
+  "released": true
+ },
+ "celeste": {
+  "role": "Disruptive performer",
+  "abilities": [
+   {
+    "name": "Light Eater",
+    "desc": "Blasts a cone of light that damages enemies and grants lifesteal, with bonus damage on bullet hits.",
+    "cooldown": 20,
+    "stats": "40 spirit damage; +15 on bullet hits; 18% lifesteal; 10m range; 8s"
+   },
+   {
+    "name": "Dazzling Trick",
+    "desc": "Wraps Celeste in a protective barrier that explodes when broken, silencing and damaging nearby foes.",
+    "cooldown": 38,
+    "stats": "100 barrier; 14m radius; 1.75s silence; 4s duration"
+   },
+   {
+    "name": "Radiant Daggers",
+    "desc": "Calls down light beams that explode, dealing damage and granting stacking spirit amplification per hit.",
+    "cooldown": 33,
+    "stats": "55 spirit damage; 8m radius; 1.4s formation; up to 6 stacks of +7% spirit amp"
+   },
+   {
+    "name": "Shining Wonder",
+    "desc": "Launches a light orb that bounces between enemies, damaging and slowing them and cutting their dash distance.",
+    "cooldown": 160,
+    "stats": "140 spirit damage; 8 bounces; 15.5m bounce range; -32% speed 1.5s; -22% dash"
+   }
+  ],
+  "released": true
+ },
+ "the-doorman": {
+  "role": "Disorienting map-control hero built on mind games",
+  "abilities": [
+   {
+    "name": "Call Bell",
+    "desc": "Throws a bell that damages on impact, then explodes to slow enemies and hurt their aim; shooting it detonates it early.",
+    "cooldown": 7,
+    "stats": "40 impact / 55 explosion damage; 5.5m radius; 45m travel"
+   },
+   {
+    "name": "Doorway",
+    "desc": "Opens two linked portals on vertical surfaces that players and projectiles can pass through.",
+    "cooldown": 45,
+    "stats": "15s duration; 65m max door separation; 50m cast range"
+   },
+   {
+    "name": "Luggage Cart",
+    "desc": "Sends a cart that drags enemy heroes along its path for damage; alt-cast can carry allies.",
+    "cooldown": 30,
+    "stats": "60 spirit damage; 20m cast range; 6s duration"
+   },
+   {
+    "name": "Hotel Guest",
+    "desc": "Channels briefly to banish a target to the Baroness Hotel, with damage on arrival and more if they fail to escape.",
+    "cooldown": 140,
+    "stats": "1s channel; 6.5s banish; 75 + 125 spirit damage; 7m range"
+   }
+  ],
+  "released": true
+ },
+ "drifter": {
+  "role": "Feral vampire who hunts isolated prey with relentless precision",
+  "abilities": [
+   {
+    "name": "Rend",
+    "desc": "Swipes in a cone for spirit damage, adding bonus melee damage at close range.",
+    "cooldown": 16,
+    "stats": "40 spirit; 61.8 melee at close range"
+   },
+   {
+    "name": "Stalker's Mark",
+    "desc": "Marks a target with a bleed and teleports Drifter behind them.",
+    "cooldown": 26,
+    "stats": "Bleed 2% DPS for 5s"
+   },
+   {
+    "name": "Bloodscent",
+    "desc": "Passive that reveals isolated enemies and amplifies damage against them; kills and assists permanently raise weapon damage.",
+    "cooldown": null,
+    "stats": "20m reveal range; +15% damage vs isolated; +3% weapon damage per isolated kill/assist"
+   },
+   {
+    "name": "Eternal Night",
+    "desc": "Shrouds two nearby enemies in darkness, limiting vision and treating them as isolated while Drifter sprints faster.",
+    "cooldown": 145,
+    "stats": "6.5s duration; 2 targets; +2 m/s sprint speed"
+   }
+  ],
+  "released": true
+ },
+ "dynamo": {
+  "role": "Teamplay initiator with clutch potential",
+  "abilities": [
+   {
+    "name": "Kinetic Pulse",
+    "desc": "Releases an energy wave that damages enemies and throws them into the air.",
+    "cooldown": 26,
+    "stats": "115 spirit damage; 16m range; 5.5m width; 1s knockup"
+   },
+   {
+    "name": "Quantum Entanglement",
+    "desc": "Becomes untargetable while teleporting to a spot, optionally bringing nearby allies.",
+    "cooldown": 20,
+    "stats": "10m cast range; 1.4s duration; 13m ally teleport distance; restores 1 stamina"
+   },
+   {
+    "name": "Rejuvenating Aurora",
+    "desc": "Channels to heal himself and nearby teammates over time, while still allowed to dash and melee.",
+    "cooldown": 48,
+    "stats": "30 HP/s; 5s channel; 8m radius"
+   },
+   {
+    "name": "Singularity",
+    "desc": "Creates a black hole that pulls in and damages nearby enemies over time, stunning them.",
+    "cooldown": 250,
+    "stats": "75 spirit DPS; 7m radius; 2.75s channel"
+   }
+  ],
+  "released": true
+ },
+ "graves": {
+  "role": "Morbid area denial necromancer",
+  "abilities": [
+   {
+    "name": "Jar of Dead",
+    "desc": "Gathers death from fallen units, then hurls jars that summon Deadheads. The Deadheads repeatedly hit nearby enemies with spirit damage.",
+    "cooldown": 13,
+    "stats": "16 spirit damage per Deadhead, 7m search range, 15m dash range, 4 charges"
+   },
+   {
+    "name": "Grasping Hands",
+    "desc": "Raises a line of grasping hands that summons a Ghoul and leaves a rift behind, which immobilizes enemies who pass through it.",
+    "cooldown": 34,
+    "stats": "90 spirit damage, 1s immobilize, 24m cast range, 5s duration"
+   },
+   {
+    "name": "Essence Theft",
+    "desc": "Passive. Hitting targets gradually siphons away their weapon damage and spirit resistance for Graves.",
+    "cooldown": null,
+    "stats": "25% max weapon damage stolen, 10% max spirit resist stolen, 4s buildup, 3 max targets"
+   },
+   {
+    "name": "Borrowed Decree",
+    "desc": "Places a gravestone that spawns Ghouls marching toward the enemy base. They explode near heroes for area spirit damage and a slow.",
+    "cooldown": 140,
+    "stats": "115 explosion damage, 40 melee damage, 16s duration, 6.5m explosion radius"
+   }
+  ],
+  "released": true
+ },
+ "grey-talon": {
+  "role": "Precision hunter area denial",
+  "abilities": [
+   {
+    "name": "Charged Shot",
+    "desc": "Charges up a piercing arrow that hurts every enemy it passes through.",
+    "cooldown": 17,
+    "stats": "80 spirit damage, pierces enemies"
+   },
+   {
+    "name": "Rain of Arrows",
+    "desc": "Launches Grey Talon into the air with a glide and grants a burst of weapon multishot while airborne.",
+    "cooldown": 25,
+    "stats": "+5 multishot, +3 weapon damage, 4s duration"
+   },
+   {
+    "name": "Spirit Snare",
+    "desc": "Sets a trap that stuns and silences enemies when triggered, also slowing and disarming them.",
+    "cooldown": 34,
+    "stats": "6.5m radius, 2.25s curse duration"
+   },
+   {
+    "name": "Guided Owl",
+    "desc": "Take control of a spirit owl that explodes on impact and stuns enemies. Hero kills permanently grant spirit power.",
+    "cooldown": 125,
+    "stats": "230 spirit damage, 12m radius, 0.75s stun, +8 permanent spirit power per hero kill"
+   }
+  ],
+  "released": true
+ },
+ "haze": {
+  "role": "Assassin who fixates on out-of-position foes and swiftly finishes them",
+  "abilities": [
+   {
+    "name": "Sleep Dagger",
+    "desc": "Throws a dagger that deals damage and puts the target to sleep for a short time.",
+    "cooldown": 30,
+    "stats": "65 spirit damage, up to 2.75s sleep, 0.1s wake-up delay"
+   },
+   {
+    "name": "Smoke Bomb",
+    "desc": "Turns Haze invisible with a sprint speed boost. Attacking breaks stealth, but using items does not.",
+    "cooldown": 33,
+    "stats": "8s duration, 1.5s fade time, 18m enemy visibility radius"
+   },
+   {
+    "name": "Fixation",
+    "desc": "Passive. Shooting a target builds stacks that increase bullet damage against it; headshots build stacks faster.",
+    "cooldown": null,
+    "stats": "0.2 damage bonus per stack, 40 max stacks, 6s duration"
+   },
+   {
+    "name": "Bullet Dance",
+    "desc": "Enters a flurry state firing at nearby enemies with perfect accuracy, extra damage and some bullet evasion.",
+    "cooldown": 165,
+    "stats": "3.5s duration, 16m radius, +25% fire rate, +7 weapon damage, 30% bullet evasion"
+   }
+  ],
+  "released": true
+ },
+ "holliday": {
+  "role": "Sheriff relying on aim with her heirloom revolver and a litany of abilities",
+  "abilities": [
+   {
+    "name": "Powder Keg",
+    "desc": "Throws an explosive barrel that detonates after a short delay, knocking enemies up, dealing spirit damage and setting them ablaze.",
+    "cooldown": 28,
+    "stats": "40 impact damage + 13.33 burn/s over 3s, 2 charges (7.5s between)"
+   },
+   {
+    "name": "Bounce Pad",
+    "desc": "Deploys a platform that launches any hero skyward. The hero who activates it damages nearby foes on landing.",
+    "cooldown": 41,
+    "stats": "60 stomp damage, 3.5s between charges"
+   },
+   {
+    "name": "Crackshot",
+    "desc": "Headshots deal bonus weapon damage and apply a fading movement slow, and ignore damage falloff.",
+    "cooldown": 20,
+    "stats": "55 bonus damage, -40% move speed for 2s"
+   },
+   {
+    "name": "Spirit Lasso",
+    "desc": "Throws a lasso that damages the target, yanks them toward Holliday and stuns them.",
+    "cooldown": 130,
+    "stats": "80 damage, 2.25s stun, 20m cast range"
+   }
+  ],
+  "released": true
+ },
+ "infernus": {
+  "role": "Ixian with powerful flame control, using it to boost his speed and ignite enemies",
+  "abilities": [
+   {
+    "name": "Napalm",
+    "desc": "Sprays an incendiary mixture that deals spirit damage, slows targets and coats them in a flammable substance.",
+    "cooldown": 25,
+    "stats": "40 spirit damage, 20m range, 28% slow for 4s, 8s napalm debuff"
+   },
+   {
+    "name": "Flame Dash",
+    "desc": "Dashes forward with slow resistance, leaving a damaging fire trail behind.",
+    "cooldown": 38,
+    "stats": "30 DPS trail, 4.5m trail width, 4s trail duration, 50% slow resistance"
+   },
+   {
+    "name": "Afterburn",
+    "desc": "Passive. Weapon hits build a stacking burn that deals continuous spirit damage, and abilities refresh its duration.",
+    "cooldown": null,
+    "stats": "14 DPS, 3s burn duration, 8.1% buildup per bullet, 15.4% per headshot"
+   },
+   {
+    "name": "Concussive Combustion",
+    "desc": "After a short delay Infernus becomes a living bomb, detonating to deal spirit damage and stun nearby enemies.",
+    "cooldown": 190,
+    "stats": "125 spirit damage, 12m radius, 1.25s stun, 3.25s delay"
+   }
+  ],
+  "released": true
+ },
+ "ivy": {
+  "role": "Gargoyle-turned-vigilante with potent supportive and disruptive abilities",
+  "abilities": [
+   {
+    "name": "Entangling Thorns",
+    "desc": "Summons a patch of thorns that damages and slows enemies standing in it.",
+    "cooldown": 32,
+    "stats": "40 DPS, 6m radius, 4s duration, -28% slow"
+   },
+   {
+    "name": "Kudzu Connection",
+    "desc": "Links Ivy to an ally, sharing healing and granting both combat bonuses.",
+    "cooldown": 37,
+    "stats": "16m range, 12s duration, +10% fire rate, +15% bullet lifesteal, 35% replicated healing"
+   },
+   {
+    "name": "Stone Form",
+    "desc": "Turns to stone and smashes the ground, stunning and damaging nearby enemies while healing herself.",
+    "cooldown": 40,
+    "stats": "75 damage, 5.75m radius, 0.75s stun, heals 6% max health"
+   },
+   {
+    "name": "Air Drop",
+    "desc": "Grabs an ally and flies them to a location, then drops them for explosive damage and an outgoing damage bonus.",
+    "cooldown": 100,
+    "stats": "115 damage, 22m range, 21s flight, +20% outgoing damage, 20m landing radius"
+   }
+  ],
+  "released": true
+ },
+ "kelvin": {
+  "role": "Dedicated undead scientist with freezing abilities to slow enemies and heal allies",
+  "abilities": [
+   {
+    "name": "Frost Grenade",
+    "desc": "Throws a grenade that bursts into a freezing cloud, healing allies while damaging and slowing enemies.",
+    "cooldown": 30,
+    "stats": "60 spirit damage, 60 healing, 6.5m radius, 32% slow for 4s"
+   },
+   {
+    "name": "Ice Path",
+    "desc": "Creates a floating ice trail that speeds up Kelvin and teammates, and gives him slow resistance.",
+    "cooldown": 50,
+    "stats": "+2m/s move and sprint speed, 8s duration, 18s trail persistence, 60% slow resistance"
+   },
+   {
+    "name": "Arctic Beam",
+    "desc": "Fires a sustained freezing beam that deals damage and progressively cuts target movement and fire rate.",
+    "cooldown": 28,
+    "stats": "45 DPS, 25m range, up to 16% move and 20% fire rate reduction, 2s to max"
+   },
+   {
+    "name": "Frozen Shelter",
+    "desc": "Conjures an impenetrable dome that rapidly heals allies inside and slows enemies.",
+    "cooldown": 185,
+    "stats": "90 health regen, 10m radius, 28% enemy slow, 5s duration"
+   }
+  ],
+  "released": true
+ },
+ "lady-geist": {
+  "role": "Socialite with a necromantic pact who spends her own health while draining enemies",
+  "abilities": [
+   {
+    "name": "Essence Bomb",
+    "desc": "Spends health to launch a bomb that deals spirit damage and leaves toxic ground that keeps damaging enemies.",
+    "cooldown": 14,
+    "stats": "90 damage, 7m radius, 0.65s arm time, 30% health cost"
+   },
+   {
+    "name": "Life Drain",
+    "desc": "Tethers to an enemy, draining their health to heal Geist. An alternate cast can heal an ally instead.",
+    "cooldown": 34,
+    "stats": "24 DPS, 18m cast range, 28m max tether, 2.5s duration, 100% damage converted to healing"
+   },
+   {
+    "name": "Malice",
+    "desc": "Fires blood shards that apply stacking debuffs, slowing enemies and making them take more damage from Geist.",
+    "cooldown": 6,
+    "stats": "23 damage, 3 shards, 5 max stacks, 12% slow and 7% damage amp per stack, 9% health cost"
+   },
+   {
+    "name": "Soul Exchange",
+    "desc": "Swaps health percentages with a nearby enemy, with minimum thresholds that prevent lethal outcomes.",
+    "cooldown": 220,
+    "stats": "5.5m range, 30% minimum enemy health, 30% minimum health received"
+   }
+  ],
+  "released": true
+ },
+ "lash": {
+  "role": "Brutal bruiser who eagerly initiates fights and chases down fleeing opponents",
+  "abilities": [
+   {
+    "name": "Ground Strike",
+    "desc": "Stomps the ground to damage enemies in front of him. Can be used mid-air to dive toward the ground.",
+    "cooldown": 18,
+    "stats": "60 spirit damage (0.791x spirit scaling), 10m radius"
+   },
+   {
+    "name": "Grapple",
+    "desc": "Pulls Lash toward a target point, resetting his air jumps and dashes.",
+    "cooldown": 35,
+    "stats": "30m range, 20m/s jump velocity, 2s between charges"
+   },
+   {
+    "name": "Flog",
+    "desc": "Lashes enemies with a whip in a cone and heals Lash for part of the damage dealt to heroes.",
+    "cooldown": 26,
+    "stats": "65 spirit damage (0.85x scaling), 20m range, 40-degree cone, 40% heal on hero damage"
+   },
+   {
+    "name": "Death Slam",
+    "desc": "Connects whips to enemies nearby, lifts and stuns them, then slams them into the ground, leaving a slowing area.",
+    "cooldown": 170,
+    "stats": "105 impact damage (0.975x scaling), 20m range, 2.3s channel, 6m radius, 40% slow for 4s"
+   }
+  ],
+  "released": true
+ },
+ "mcginnis": {
+  "role": "Inventor support disruption",
+  "abilities": [
+   {
+    "name": "Mini Turret",
+    "desc": "Deploys a turret that shoots enemies, dealing spirit damage over time.",
+    "cooldown": 18,
+    "stats": "24 DPS, 30m range, 35s lifetime"
+   },
+   {
+    "name": "Medicinal Specter",
+    "desc": "Deploys a spirit that heals nearby allies.",
+    "cooldown": 50,
+    "stats": "25 healing/s, 6m radius, 6.5s duration"
+   },
+   {
+    "name": "Spectral Wall",
+    "desc": "Casts a wall that slows enemies passing through it. Erupting it divides terrain and damages nearby enemies.",
+    "cooldown": 50,
+    "stats": "60 damage, -16% slow, 6s duration"
+   },
+   {
+    "name": "Heavy Barrage",
+    "desc": "Fires a volley of rockets that home in on a targeted location.",
+    "cooldown": 200,
+    "stats": "21 damage per rocket, 6 rockets/s, 4.5m radius, 8s duration"
+   }
+  ],
+  "released": true
+ },
+ "mina": {
+  "role": "Glass cannon who rakes with her umbrella and bursts enemies down with ranged spirit damage.",
+  "abilities": [
+   {
+    "name": "Rake",
+    "desc": "Slashes with her umbrella for spirit damage that grows with the target's missing health, and heals her when it kills.",
+    "cooldown": 16,
+    "stats": "60 spirit damage + 6% missing health"
+   },
+   {
+    "name": "Sanguine Retreat",
+    "desc": "Becomes briefly untargetable and flies to a chosen spot, with a window to recast.",
+    "cooldown": 32,
+    "stats": "9m cast range; 0.65s duration"
+   },
+   {
+    "name": "Love Bites",
+    "desc": "Passive: bullets add spirit damage, and ability damage builds toward a bite that deals a burst of bonus damage.",
+    "cooldown": null,
+    "stats": "4 spirit damage per bullet; 45 bonus on proc (10s per-target cooldown)"
+   },
+   {
+    "name": "Nox Nostra",
+    "desc": "Releases a bat swarm that seeks enemies, dealing spirit damage and silencing them. Each Love Bites proc adds bats.",
+    "cooldown": 150,
+    "stats": "4.6 damage per bat; 1.25s silence; +2 bats per proc (max 75)"
+   }
+  ],
+  "released": true
+ },
+ "mirage": {
+  "role": "Agile hero using wind-based abilities for disruption.",
+  "abilities": [
+   {
+    "name": "Fire Scarabs",
+    "desc": "Infests an enemy with scarabs that drain their life and weaken their damage output.",
+    "cooldown": 35,
+    "stats": "8 health steal/s; -20% damage for 5s"
+   },
+   {
+    "name": "Dust Devil",
+    "desc": "Turns into a whirlwind that surges forward, damaging, slowing and lifting enemies, then grants bullet evasion on exit.",
+    "cooldown": 36,
+    "stats": "65 spirit damage; 30% evasion for 4s"
+   },
+   {
+    "name": "Djinn's Mark",
+    "desc": "Passive shots mark targets; marks deal spirit damage and briefly reveal them when they expire or are consumed by the active.",
+    "cooldown": null,
+    "stats": "11 base damage, doubling per stack; max 4 marks; 2.75s per-target cooldown"
+   },
+   {
+    "name": "Traveler",
+    "desc": "Teleports to a chosen minimap location after a short delay that is cancelled by taking damage.",
+    "cooldown": 140,
+    "stats": "2s delay"
+   }
+  ],
+  "released": true
+ },
+ "mo-and-krill": {
+  "role": "Tag-team initiator burrower.",
+  "abilities": [
+   {
+    "name": "Scorn",
+    "desc": "Deals spirit damage to nearby enemies and heals from the damage dealt, more so against heroes.",
+    "cooldown": 13,
+    "stats": "50 base damage"
+   },
+   {
+    "name": "Burrow",
+    "desc": "Dig underground for armor and extra speed; on emerging, deal spirit damage, slow and knock up nearby enemies.",
+    "cooldown": 40,
+    "stats": "75 damage"
+   },
+   {
+    "name": "Sand Blast",
+    "desc": "Fires a projectile that deals spirit damage and disarms enemies it hits.",
+    "cooldown": 40,
+    "stats": "40 damage; 25m range"
+   },
+   {
+    "name": "Combo",
+    "desc": "Channels to stun and hold a target while dealing damage over time; a kill during or just after the channel permanently grants max health.",
+    "cooldown": 150,
+    "stats": "40 DPS; +40 max health per kill; 3s kill window"
+   }
+  ],
+  "released": true
+ },
+ "paige": {
+  "role": "Helpful protector, booksmart support.",
+  "abilities": [
+   {
+    "name": "Bookwyrm",
+    "desc": "Conjures a dragon that deals spirit damage and leaves a burning trail behind it.",
+    "cooldown": 33,
+    "stats": "60 damage; 30 DPS trail; 4m radius; 5s; 20m range"
+   },
+   {
+    "name": "Plot Armor",
+    "desc": "Gives an ally a barrier and bonus weapon damage while it lasts.",
+    "cooldown": 28,
+    "stats": "125 barrier; +25% weapon damage; 35m range; 5s"
+   },
+   {
+    "name": "Captivating Read",
+    "desc": "Marks an area with delayed magic that slows enemies, then detonates to deal spirit damage and briefly immobilize them.",
+    "cooldown": 30,
+    "stats": "90 damage; 36% slow; 1s immobilize; 7.5m radius; 30m range"
+   },
+   {
+    "name": "Rallying Charge",
+    "desc": "Sends spectral knights across the map that heal allies and damage enemies, growing stronger with distance traveled.",
+    "cooldown": 210,
+    "stats": "125 damage; 125 heal; 1s stun; 600m range"
+   }
+  ],
+  "released": true
+ },
+ "paradox": {
+  "role": "Calculated disruptor tactician.",
+  "abilities": [
+   {
+    "name": "Pulse Grenade",
+    "desc": "Throws a grenade that pulses spirit damage, slows enemies and stacks damage amplification on them.",
+    "cooldown": 32,
+    "stats": "35 damage per pulse; 5.5m radius; 3.2s; 20% slow"
+   },
+   {
+    "name": "Time Wall",
+    "desc": "Creates a barrier that freezes enemy projectiles, speeds up allied bullets and briefly slows enemies who touch it.",
+    "cooldown": 25,
+    "stats": "+30% ally weapon damage; 64% slow; 8m wide, 4m high; 5.5s"
+   },
+   {
+    "name": "Kinetic Carbine",
+    "desc": "Charges a time-energy shot that scales with weapon damage and time-stops what it hits, while granting speed as it charges.",
+    "cooldown": 28,
+    "stats": "76.5 damage at max charge; 0.4s time-stop; 2.5s charge; +25% move speed"
+   },
+   {
+    "name": "Paradoxical Swap",
+    "desc": "Fires a projectile that swaps places with an enemy hero and deals spirit damage.",
+    "cooldown": 110,
+    "stats": "150 damage; 25m range"
+   }
+  ],
+  "released": true
+ },
+ "pocket": {
+  "role": "Trickster burst damage hero who fights up close with mobility and area control.",
+  "abilities": [
+   {
+    "name": "Barrage",
+    "desc": "Channels a volley that deals spirit damage and slows in an area; hitting heroes builds damage amplification stacks.",
+    "cooldown": 32,
+    "stats": "32 damage per projectile; 4.5m radius; 1.5s duration"
+   },
+   {
+    "name": "Flying Cloak",
+    "desc": "Sends a sentient cloak forward to damage enemies; Pocket can teleport to it to reposition.",
+    "cooldown": 26,
+    "stats": "60 damage; 5m radius; 3.8s lifetime"
+   },
+   {
+    "name": "Enchanter's Satchel",
+    "desc": "Channels to escape into a suitcase and become invulnerable; exiting early deals area spirit damage.",
+    "cooldown": 17,
+    "stats": "65 damage; 12m radius; 1.5s channel"
+   },
+   {
+    "name": "Affliction",
+    "desc": "Afflicts nearby enemies with damage over time that scales with their depleted health; non-lethal and does not trigger item effects.",
+    "cooldown": 170,
+    "stats": "32 DPS; 9m radius; 10s"
+   }
+  ],
+  "released": true
+ },
+ "rem": {
+  "role": "Dream-world stowaway who supports and controls fights through sleep mechanics.",
+  "abilities": [
+   {
+    "name": "Pillow Toss",
+    "desc": "Throws a pillow that deals spirit damage, knocks back and slows enemies; hitting them reduces her other cooldowns.",
+    "cooldown": 25,
+    "stats": "75 damage; 40m range; -36% move speed for 3s"
+   },
+   {
+    "name": "Tag Along",
+    "desc": "Leaps to an ally to nap on their shoulder for a burst heal based on missing health plus regeneration; can hop between allies.",
+    "cooldown": 40,
+    "stats": "15% missing health burst heal; 42/s regen for 2s; 23m range"
+   },
+   {
+    "name": "Lil Helpers",
+    "desc": "Summons helpers that can collect items, buff allies and troopers, or assist with map objectives.",
+    "cooldown": null,
+    "stats": "45m cast range; hero support 12% spirit resist and +3m/s speed for 8s; trooper support 30% damage/resists, 8/s healing for 50s"
+   },
+   {
+    "name": "Naptime",
+    "desc": "Channels to put enemies in a cone to sleep, then they take heavy spirit damage on waking; movement abilities are restricted.",
+    "cooldown": 200,
+    "stats": "1.9s channel; 120 wake damage; 4s sleep; 19m radius"
+   }
+  ],
+  "released": true
+ },
+ "seven": {
+  "role": "High-voltage electric controller specializing in area denial and crowd control.",
+  "abilities": [
+   {
+    "name": "Lightning Ball",
+    "desc": "Launches a projectile that damages and slows enemies within its radius.",
+    "cooldown": 26,
+    "stats": "75 damage; 4.25m radius; 5s lifetime"
+   },
+   {
+    "name": "Static Charge",
+    "desc": "Attaches a charge to an enemy that detonates after a delay, stunning and damaging nearby foes.",
+    "cooldown": 42,
+    "stats": "35 damage; 0.9s stun; 5m radius; 3.5s fuse"
+   },
+   {
+    "name": "Power Surge",
+    "desc": "Electrifies his weapon so bullets cause shock damage that chains to nearby enemies.",
+    "cooldown": 50,
+    "stats": "10 shock damage; up to 4 jumps; 10m jump radius; 10s"
+   },
+   {
+    "name": "Storm Cloud",
+    "desc": "Channels an expanding storm that deals continuous damage, and can strike a targeted spot for knockback.",
+    "cooldown": 205,
+    "stats": "95 DPS; radius 10m to 30m; 75 strike damage"
+   }
+  ],
+  "released": true
+ },
+ "shiv": {
+  "role": "Cutthroat monster hunter doing hit-and-run attacks and picking off vulnerable targets.",
+  "abilities": [
+   {
+    "name": "Serrated Knives",
+    "desc": "Throws knives that cause bleeding, with each hit stacking more bleed damage.",
+    "cooldown": 16,
+    "stats": "10 impact damage; 5s duration"
+   },
+   {
+    "name": "Slice and Dice",
+    "desc": "Dashes forward dealing spirit damage and lowering the target's spirit resistance.",
+    "cooldown": 16,
+    "stats": "75 damage; 12m range; -6% spirit resist"
+   },
+   {
+    "name": "Bloodletting",
+    "desc": "Defers a share of incoming damage to be taken over time, and can be activated to clear the deferred damage.",
+    "cooldown": 25,
+    "stats": "25% damage deferred; 6s"
+   },
+   {
+    "name": "Killing Blow",
+    "desc": "Leaps forward for spirit damage and executes low-health enemies; passive rage builds from damage dealt.",
+    "cooldown": 145,
+    "stats": "200 damage; 12m range; executes below 18% health; +8% damage at full rage"
+   }
+  ],
+  "released": true
+ },
+ "silver": {
+  "role": "Bounty hunter lycanthrope with transformation mechanics.",
+  "abilities": [
+   {
+    "name": "Slam Fire",
+    "desc": "Instantly reloads and boosts fire rate and health-based weapon damage for up to 3 shots, at the cost of accuracy.",
+    "cooldown": 25,
+    "stats": "300% fire rate; 2.5% current health as damage"
+   },
+   {
+    "name": "Boot Kick",
+    "desc": "Dashes to kick the first enemy hit for melee damage and mark them; shooting the mark deals bonus spirit damage.",
+    "cooldown": 21,
+    "stats": "45 spirit damage; 25 bonus to marked; 3s mark"
+   },
+   {
+    "name": "Entangling Bola",
+    "desc": "Throws a bola that slows the target and stops them using abilities or stamina.",
+    "cooldown": 23,
+    "stats": "40 damage; -16% move speed; 1.5s"
+   },
+   {
+    "name": "Lycan Curse",
+    "desc": "Passively builds bloodlust in combat; at max (or manually) transforms into a werewolf with new abilities, more health and stacking fire rate.",
+    "cooldown": 60,
+    "stats": "15s transformation; +125 health; +1.5m/s speed; +60% fire rate at max stacks"
+   }
+  ],
+  "released": true
+ },
+ "sinclair": {
+  "role": "Trickster Copycat Versatile",
+  "abilities": [
+   {
+    "name": "Vexing Bolt",
+    "desc": "Fires a magic bolt that hits harder the longer it flies, and it can be steered mid-flight.",
+    "cooldown": 24,
+    "stats": "Damage 60-120 (max at 2s travel); radius 3.25m"
+   },
+   {
+    "name": "Spectral Assistant",
+    "desc": "Summons a ghostly helper that copies Sinclair's weapon attacks and lets him swap places with it twice before it fades.",
+    "cooldown": 40,
+    "stats": "15 damage per assist attack; 6s duration; 15m cast range"
+   },
+   {
+    "name": "Rabbit Hex",
+    "desc": "Turns enemies in an area into rabbits that move faster and take extra damage but can barely act.",
+    "cooldown": 26,
+    "stats": "2s hex; 24m cast range; 6m radius; 15% damage amplification"
+   },
+   {
+    "name": "Audience Participation",
+    "desc": "Lets Sinclair borrow an enemy hero's ultimate for a short time.",
+    "cooldown": 85,
+    "stats": "9s copy duration; copied ultimate has 60% of its original cooldown"
+   }
+  ],
+  "released": true
+ },
+ "venator": {
+  "role": "Devout Arms Expert Tactical",
+  "abilities": [
+   {
+    "name": "Consecrating Grenade",
+    "desc": "Lobs a bouncing grenade that deals weapon damage and sets enemies burning, which cuts their healing.",
+    "cooldown": 25,
+    "stats": "30% healing reduction; 10 DPS burn; 4.5m radius"
+   },
+   {
+    "name": "Gutshot",
+    "desc": "Fires a shotgun blast that knocks enemies back, with bonus damage and a stun if they hit a wall.",
+    "cooldown": 23,
+    "stats": "60 damage; +30 wall damage; 0.6s stun"
+   },
+   {
+    "name": "Hex-Lined Snap Trap",
+    "desc": "Places a trap that roots the first enemy to step on it, damaging and revealing them.",
+    "cooldown": 28,
+    "stats": "2 charges; 1.25s immobilize; 80 spirit damage; 6s reveal; 2m radius"
+   },
+   {
+    "name": "Ira Domini",
+    "desc": "Loads a crossbow with three stakes; the last is blessed and can execute low-health targets.",
+    "cooldown": 160,
+    "stats": "3 stakes x 120 damage; +115 pure damage on last; execute below 8% health; 15s"
+   }
+  ],
+  "released": true
+ },
+ "victor": {
+  "role": "Walks the line between life and death, turning pain into offense and damage taken into power.",
+  "abilities": [
+   {
+    "name": "Pain Battery",
+    "desc": "Builds charge passively from damage Victor takes, then fires shocking bolts at nearby enemies when full.",
+    "cooldown": 2,
+    "stats": "100 base spirit damage (x1.6 scaling); 28m range"
+   },
+   {
+    "name": "Jumpstart",
+    "desc": "Victor hurts himself for a share of his current health, then gains regeneration and a decaying speed boost.",
+    "cooldown": 30,
+    "stats": "15% current health self-damage; 100 total regen; +3m move speed; 4.5s; 1 charge"
+   },
+   {
+    "name": "Aura of Suffering",
+    "desc": "Channeled aura that damages nearby enemies and Victor over time, ramping up the longer it runs.",
+    "cooldown": 2,
+    "stats": "13-58 DPS (x0.15-0.72 scaling); 8m radius"
+   },
+   {
+    "name": "Shocking Reanimation",
+    "desc": "Passive that revives Victor after a short channel when he takes lethal damage, shocking and stunning nearby enemies.",
+    "cooldown": 240,
+    "stats": "3s channel; revive at 50% health; 200 spirit damage (x2); 1.5s stun; 18m radius; 3s slow"
+   }
+  ],
+  "released": true
+ },
+ "vindicta": {
+  "role": "Mobile, powerful marksman who engages from range with a crow, flight and a scoped rifle.",
+  "abilities": [
+   {
+    "name": "Stake",
+    "desc": "Throws a stake that tethers enemies near where it lands, limiting how far they can move, while damaging and slowing them.",
+    "cooldown": 40,
+    "stats": "9m radius; 40 spirit damage; 40% slow; 1.75s tether"
+   },
+   {
+    "name": "Flight",
+    "desc": "Takes to the air for a while, gaining extra bullet damage and item range while airborne.",
+    "cooldown": 42,
+    "stats": "13s duration; +10 spirit damage per bullet; +50% item range; 0.2s channel"
+   },
+   {
+    "name": "Crow Familiar",
+    "desc": "Sends out a crow that hits enemies, lowers their resistances and applies a health-percentage bleed.",
+    "cooldown": 32,
+    "stats": "40 impact damage; -6% bullet/spirit resist each; bleed 2.2% current health/s for 5s"
+   },
+   {
+    "name": "Assassinate",
+    "desc": "Fires a charged scoped hitscan shot that deals bonus damage to wounded targets; kills grant weapon damage stacks.",
+    "cooldown": 55,
+    "stats": "2 charges; 90 spirit damage; up to +90 below 50% health; 1s charge; 6% weapon damage per kill"
+   }
+  ],
+  "released": true
+ },
+ "viscous": {
+  "role": "Evasive Disruptor Gooey: a psychic sea anemone who protects allies and disrupts enemies.",
+  "abilities": [
+   {
+    "name": "Splatter",
+    "desc": "Hurls a bouncing goo blob that leaves slowing puddles where it lands.",
+    "cooldown": 26,
+    "stats": "55 damage (x0.7); 2 bounces; 5m radius; 10s puddles; -28% move speed"
+   },
+   {
+    "name": "The Cube",
+    "desc": "Encases a target in protective goo that makes them invulnerable and heals them, but they can't act.",
+    "cooldown": 42,
+    "stats": "40 HP regen (x0.3); 3s; 20m cast range"
+   },
+   {
+    "name": "Puddle Punch",
+    "desc": "Raises a goo fist that knocks enemies up, damages and slows them.",
+    "cooldown": 24,
+    "stats": "57.8 melee damage (x0.6); 4m radius; -24% move speed for 3s; 40m range; 1 charge per 1.7s"
+   },
+   {
+    "name": "Goo Ball",
+    "desc": "Turns Viscous into a big bouncing ball that damages and stuns on impact and grants resistance.",
+    "cooldown": 150,
+    "stats": "110 damage (x1.0); 0.5s stun; 35% bullet and spirit resist; 11s duration"
+   }
+  ],
+  "released": true
+ },
+ "vyper": {
+  "role": "Gunner Slippery Rat-a-Tat: a mobile gunner focused on evasion and burst damage.",
+  "abilities": [
+   {
+    "name": "Screwjab Dagger",
+    "desc": "Throws a dagger whose damage and slow grow with each hit on the same target.",
+    "cooldown": 10,
+    "stats": "50 spirit damage (+25/stack); -28% move speed (-12%/stack); max 3 stacks; 2 charges"
+   },
+   {
+    "name": "Lethal Venom",
+    "desc": "Injects venom that detonates after a delay, hitting harder the lower the target's health is.",
+    "cooldown": 28,
+    "stats": "20-140 spirit damage; 10m range; 3s buildup"
+   },
+   {
+    "name": "Slither",
+    "desc": "Passive that improves sliding with more distance, uphill ability and tighter turning.",
+    "cooldown": null,
+    "stats": "+15% slide distance; 14.7 m/s slide speed"
+   },
+   {
+    "name": "Petrifying Bola",
+    "desc": "Throws a bola that slows and damages in an area; a direct hit petrifies the target instead.",
+    "cooldown": 115,
+    "stats": "50 explosion damage; 180 petrify damage; 2.2s petrify; 12m radius; -40% slow for 1.5s"
+   }
+  ],
+  "released": true
+ },
+ "warden": {
+  "role": "A tough, tenacious brawler with endless determination and a knack for alchemy.",
+  "abilities": [
+   {
+    "name": "Alchemical Flask",
+    "desc": "Throws a flask that damages enemies and weakens their gun damage and movement speed.",
+    "cooldown": 12,
+    "stats": "60 damage (x0.63); 5.5m radius; -25% weapon damage; -16% move speed"
+   },
+   {
+    "name": "Willpower",
+    "desc": "Gives Warden a barrier and a short movement speed boost.",
+    "cooldown": 40,
+    "stats": "125 barrier (x0.8); +15% move speed; 5s"
+   },
+   {
+    "name": "Binding Word",
+    "desc": "Curses an enemy hero, who is damaged and immobilized if they don't get away in time.",
+    "cooldown": 34,
+    "stats": "110 damage (x2.44); 15m range; 1.75s immobilize; 2.8s escape time"
+   },
+   {
+    "name": "Last Stand",
+    "desc": "Channels briefly with damage resistance, then releases pulses that damage enemies and heal Warden.",
+    "cooldown": 180,
+    "stats": "70 DPS (x1.3); 12m radius; 75% hero lifesteal; 50% resist during 2s channel; 6s duration"
+   }
+  ],
+  "released": true
+ },
+ "wraith": {
+  "role": "A fast-talking, fast-firing combatant with strong offense and mobility.",
+  "abilities": [
+   {
+    "name": "Card Trick",
+    "desc": "Conjures random playing cards to throw at enemies, each suit applying a different effect.",
+    "cooldown": 0.6,
+    "stats": "45 spirit damage; 500m cast range; 2 charges"
+   },
+   {
+    "name": "Project Mind",
+    "desc": "Teleports Wraith to a targeted spot, optionally granting a barrier.",
+    "cooldown": 46,
+    "stats": "25m cast range; 0.8s channel; 300 barrier at T2"
+   },
+   {
+    "name": "Full Auto",
+    "desc": "Temporarily raises fire rate and adds spirit damage to each bullet.",
+    "cooldown": 45,
+    "stats": "+20% fire rate; 2 spirit damage per bullet; 5s"
+   },
+   {
+    "name": "Telekinesis",
+    "desc": "Lifts an enemy hero into the air and slams them toward a chosen spot, damaging and slowing them.",
+    "cooldown": 150,
+    "stats": "1.25s channel; 10m range; 100 spirit damage; 1.25s stun; -32% move speed"
+   }
+  ],
+  "released": true
+ },
+ "yamato": {
+  "role": "Close-range assassin using precise strikes and sword attacks.",
+  "abilities": [
+   {
+    "name": "Power Slash",
+    "desc": "Channels to build up a sword strike that can be released early for less damage, resisting bullets while casting.",
+    "cooldown": 12,
+    "stats": "145 spirit damage (x1.85); 22m range; 1.4s full charge; 60% bullet resist"
+   },
+   {
+    "name": "Flying Slash",
+    "desc": "Fires a grappling hook that pulls Yamato to an enemy, hitting and slowing them on arrival.",
+    "cooldown": 36,
+    "stats": "66 melee damage (x1.2); -40% move speed for 2.5s; 26m range"
+   },
+   {
+    "name": "Crimson Slash",
+    "desc": "Slashes enemies in front, damaging them and cutting their fire rate; heals Yamato on hero hits.",
+    "cooldown": 16,
+    "stats": "55 spirit damage (x0.37); -30% fire rate for 4s; 13m radius; heals 55 (x1.04)"
+   },
+   {
+    "name": "Shadow Transformation",
+    "desc": "After a short channel, Yamato becomes a shadow with faster abilities, resistances and immunity to negative effects.",
+    "cooldown": 150,
+    "stats": "1.5s channel; 5s; +60% ability speed; 30% bullet/spirit resist; kill heals 15% max HP, +2s"
+   }
+  ],
+  "released": true
+ },
+ "deadman-danny": {
+  "role": "Reckless, high-flying, explosive aggressive airborne combatant",
+  "released": false,
+  "abilities": [
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   }
+  ]
+ },
+ "nurse-harrow": {
+  "role": "Strict, terrifying savior with a medical theme and an automatic weapon",
+  "released": false,
+  "abilities": [
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   }
+  ]
+ },
+ "solomon": {
+  "role": "Strategist, focused, checkmate: chess-themed hero",
+  "released": false,
+  "abilities": [
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   }
+  ]
+ },
+ "violet": {
+  "role": "Ambitious, nimble, creative hero",
+  "released": false,
+  "abilities": [
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   },
+   {
+    "name": null,
+    "desc": null,
+    "cooldown": null,
+    "stats": null
+   }
+  ]
+ },
+ "rat-king": {
+  "role": "Scrappy, regal, tenacious rat monarch with grenade slows, rat-swarm shred, reflective armor and a team banner ult",
+  "released": true,
+  "abilities": [
+   {
+    "name": "Scrap Grenade",
+    "desc": "Hurl a scrap grenade that blows up several times in a row, dealing bullet damage and slowing enemies in the blast area.",
+    "cooldown": 26,
+    "stats": "3 detonations x 70 dmg; 8m radius; -20% move speed for 4s"
+   },
+   {
+    "name": "Rat Swarm",
+    "desc": "Summon rats that jump onto enemies, dealing spirit damage over time and lowering their bullet resist with each bite.",
+    "cooldown": 24,
+    "stats": "50m cast range; 10m radius; 6s; 8 dmg/bite; -1% bullet resist/bite; max 5 rats; 8s charge cooldown"
+   },
+   {
+    "name": "Royal Pestments",
+    "desc": "Put on scrap armor that grants a barrier from your max health; while it holds, incoming bullets may be reflected back at attackers.",
+    "cooldown": 22,
+    "stats": "6s; barrier 15% max HP; 15% bullet return chance"
+   },
+   {
+    "name": "Rule, Ratannia!",
+    "desc": "Charge up and slam down the banner of Ratannia; nearby allies gain move speed, slow immunity and damage reduction while near it.",
+    "cooldown": 160,
+    "stats": "10s; 20m radius; +3 m/s; 15% damage reduction; slam 200 dmg, -40% slow; flag lasts 12s"
+   }
+  ]
+ }
+}

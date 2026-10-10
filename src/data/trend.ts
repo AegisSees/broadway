@@ -1,0 +1,145 @@
+import { hash, rng } from '../lib/prng';
+
+/** One day of results for a hero. `t` is the UTC midnight that starts the day, in unix seconds. */
+export interface TrendPoint { t: number; winRate: number; matches: number }
+export interface PatchMark { t: number; label: string }
+export interface HeroTrend {
+  /** Oldest first, one point per day. */
+  points: TrendPoint[];
+  /** Patch release days, oldest first. */
+  patches: PatchMark[];
+  illustrative: boolean;
+}
+
+export type TrendRange = 'all' | '4w' | 'patch';
+export const DAY = 86400;
+export const todayUtc = (now = Date.now()): number => Math.floor(now / 1000 / DAY) * DAY;
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export const fmtDay = (t: number): string => { const d = new Date(t * 1000); return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`; };
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Illustrative daily series ending on `endT`, with invented patch dates. Win rate drifts slowly, jumps a little at
+ * each patch and carries day-to-day noise, like a real hero. Deterministic per hero so it never flickers. When `anchor`
+ * is given (a win rate the page already shows elsewhere) the whole curve is shifted so its last week averages to it.
+ */
+export function sampleTrend(slug: string, endT: number, days = 140, anchor?: number): HeroTrend {
+  const r = rng(hash(`trend:${slug}`));
+  const patches: PatchMark[] = [];
+  let t = endT - Math.round(6 + r() * 8) * DAY;
+  while (t > endT - days * DAY + 6 * DAY) {
+    patches.unshift({ t, label: fmtDay(t) });
+    t -= Math.round(12 + r() * 14) * DAY;
+  }
+  const patchSet = new Set(patches.map((p) => p.t));
+  let level = 49 + r() * 4.5;
+  const base = level;
+  const popularity = 600 + r() * 2600;
+  const points: TrendPoint[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const day = endT - i * DAY;
+    if (patchSet.has(day)) level += (r() - 0.5) * 3.2;
+    level += (base - level) * 0.015 + (r() - 0.5) * 0.35;
+    const matches = Math.round(popularity * (0.78 + r() * 0.44));
+    points.push({ t: day, matches, winRate: r2(Math.min(61, Math.max(42, level + (r() - 0.5) * 1.5))) });
+  }
+  if (anchor !== undefined) {
+    const week = points.slice(-7);
+    const m = week.reduce((n, p) => n + p.matches, 0);
+    const shift = anchor - week.reduce((n, p) => n + p.winRate * p.matches, 0) / m;
+    for (const p of points) p.winRate = r2(Math.min(64, Math.max(40, p.winRate + shift)));
+  }
+  return { points, patches, illustrative: true };
+}
+
+/**
+ * The newest bucket is usually today, which is still being played: a few dozen games where an ordinary day has thousands,
+ * so its win rate swings wildly and drags the chart's last point off a cliff (37.6% on 8 Oct 2026). A last day with fewer than
+ * 60% of the games of the median of the days before it is treated as unfinished and left off. Needs at least three earlier days to judge.
+ */
+export function dropPartialLastDay(points: TrendPoint[]): TrendPoint[] {
+  if (points.length < 4) return points;
+  const last = points[points.length - 1];
+  const before = points.slice(-8, -1).map((p) => p.matches).sort((a, b) => a - b);
+  const median = before.length % 2 ? before[(before.length - 1) / 2] : (before[before.length / 2 - 1] + before[before.length / 2]) / 2;
+  return last.matches < median * 0.6 ? points.slice(0, -1) : points;
+}
+
+interface DayRow { bucket: number; hero_id: number; matches: number; wins: number }
+
+/** Builds a trend from /v1/analytics/hero-stats?bucket=start_time_day rows plus patch dates. Shape checked against the live API on 8 Oct 2026 (each row carries the day's start as `bucket`). */
+export function normalizeTrend(rows: DayRow[], heroId: number, patches: PatchMark[]): HeroTrend | null {
+  const byDay = new Map<number, { m: number; w: number }>();
+  for (const r of rows) {
+    if (r.hero_id !== heroId || !(r.matches > 0)) continue;
+    const day = Math.floor(r.bucket / DAY) * DAY;
+    const a = byDay.get(day) ?? { m: 0, w: 0 };
+    a.m += r.matches; a.w += r.wins;
+    byDay.set(day, a);
+  }
+  const points = dropPartialLastDay([...byDay.entries()].sort((a, b) => a[0] - b[0]).map(([t, a]) => ({ t, matches: a.m, winRate: r2((a.w / a.m) * 100) })));
+  return points.length >= 2 ? { points, patches: patches.filter((p) => p.t >= points[0].t && p.t <= points[points.length - 1].t), illustrative: false } : null;
+}
+
+/** Reads a patch date out of whatever field the patch feed uses. Tolerant on purpose: the shape is not verified. */
+export function patchMarks(raw: unknown): PatchMark[] {
+  const list = Array.isArray(raw) ? raw : [];
+  const out: PatchMark[] = [];
+  for (const p of list as Record<string, unknown>[]) {
+    const v = p?.pub_date ?? p?.published_at ?? p?.date ?? p?.release_date ?? p?.created_at;
+    const ms = typeof v === 'number' ? (v > 1e12 ? v : v * 1000) : typeof v === 'string' ? Date.parse(v) : NaN;
+    if (Number.isFinite(ms)) { const t = todayUtc(ms); out.push({ t, label: fmtDay(t) }); }
+  }
+  return out.sort((a, b) => a.t - b.t);
+}
+
+export interface TrendView {
+  points: TrendPoint[];
+  patches: PatchMark[];
+  /** In "by patch" view each point stands for one patch, so the chart spaces them evenly rather than by date. */
+  byPatch: boolean;
+}
+
+/** Cuts the series down for the chosen range. */
+export function trendView(trend: HeroTrend, range: TrendRange): TrendView {
+  const last = trend.points[trend.points.length - 1];
+  if (!last) return { points: [], patches: [], byPatch: false };
+  if (range === 'all') return { points: trend.points, patches: trend.patches, byPatch: false };
+  if (range === '4w') {
+    const from = last.t - 27 * DAY;
+    return { points: trend.points.filter((p) => p.t >= from), patches: trend.patches.filter((p) => p.t >= from), byPatch: false };
+  }
+  // One point per patch: matches-weighted win rate between that patch and the next one. The first window starts at the series start.
+  const edges = [trend.points[0].t, ...trend.patches.map((p) => p.t).filter((t) => t > trend.points[0].t)];
+  const points: TrendPoint[] = [];
+  const patches: PatchMark[] = [];
+  edges.forEach((from, i) => {
+    const to = edges[i + 1] ?? Infinity;
+    const slice = trend.points.filter((p) => p.t >= from && p.t < to);
+    const m = slice.reduce((n, p) => n + p.matches, 0);
+    if (!m) return;
+    points.push({ t: from, matches: m, winRate: r2(slice.reduce((n, p) => n + p.winRate * p.matches, 0) / m) });
+    patches.push({ t: from, label: fmtDay(from) });
+  });
+  return { points, patches, byPatch: true };
+}
+
+export interface TrendSummary { current: number; delta: number | null; matchesWeek: number }
+
+/** Latest win rate (last 7 days, weighted by matches), the change against the 7 days before, and last week's matches. */
+export function trendSummary(trend: HeroTrend): TrendSummary | null {
+  const pts = trend.points;
+  if (!pts.length) return null;
+  const end = pts[pts.length - 1].t;
+  const wk = (from: number, to: number) => {
+    const s = pts.filter((p) => p.t > from && p.t <= to);
+    const m = s.reduce((n, p) => n + p.matches, 0);
+    return { m, wr: m ? s.reduce((n, p) => n + p.winRate * p.matches, 0) / m : null };
+  };
+  const cur = wk(end - 7 * DAY, end);
+  const prev = wk(end - 14 * DAY, end - 7 * DAY);
+  if (cur.wr === null) return null;
+  return { current: Math.round(cur.wr * 10) / 10, delta: prev.wr === null ? null : Math.round((cur.wr - prev.wr) * 10) / 10, matchesWeek: cur.m };
+}

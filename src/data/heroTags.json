@@ -1,0 +1,222 @@
+{
+ "abrams": [
+  "Tank",
+  "Brawler",
+  "Bull-Headed"
+ ],
+ "bebop": [
+  "Hook",
+  "Bomb",
+  "Punch"
+ ],
+ "celeste": [
+  "Performer",
+  "Disruptive",
+  "Dazzling"
+ ],
+ "dynamo": [
+  "Teamplay",
+  "Initiator",
+  "Clutch"
+ ],
+ "haze": [
+  "Assassin",
+  "Stealthy",
+  "Lethal"
+ ],
+ "ivy": [
+  "Team-up",
+  "Disruptor",
+  "Rock Solid"
+ ],
+ "lash": [
+  "Initiator",
+  "High-Flying",
+  "Arrogant"
+ ],
+ "mirage": [
+  "Bodyguard",
+  "Traveller",
+  "Focused"
+ ],
+ "paradox": [
+  "Calculated",
+  "Disruptor",
+  "Tactician"
+ ],
+ "seven": [
+  "High Voltage",
+  "Merciless",
+  "Area Denial"
+ ],
+ "sinclair": [
+  "Trickster",
+  "Copycat",
+  "Versatile"
+ ],
+ "vindicta": [
+  "Sniper",
+  "Soaring",
+  "One Shot Kill"
+ ],
+ "warden": [
+  "Initiator",
+  "Fearless",
+  "One Man Army"
+ ],
+ "deadman-danny": [
+  "Reckless",
+  "High-flying",
+  "Explosive"
+ ],
+ "violet": [
+  "Ambitious",
+  "Nimble",
+  "Creative"
+ ],
+ "apollo": [
+  "Finesse",
+  "Mobility",
+  "A Cut Above"
+ ],
+ "billy": [
+  "Punk",
+  "Chaotic",
+  "G.O.A.T."
+ ],
+ "the-doorman": [
+  "Disorienting",
+  "Map Control",
+  "Mind Games"
+ ],
+ "graves": [
+  "Morbid",
+  "Area Denial",
+  "Necromancer"
+ ],
+ "holliday": [
+  "Crackshot",
+  "Explosive",
+  "Apprehender"
+ ],
+ "kelvin": [
+  "Protector",
+  "Explorer",
+  "Ice Cold"
+ ],
+ "mcginnis": [
+  "Inventor",
+  "Support",
+  "Disruption"
+ ],
+ "mo-and-krill": [
+  "Tag-Team",
+  "Initiator",
+  "Burrower"
+ ],
+ "pocket": [
+  "Trickster",
+  "Burst Damage",
+  "Frogs"
+ ],
+ "shiv": [
+  "Rage",
+  "Bleed",
+  "Repeat"
+ ],
+ "venator": [
+  "Devout",
+  "Arms Expert",
+  "Tactical"
+ ],
+ "viscous": [
+  "Evasive",
+  "Disruptor",
+  "Gooey"
+ ],
+ "wraith": [
+  "Duelist",
+  "Isolator",
+  "Telekinetic"
+ ],
+ "nurse-harrow": [
+  "Strict",
+  "Terrifying",
+  "Savior"
+ ],
+ "rat-king": [
+  "Scrappy",
+  "Regal",
+  "Tenacious"
+ ],
+ "baba": [
+  "Cackling",
+  "Beady",
+  "Hexing"
+ ],
+ "calico": [
+  "Tricksy",
+  "Slippery",
+  "Burst Damage"
+ ],
+ "drifter": [
+  "Stalker",
+  "Bloodthirsty",
+  "Cruel"
+ ],
+ "grey-talon": [
+  "Precision",
+  "Hunter",
+  "Area Denial"
+ ],
+ "infernus": [
+  "Arsonist",
+  "Explosive",
+  "Burn Rubber"
+ ],
+ "lady-geist": [
+  "Lifesteal",
+  "Self Damage",
+  "Fatale"
+ ],
+ "mina": [
+  "Harasser",
+  "Nimble",
+  "Vexing"
+ ],
+ "paige": [
+  "Helpful",
+  "Protector",
+  "Booksmart"
+ ],
+ "rem": [
+  "Helpful",
+  "Tiny",
+  "zZzzZ"
+ ],
+ "silver": [
+  "Feral",
+  "Hot Mess",
+  "Transformation"
+ ],
+ "victor": [
+  "You",
+  "Can't",
+  "Kill Me"
+ ],
+ "vyper": [
+  "Gunner",
+  "Slippery",
+  "Rat-a-Tat"
+ ],
+ "yamato": [
+  "Relentless",
+  "Acrobatics",
+  "Pursuer"
+ ],
+ "solomon": [
+  "Strategist",
+  "Focused",
+  "Checkmate"
+ ]
+}
