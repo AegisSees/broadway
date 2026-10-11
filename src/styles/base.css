@@ -15,6 +15,10 @@
   --ui: 'Valve Oracle', Radiance, Georgia, sans-serif;
   --serif: Reaver, 'Times New Roman', serif;
   --body: Radiance, Georgia, serif;
+  /* textures from the official City Never Sleeps page: the normal grain (stretched to a mid-grey detail map) and the lane grain */
+  --grain-map: url('../assets/ui/grain-detail.webp');
+  --film-dust: url('../assets/ui/film-dust.webp');
+  --grain-blend: overlay; --panel-grain-blend: soft-light; --dust: 0.5;
 }
 /* Archmother: sapphire blue and pale white on deep night-blue */
 :root[data-theme='archmother'] {
@@ -78,25 +82,29 @@ body {
   margin: 0; background: transparent; color: var(--ink); font: 15px/1.5 var(--body); min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-/* Deadlock's scenes are lit by big soft glows over near-black, so the page background is a gradient, not a flat colour */
+/* Deadlock's scenes are lit by big soft glows over near-black, so the page background is a gradient, not a flat colour.
+   Under the glows sits the official page's own grain (a dark mottled paint texture, here stretched to a mid-grey detail
+   map) blended into the theme colour, so every theme gets the same surface. */
 body::after {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(1200px 640px at 50% -8%, var(--halo-a), transparent 72%),
     radial-gradient(980px 600px at 104% 108%, var(--halo-b), transparent 70%),
     radial-gradient(760px 520px at -6% 58%, var(--halo-c), transparent 70%),
+    var(--grain-map) center / cover no-repeat,
     linear-gradient(180deg, var(--s2), var(--s0) 92%);
+  background-blend-mode: normal, normal, normal, var(--grain-blend), normal;
 }
 /* the official night-city art, tinted per theme and faded out towards the middle of the page; it sits above the glow and below all content */
 html::after {
   content: ''; position: fixed; left: 0; right: 0; top: 0; height: min(86vh, 820px); z-index: -1; pointer-events: none;
-  background: url('../assets/ui/city-night.webp') center top / cover no-repeat; filter: var(--city-tone); opacity: var(--city-o, 0.3);
+  background: var(--film-dust) 0 0 / 1100px auto repeat, var(--page-art, url('../assets/ui/city-night.webp')) center top / cover no-repeat; background-blend-mode: screen, normal; filter: var(--city-tone); opacity: var(--city-o, 0.3);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%); mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
 }
-/* paper grain over everything, very faint */
+/* the lane grain (film dust and scratches from the official page) over the whole page, very faint */
 body::before {
-  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 90; opacity: var(--grain); mix-blend-mode: overlay;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .9  0 0 0 0 .8  0 0 0 0 .6  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 90; opacity: var(--dust); mix-blend-mode: screen;
+  background: var(--film-dust) 0 0 / 1100px auto repeat;
 }
 h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; letter-spacing: 0.01em; margin: 0; }
 p { margin: 0; }
@@ -117,9 +125,11 @@ small { color: var(--muted); font-size: 12px; }
 .panel {
   position: relative; border: 1px solid var(--line); border-radius: 6px; box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3), 0 18px 36px -22px #000;
   background:
-    url('../assets/ui/grain.webp') 0 0 / 256px 256px,
+    var(--film-dust) 0 0 / 900px auto repeat,
+    var(--grain-map) 30% 20% / max(100%, 1400px) auto repeat,
     radial-gradient(120% 90% at 50% -20%, color-mix(in srgb, var(--brass) 8%, transparent), transparent 62%),
     linear-gradient(180deg, var(--panel-2), var(--panel));
+  background-blend-mode: screen, var(--panel-grain-blend), normal, normal;
 }
 /* fine film grain (the official page's texture) sits in the panel's own background, under the content, not blotches over it */
 .panel::before { content: ''; position: absolute; inset: 4px; border: 1px solid var(--line-2); border-radius: 3px; pointer-events: none; }

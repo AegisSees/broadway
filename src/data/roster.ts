@@ -1,6 +1,6 @@
 import manifest from '../assets/heroes/manifest.json';
-import celesteArt from '../assets/art/celeste-art.png';
-import hazeArt from '../assets/art/haze-art.png';
+import celesteArt from '../assets/art/celeste-art.webp';
+import hazeArt from '../assets/art/haze-art.webp';
 
 const iconUrls = import.meta.glob('../assets/icons/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const renderUrls = import.meta.glob('../assets/renders/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;

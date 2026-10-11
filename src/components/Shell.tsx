@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import SearchBox from './SearchBox';
 import ThemeToggle from './ThemeToggle';
 import { dataMode, switchDataMode, useDataHealth } from '../data/dataMode';
+import { pageArtFor } from '../lib/pageArt';
 
 const NAV = [
   { to: '/', label: 'Home', glyph: '⌂', end: true },
@@ -74,6 +75,12 @@ function DataChip() {
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [pinned, setPinned] = useState(false);
+  const { pathname } = useLocation();
+  // the picture at the top of the page follows the route (see lib/pageArt.ts)
+  useEffect(() => {
+    const art = pageArtFor(pathname);
+    if (art) document.documentElement.dataset.art = art; else delete document.documentElement.dataset.art;
+  }, [pathname]);
   return (
     <>
       <aside className={`rail ${pinned ? 'pinned' : ''}`} aria-label="Primary">

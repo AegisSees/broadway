@@ -1,0 +1,96 @@
+/* ==========================================================================================================
+   Round 18 · art from the City Never Sleeps pack
+   page pictures, lane plates, lane titles and maps, per-lane skylines, dashed rules.
+   Loaded last; every rule here only adds to or restyles something earlier.
+   ========================================================================================================== */
+
+/* ---------- the picture at the top of each page (district photos; the key is set by Shell from the route) ---------- */
+html[data-art='header-city'] { --page-art: url('../assets/city/header-city.webp'); }
+html[data-art='times-square'] { --page-art: url('../assets/city/times-square.webp'); }
+html[data-art='stock-exchange'] { --page-art: url('../assets/city/stock-exchange.webp'); }
+html[data-art='factory'] { --page-art: url('../assets/city/factory.webp'); }
+html[data-art='theater'] { --page-art: url('../assets/city/theater.webp'); }
+html[data-art='chinatown'] { --page-art: url('../assets/city/chinatown.webp'); }
+html[data-art='seaport'] { --page-art: url('../assets/city/seaport.webp'); }
+html[data-art='uptown'] { --page-art: url('../assets/city/uptown.webp'); }
+html[data-art='campus'] { --page-art: url('../assets/city/campus.webp'); }
+html[data-art='fairfax'] { --page-art: url('../assets/city/fairfax.webp'); }
+html[data-art='central-park'] { --page-art: url('../assets/city/central-park.webp'); }
+
+/* ---------- home: three lanes on the pack's own plates ---------- */
+.lane-card.york { --plate-art: url('../assets/city/plate-yellow.svg'); --kick: url('../assets/city/kicker-yellow.svg'); --lane-line: #ffe14d; }
+.lane-card.broadway { --plate-art: url('../assets/city/plate-blue.svg'); --kick: url('../assets/city/kicker-blue.svg'); --lane-line: #60cde3; }
+.lane-card.greenwich { --plate-art: url('../assets/city/plate-green.svg'); --kick: url('../assets/city/kicker-green.svg'); --lane-line: #97da79; }
+.lane-row { gap: 22px; }
+.lane-card, .lane-card.york, .lane-card.broadway, .lane-card.greenwich {
+  position: relative; display: grid; gap: 14px; margin: 0; padding: 34px 34px 40px 26px; aspect-ratio: auto; overflow: visible; border: 0; border-radius: 0;
+  color: var(--ink); background: var(--plate-art) 0 0 / 100% 100% no-repeat; box-shadow: none;
+  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.lane-card::before { content: none; }
+.lane-card.broadway { filter: drop-shadow(0 0 26px color-mix(in srgb, #60cde3 28%, transparent)); }
+.lane-card img, .lane-card:hover img { position: static; inset: auto; width: auto; height: auto; object-fit: initial; transform: none; transition: none; filter: none; }
+.lane-card .print { position: relative; aspect-ratio: 16 / 10; overflow: visible; background: #000; box-shadow: var(--hard), 0 0 0 3px color-mix(in srgb, var(--lane-line) 22%, transparent); }
+.lane-card .print > img:first-child:not(.lane-map), .lane-card:hover .print > img:first-child:not(.lane-map) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.lane-tag {
+  position: absolute; left: -10px; top: -14px; z-index: 2; padding: 9px 22px 7px 20px; color: #17130a;
+  font: 400 15px/1 var(--display); letter-spacing: 0.08em; text-transform: uppercase; background: var(--kick) 0 0 / 100% 100% no-repeat; filter: drop-shadow(var(--hard));
+}
+.lane-card .print > img.lane-map, .lane-card:hover .print > img.lane-map { position: absolute; inset: auto -16px -26px auto; z-index: 2; width: 31%; height: auto; transform: rotate(6deg); filter: drop-shadow(3px 4px 0 rgba(0, 0, 0, 0.5)); }
+.lane-card figcaption { position: static; display: flex; align-items: center; gap: 14px; padding: 0 4px; min-width: 0; }
+.lane-card figcaption img.lane-title, .lane-card:hover figcaption img.lane-title { flex: none; width: min(46%, 190px); height: auto; filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.45)); }
+.lane-card figcaption small { color: var(--ink-2); font-size: 12.5px; line-height: 1.35; margin: 0; }
+@media (max-width: 720px) {
+  .lane-card, .lane-card.york, .lane-card.broadway, .lane-card.greenwich { padding: 30px 28px 38px 22px; }
+  .lane-card figcaption .lane-title { width: min(44%, 170px); }
+}
+
+/* ---------- the skyline that closes the page, in the colour of the lane that goes with the theme ---------- */
+:root, :root[data-theme='hidden-king'] { --sky-art: url('../assets/city/skyline-yellow.webp'); --sky-o: 0.7; }
+:root[data-theme='archmother'] { --sky-art: url('../assets/city/skyline-blue.webp'); --sky-o: 0.85; }
+:root[data-theme='night-shift'] { --sky-art: url('../assets/city/skyline-green.webp'); --sky-o: 0.55; }
+.site-foot { margin-top: clamp(150px, 19vw, 250px); }
+.site-foot::before {
+  /* the top half of the pack's skyline art is the silhouette; the lower half is solid fill, which is cropped off */
+  z-index: 0; height: auto; aspect-ratio: 1500 / 300;
+  background: var(--sky-art) center top / 100% auto no-repeat; opacity: var(--sky-o);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-composite: source-over; mask-composite: add;
+}
+
+/* ---------- section rules: the pack's dashed line instead of a hairline ---------- */
+.section-heading::after {
+  height: 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--brass) 70%, transparent), transparent 85%);
+  -webkit-mask: url('../assets/city/dash-1.svg') left center / auto 8px repeat-x; mask: url('../assets/city/dash-1.svg') left center / auto 8px repeat-x;
+}
+
+/* ---------- the two sides on match pages: Hidden King on the amber plate, Archmother on the blue one ---------- */
+.mt-side-score { --team-plate: url('../assets/city/plate-yellow.svg'); }
+.mt-side-score.archmother { --team-plate: url('../assets/city/plate-blue.svg'); }
+.mt-side-score, .mt-side-score.won {
+  border-top: 0; box-shadow: none; padding: 16px 26px 22px 20px; min-width: 164px;
+  background: var(--team-plate) 0 0 / 100% 100% no-repeat;
+}
+.mt-side-score.won { filter: drop-shadow(0 0 20px color-mix(in srgb, var(--c) 38%, transparent)); }
+.lm-team.hidden-king { --team-plate: url('../assets/city/plate-yellow-wide.svg'); }
+.lm-team.archmother { --team-plate: url('../assets/city/plate-blue-wide.svg'); }
+.lm-team { border-left: 0; border-radius: 0; padding: 14px 20px 14px 16px; background: var(--team-plate) 0 0 / 100% 100% no-repeat; }
+
+/* ---------- empty and error states: a neutral from the pack keeps the page company ---------- */
+.empty::before {
+  content: ''; display: block; width: 104px; height: 88px; margin: 0 auto 8px; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55));
+  background: url('../assets/city/neutral-bookmoth.webp') center / contain no-repeat;
+}
+.empty[role='alert']::before { background-image: url('../assets/city/neutral-ghoul-small.webp'); }
+
+/* ---------- the footer rule is the pack's scratched edge ---------- */
+.site-foot { border-top: 0; }
+.site-foot::after {
+  content: ''; position: absolute; left: 0; right: 0; top: -6px; height: 12px; pointer-events: none;
+  background: color-mix(in srgb, var(--ink) 38%, transparent);
+  -webkit-mask: url('../assets/city/scratch-edge.png') center / 100% 100% no-repeat; mask: url('../assets/city/scratch-edge.png') center / 100% 100% no-repeat;
+}
+@media (max-width: 720px) {
+  .mt-side-score, .mt-side-score.won { min-width: 0; padding: 14px 16px 20px 14px; }
+  .mt-score { gap: 8px; }
+}

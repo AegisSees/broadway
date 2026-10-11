@@ -1,0 +1,14 @@
+/* ==========================================================================================================
+   Round 18 · textures from the official City Never Sleeps page
+   grain.jpg ("the normal grain") is a dark mottled paint surface; lane_grain.jpg is film dust and scratches. Both are
+   kept as seamless greyscale maps (src/assets/ui) and blended into whatever colour the theme gives a surface, so all
+   three themes share the same paper. The page background and `.panel` are set in base.css; this file adds the same
+   two layers to the plain-colour surfaces that do not use `.panel`.
+   ========================================================================================================== */
+
+.tl-row, .dir-card, .abl-row, .draft-card, .hs-boon, .rail {
+  background-image: var(--film-dust), var(--grain-map);
+  background-size: 900px auto, max(100%, 1400px) auto;
+  background-position: 0 0, 30% 20%;
+  background-blend-mode: screen, var(--panel-grain-blend);
+}

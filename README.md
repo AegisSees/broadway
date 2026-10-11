@@ -20,7 +20,7 @@ npm run build      # typecheck + production build into dist/
 - **Builds hub** (`/builds`): every hero's builds in one place. Filter All / In-game / Community / Pro (Eternus), sort Popular / Trending / Newest / Win rate, pick a hero or search. Each card has a copyable build code and expands to the laning, mid and late item paths plus skill order.
 - **Top builds on every hero page**: Meta consensus, Highest win rate, Most popular and Pro · Eternus, each with items by phase (how many builds include them, average buy time, win rate), the skill order and the build code.
 - **Tier list** (`/tiers`): tier labels are flat rectangular plates with black lettering, like the orange labels on the official site (S+ amber, S orange, A green, B blue, C grey, D red). The plate rocks about its centre three times a second, like low-frame-rate animation, while the lettering stays still; it sits still for reduced-motion users. The same tag is used on the hero page and the home table. Hero cards lift and glow on hover.
-- **Three themes**: Hidden King (amber), Archmother (blue) and Night Shift (near-black teal and orange), switched from the top bar.
+- **Three themes**: Hidden King (amber), Archmother (blue) and Night Shift (near-black teal and orange), switched from the top bar. All three sit on the official page's grain texture, with its film dust mixed in, a district photo at the top of each page, lane plates and titles on Home, amber and blue plates for the two sides on match pages, and the lane skyline closing every page (round 18, see DESIGN_NOTES).
 - **Win rate trend** on every hero page: chart with patch lines, green above 50% and red below, ALL / 4W / BY PATCH.
 - **Live matches** (`/matches`): games in progress with running clocks, teams, net worth lead and match id. **Livestreams** (`/streams`): who is streaming Deadlock, with an optional in-page Twitch player.
 - **Build planner** (`/planner`): twelve slots, cost, always-on stat totals, hero projection at the boon level your souls reach, shareable link, builds saved in the browser.
@@ -45,7 +45,7 @@ npm run build      # typecheck + production build into dist/
 
 - `api-samples/` is tracked on purpose: the unit tests and the Sample-mode match page read it. `npm run probe:api` refreshes it.
 - Never commit `.env.local` (Twitch keys live there). `.env.example` is the template.
-- `src/assets/` holds Valve's hero art, fonts, rank badges and item icons taken from a game install. Keep the repository **private**, or check Valve's asset policy (and move those files out of git) before making it public.
+- `src/assets/` holds Valve's hero art, fonts, rank badges, item icons and the City Never Sleeps page assets (`src/assets/city/`, `ui/grain-detail.webp`, `ui/film-dust.webp`), taken from a game install and the official update page. Keep the repository **private**, or check Valve's asset policy (and move those files out of git) before making it public.
 - `dist/` and `dist-standalone/` are build output and are not tracked. `npm run build:standalone` rebuilds the single-file `index.html`.
 
 ## Data: read this before launch

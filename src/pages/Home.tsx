@@ -20,11 +20,17 @@ import { fmtInt, fmtPct } from '../lib/stats';
 import type { PatchNote } from '../data/patches';
 import type { TierRow } from '../data/tiers';
 import { useTitle } from '../lib/useTitle';
+import titleYellow from '../assets/city/lane-title-yellow.webp';
+import titleBlue from '../assets/city/lane-title-blue.webp';
+import titleGreen from '../assets/city/lane-title-green.webp';
+import mapYellow from '../assets/city/map-yellow.webp';
+import mapBlue from '../assets/city/map-blue.webp';
+import mapGreen from '../assets/city/map-green.webp';
 
 const LANES = [
-  { n: 1, name: 'York', note: 'The yellow lane', imgs: YORK, cls: 'york' },
-  { n: 2, name: 'Broadway', note: 'The blue lane. Where Broadway began', imgs: BROADWAY, cls: 'broadway' },
-  { n: 3, name: 'Greenwich', note: 'The green lane', imgs: GREENWICH, cls: 'greenwich' },
+  { n: 1, name: 'York', note: 'The yellow lane', imgs: YORK, cls: 'york', title: titleYellow, map: mapYellow },
+  { n: 2, name: 'Broadway', note: 'The blue lane. Where Broadway began', imgs: BROADWAY, cls: 'broadway', title: titleBlue, map: mapBlue },
+  { n: 3, name: 'Greenwich', note: 'The green lane', imgs: GREENWICH, cls: 'greenwich', title: titleGreen, map: mapGreen },
 ];
 
 const bgFor = (...slugs: string[]) => slugs.map((s) => getHeroBg(s)).find(Boolean);
@@ -213,8 +219,12 @@ export default function Home() {
           <div className="lane-row">
             {LANES.map((l) => (
               <figure key={l.name} className={`lane-card ${l.cls}`}>
-                <div className="print"><img src={l.imgs[pick % l.imgs.length]} alt="" loading="lazy" /></div>
-                <figcaption><span className="no">{l.n}</span><span><b>{l.name}</b><small>{l.note}</small></span></figcaption>
+                <div className="print">
+                  <img src={l.imgs[pick % l.imgs.length]} alt="" loading="lazy" />
+                  <span className="lane-tag">Lane {l.n}</span>
+                  <img className="lane-map" src={l.map} alt="" loading="lazy" />
+                </div>
+                <figcaption><img className="lane-title" src={l.title} alt={l.name} loading="lazy" /><small>{l.note}</small></figcaption>
               </figure>
             ))}
           </div>
