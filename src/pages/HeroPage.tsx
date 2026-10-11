@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import BuildBoard from '../components/BuildBoard';
 import WinTrend from '../components/WinTrend';
 import Controls from '../components/Controls';
-import TierBadge from '../components/TierBadge';
+import TierTag from '../components/TierTag';
 import LaneBackdrop from '../components/LaneBackdrop';
 import Tip from '../components/Tip';
 import AbilityTip from '../components/AbilityTip';
@@ -58,7 +58,7 @@ function Stats({ o }: { o: HeroOverview }) {
           {i.lead}
           <span className="val">
             <small>{i.label}</small>
-            {i.tier ? <TierBadge tier={tier} size="md" /> : <b className={i.hi ? 'hi' : ''}>{i.value}</b>}
+            {i.tier ? <TierTag tier={tier} size="md" /> : <b className={i.hi ? 'hi' : ''}>{i.value}</b>}
             {i.note && <em>{i.note}</em>}
           </span>
         </div>

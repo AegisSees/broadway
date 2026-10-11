@@ -2,7 +2,7 @@ import Kicker from '../components/Kicker';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBox from '../components/SearchBox';
-import TierBadge from '../components/TierBadge';
+import TierTag from '../components/TierTag';
 import { BROADWAY, GREENWICH, HallBackdrop, YORK } from '../components/LaneBackdrop';
 import { SiteFooter } from '../components/Shell';
 import { HeroFace } from '../components/HeroFace';
@@ -157,7 +157,7 @@ export default function Home() {
                 {top.map((r) => { const h = getHero(r.slug); return (
                   <tr key={r.slug}>
                     <td><span className="hn">{h && <HeroFace hero={h} />}<Link to={`/hero/${r.slug}`}>{h?.name ?? r.slug}</Link></span></td>
-                    <td className="tiercell"><TierBadge tier={r.tier} size="sm" /></td>
+                    <td className="tiercell"><TierTag tier={r.tier} size="sm" /></td>
                     <td className="good">{fmtPct(r.winRate)}</td><td>{fmtPct(r.pickRate)}</td><td className="muted">{fmtInt(r.matches)}</td>
                   </tr>
                 ); })}

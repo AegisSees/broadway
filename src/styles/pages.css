@@ -60,7 +60,6 @@
 .rank-badge.fan img:nth-child(3) { left: 50%; margin-left: -45px; width: 90px; height: 90px; top: 1px; z-index: 2; }
 .stats > div { padding: 16px 10px; text-align: center; display: grid; align-content: center; box-shadow: 1px 0 0 var(--line-2), 0 1px 0 var(--line-2); }
 .stats > div.lead { display: flex; }
-.stats .tiercell .tier-badge { margin: 2px auto 0; }
 .stats small { display: block; letter-spacing: 0.14em; text-transform: uppercase; font-size: 10.5px; }
 .stats b { font: 400 30px var(--display); }
 .stats b.hi { color: var(--good); }
@@ -262,18 +261,6 @@ table.data th:first-child, table.data td:first-child { text-align: left; }
 .new-flag { position: absolute; top: 8px; right: 8px; font: 600 10px var(--body); letter-spacing: 0.14em; text-transform: uppercase; background: var(--brass); color: var(--on-accent); padding: 2px 7px; border-radius: 2px; }
 .portrait img.icon-fill { object-fit: contain; padding: 14px; box-sizing: border-box; }
 
-/* ------------ tier badge ------------ */
-.tier-badge { display: inline-block; line-height: 0; filter: drop-shadow(0 4px 8px #000a) drop-shadow(0 0 9px color-mix(in srgb, var(--tier-glow) 42%, transparent)); }
-.tier-badge svg { width: 100%; height: auto; display: block; overflow: visible; }
-.tier-badge.sm { width: 64px; } .tier-badge.md { width: 76px; } .tier-badge.lg { width: 112px; }
-.tier-badge.t-sp { animation: tier-glow 3.4s ease-in-out infinite; }
-.tier-badge .sheen { animation: tier-sheen 4.2s ease-in-out infinite; }
-@keyframes tier-glow {
-  0%, 100% { filter: drop-shadow(0 4px 8px #000a) drop-shadow(0 0 8px color-mix(in srgb, var(--tier-glow) 38%, transparent)); }
-  50% { filter: drop-shadow(0 4px 8px #000a) drop-shadow(0 0 20px color-mix(in srgb, var(--tier-glow) 80%, transparent)); }
-}
-@keyframes tier-sheen { 0%, 45% { transform: translateX(0); } 85%, 100% { transform: translateX(120px); } }
-@media (prefers-reduced-motion: reduce) { .tier-badge.t-sp, .tier-badge .sheen { animation: none; } }
 
 /* ------------ lane backdrops (cross-fade per theme) ------------ */
 .city { transition: opacity 0.7s ease; }
@@ -466,7 +453,6 @@ table.data th { letter-spacing: 0.12em; }
 
 /* stats: the tier badge and rank badge are sized so the first row is no taller than the second */
 .stats > div { padding: 12px 10px; }
-.stats .tiercell .tier-badge.md { width: 60px; margin-top: 0; }
 .rank-badge { width: 68px; height: 68px; }
 .rank-badge.fan { width: 104px; }
 .rank-badge.fan img { width: 58px; height: 58px; top: 5px; }
@@ -595,10 +581,9 @@ table.data th { letter-spacing: 0.12em; }
 .stats > div { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 104px; padding: 13px 10px 12px; text-align: center; }
 .stats > div .val { display: flex; flex: 1; flex-direction: column; align-items: center; width: 100%; }
 .stats > div .val > small { flex: none; }
-.stats > div .val > b, .stats > div .val > .tier-badge { margin-block: auto; }
+.stats > div .val > b, .stats > div .val > .tier-tag { margin-block: auto; }
 .stats > div .val > b { line-height: 1; padding-bottom: 6px; }
 .stats > div .val > em { position: absolute; left: 0; right: 0; bottom: 10px; line-height: 1; }
-.stats .tiercell .tier-badge.md { width: 62px; margin-block: auto; transform: translateY(-3px); }
 @media (max-width: 720px) { .stats > div { min-height: 92px; } }
 
 /* ------------ round 6: trends and damage ------------ */
@@ -688,10 +673,8 @@ table.data th { letter-spacing: 0.12em; }
 @media (max-width: 720px) { .tl-row { grid-template-columns: 1fr; } .tl-cap { grid-auto-flow: column; justify-content: start; gap: 12px; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 14px; } .tl-tools { width: 100%; } }
 .hr-row .nm .top { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .hr-row .crown { margin-left: 0; vertical-align: baseline; flex: none; }
-.tl-table .tier-badge.sm { width: 46px; }
 .tl-table table.data td { padding: 5px 6px; }
 .tl-table .hn { display: inline-flex; align-items: center; gap: 12px; }
-table.data.tl .tier-badge.sm { width: 46px; }
 @media (max-width: 520px) { .hr-row .nm .top { flex-wrap: wrap; row-gap: 3px; } .hr-row .nm b { white-space: normal; } .hr-row .pk b, .hr-row .wr b { font-size: 16px; } }
 
 /* ------------ round 7: equal stat columns ------------ */

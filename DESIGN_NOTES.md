@@ -6,10 +6,8 @@
 - Both stay dark; only borders, text, lighting and accents change. Toggle is top right; the choice is saved in localStorage (`broadway-theme-v2`).
 - All colours are CSS tokens in `src/styles/base.css`. Add a theme by adding one `:root[data-theme='...']` block and an entry in `src/lib/theme.ts`.
 
-## Tier badges (placeholder art, keep this direction)
-Direction approved by Alp: winged diamonds coloured from the Eternus rank badge (pearl white and ice teal), more ornament the higher the tier.
-- S+ crested, full wings, glow pulse and sheen. S smaller wings. A cut-gem facets with studs (no side lines). B and C plain diamonds. D cracked and ember-red.
-- Alp noted the letters look off on some tiers, so the lettering is still to be refined. Everything lives in `src/components/TierBadge.tsx`.
+## Tier tags
+Replaced the winged-diamond badges in round 17 (see below); `TierBadge.tsx` is gone but lives in git history (commit `de21e95` and earlier) if it is ever wanted back.
 - Tier colours are fixed, not themed, so a tier reads the same in both themes.
 - Tier source: sample data supplies it. If the data source gives none, `tierFromWinRate` (src/lib/stats.ts) bands win rate as a rough guide only.
 
@@ -189,5 +187,8 @@ Feedback: the per-hero styles did not work well and undermined Deadlock (the her
 - **Removed**: the whole skin engine (`src/skin/`), its six stylesheets, the 43 per-hero typefaces and their licence file, the two generator scripts, the Hero style switch, the player page's Page style picker, the fixed wallpaper and the per-hero card motions. Hero pages show the game's own name lettering again, and section titles are the plain ones.
 - **Checked against the previous build**: the same 11 pages (home, heroes, tier list, four hero pages, player, leaderboard, builds, ranks) rendered from the previous standalone file and from this build with the same mock API and compared pixel by pixel. Page heights match exactly; the hero directory and tier list are identical; the other differences are the orange kicker label's random tilt, the random home-page spotlight hero, and the new arrow on player game rows.
 - **Kept**: the match page (`/match/:id`) and clicking a game on the player page, the trend's partial-day fix, and visible card hover. The hover is now one motion for every hero (lift, glow in the hero's colour, portrait push-in) in `hero-cards.css`; reduced motion gets a small lift.
-- **Tier tags** (`TierTag.tsx`, `tier-tags.css`): flat plates in the label-plate shape with the hard shadow and Valve Pulp lettering, used on the tier list (rows and table). S+ is the amber (#fbbf24) of the label that was sent; S orange, A green, B blue, C grey, D red. The winged emblem (`TierBadge`) is still used on hero pages and the home table; switching those is a one-line change each.
+- **Tier tags** (`TierTag.tsx`, `tier-tags.css`): matched to the orange labels on the official site (the "new", "You", "updated" and red "always a catch" tags). A flat, squarish rectangle in the tier colour with solid black lettering in Valve Oracle (the same face the site's labels use) and the hard offset shadow. Sizes `lg` (tier list captions), `md` (hero page stats) and `sm` (tables). S+ is amber (#fbbf24); S orange, A green, B blue, C grey, D red.
+- **Motion**: stop-motion, exactly three frames a second (`steps(1)` over a one-second cycle with three held keyframes, each about 1px and under 1 degree off the last). Phases are staggered per tier and per table row so the tags do not all change on the same beat. `prefers-reduced-motion` turns it off and leaves a fixed half-degree tilt.
+- **Everywhere**: the same tag is used on the tier list (rows and table), the hero page stats cell and the home page "On the marquee" table. The winged emblem was removed from all three.
+- Two earlier tries that were rejected: a strongly slanted plate (too tilted), and white lettering with a dark outline (did not look like the site's labels).
 - `broadway-skin-v1` may still sit in a browser's localStorage from round 16; nothing reads it now.

@@ -1,8 +1,8 @@
 import type { Tier } from '../data/types';
 
 /**
- * Tier label in the city's tape-plate style: a flat coloured plate with a hard shadow and heavy dark lettering.
- * Used on the tier list; the winged emblem (TierBadge) stays on hero pages.
+ * Tier label: a flat rectangular plate in the tier's colour with a hard shadow and heavy white lettering, moving in
+ * three-frame stop-motion (styles in tier-tags.css). Used wherever a tier is shown: tier list, hero page, home table.
  */
 export default function TierTag({ tier, size = 'md' }: { tier: Tier; size?: 'sm' | 'md' | 'lg' }) {
   const plus = tier === 'S+';
