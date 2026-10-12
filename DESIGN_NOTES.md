@@ -206,3 +206,9 @@ Alp supplied the pack extracted from the official update page (`deadlock_city_as
 - **Not used**: the Broker material, the hero cards in the pack (their file names do not match their pictures), the UI screenshots, the videos, the fonts (already in the app) and about a third of the artwork. They stay in the original zip.
 - **Size**: the standalone preview got smaller despite the additions (28.6 MB, limit for upload is 30 MiB), because the two biggest PNGs in `src/assets/art/` (Celeste and Haze art, 3 MB together) were recompressed to WebP.
 - Replaced: the 256px film-grain tile (`ui/grain.webp`) and the SVG paper noise.
+
+## Round 19: pinned selection
+
+- **No fill behind the plate.** Selected tabs and toggles had two older rules in `pages.css` painting a solid rectangle behind the new coloured plate: a cream fill on the build tabs (`.btabs`) and the accent colour on the `.seg` toggles. Both are removed; the plate is the only shape.
+- **Every "pick one" control shares one plate**: segmented toggles, hero tab strip, build tabs, pills, the hero-directory filters, the Following toggle and the pager (`:is(...)` group in `city.css`). Unselected is a dark skewed plate, selected is the flat orange/blue label.
+- **Pinned feeling**: like the tier tags, the selected plate rocks about its own centre in three held frames a second (`pin-rock`, about 1 degree either way, staggered phases so neighbours do not move in step) while the lettering stays still. The hard shadow sits on the button, so it follows the plate. With reduced motion the plate holds a half-degree tilt.

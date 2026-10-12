@@ -31,34 +31,46 @@
 .tape.orange { color: var(--on-accent); }
 .tape.orange::before { background: var(--label); }
 
-/* ---------- segmented controls, tab strips and filter pills ---------- */
+/* ---------- segmented controls, tab strips, filter pills, pager ---------- */
+/* every "pick one" control shares one plate: a flat shape behind the lettering, a flat orange/blue label when selected */
 .seg { border: 0; background: none; overflow: visible; gap: 6px; align-items: stretch; }
-.seg button, .btabs button, .tabs a, .pill {
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) {
+  --ph: -0.11s;
   position: relative; isolation: isolate; border: 0; border-radius: 0; background: none; color: var(--ink-2);
   font: 700 12.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase;
   transition: color 0.15s, transform 0.18s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.15s;
 }
-/* the shape is a pseudo-element so the active state can carry a hard shadow (clip-path would cut a box-shadow off) */
-.seg button::before, .btabs button::before, .tabs a::before, .pill::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; clip-path: var(--skew);
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(even) { --ph: -0.24s; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(3n) { --ph: -0.05s; }
+/* the shape is a pseudo-element so the lettering stays put while the plate moves, and so the selected state can carry a hard shadow */
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle)::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; clip-path: var(--skew); transform-origin: 50% 50%;
   background: color-mix(in srgb, var(--ink) 8%, var(--s2)); transition: background 0.15s;
 }
 .seg button, .btabs button { padding: 9px 22px 8px; }
-.pill { padding: 7px 16px 6px; font-size: 12px; letter-spacing: 0.1em; cursor: var(--cur-hand); }
+.pill, .dir-filters button, .fav-toggle { padding: 7px 16px 6px; font-size: 12px; letter-spacing: 0.1em; cursor: var(--cur-hand); }
+.dir-filters button { padding: 7px 14px 6px; }
+.pager button { min-width: 40px; padding: 7px 12px 6px; letter-spacing: 0.04em; }
 .tabs a { padding: 9px 22px 8px; flex: none; margin: 0; }
-.seg button:not([aria-pressed='true']):hover, .btabs button:not([aria-selected='true']):hover, .tabs a:not(.active):hover, .pill:not([aria-pressed='true']):hover { color: var(--ink); }
-.seg button:not([aria-pressed='true']):hover::before, .btabs button:not([aria-selected='true']):hover::before, .tabs a:not(.active):hover::before, .pill:not([aria-pressed='true']):hover::before {
+button.chip.fav-toggle:hover { background: none; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):not(:is([aria-pressed='true'], [aria-selected='true'], .active, .on)):not(:disabled):hover { color: var(--ink); }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):not(:is([aria-pressed='true'], [aria-selected='true'], .active, .on)):not(:disabled):hover::before {
   background: color-mix(in srgb, var(--ink) 16%, var(--s2));
 }
-/* selected: flat orange label, dark text, offset shadow, a hair of tilt */
-.seg button[aria-pressed='true'], .btabs button[aria-selected='true'], .tabs a.active, .pill[aria-pressed='true'] {
-  color: var(--on-accent); filter: drop-shadow(var(--hard)); transform: rotate(-1deg);
+/* selected: a flat label pinned through its middle. Only the plate rocks (three frames a second, like the tier tags);
+   the lettering never moves. The hard shadow sits on the button so it follows the plate. */
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on) {
+  color: var(--on-accent); filter: drop-shadow(var(--hard)); transform: none;
 }
-.seg button[aria-pressed='true']::before, .btabs button[aria-selected='true']::before, .tabs a.active::before, .pill[aria-pressed='true']::before {
-  background: var(--label); clip-path: var(--plate);
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on)::before {
+  background: var(--label); clip-path: var(--plate); animation: pin-rock 1s steps(1, end) var(--ph) infinite;
 }
-.seg button:nth-child(even)[aria-pressed='true'], .btabs button:nth-child(even)[aria-selected='true'], .pill:nth-child(even)[aria-pressed='true'] { transform: rotate(0.8deg); }
-.seg button:focus-visible, .btabs button:focus-visible, .tabs a:focus-visible, .pill:focus-visible { outline: 2px solid var(--brass-2); outline-offset: 3px; }
+@keyframes pin-rock {
+  0% { transform: rotate(-1deg); }
+  33.34% { transform: rotate(0.8deg); }
+  66.67% { transform: rotate(-0.2deg); }
+}
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):focus-visible { outline: 2px solid var(--brass-2); outline-offset: 3px; }
 .btabs { gap: 8px; }
 .pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .pill small { margin-left: 6px; opacity: 0.75; font-size: 10.5px; letter-spacing: 0.04em; color: inherit; }
@@ -106,8 +118,9 @@
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .seg button, .btabs button, .tabs a, .pill { transition: none; }
-  .seg button[aria-pressed='true'], .btabs button[aria-selected='true'], .tabs a.active, .pill[aria-pressed='true'], .paper-note { transform: none; }
+  :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) { transition: none; }
+  :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on)::before { animation: none; transform: rotate(-0.5deg); }
+  .paper-note { transform: none; }
 }
 @media (max-width: 720px) {
   .seg button, .btabs button { padding: 8px 14px 7px; }
