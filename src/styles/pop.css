@@ -618,7 +618,7 @@ main { overflow-x: clip; }
 .rx-axis i { text-align: center; font: 700 8.5px var(--ui); font-style: normal; color: #5a4630; letter-spacing: 0; }
 .rx-gname { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 6px; border-top: 4px solid var(--rc); margin-top: 6px; min-width: 0; }
 .rx-gname .rbadge.sm { width: 30px; height: 30px; flex: none; }
-.rx-gname .rbadge img { width: 100%; height: 100%; max-height: 30px; filter: drop-shadow(0 2px 0 #140c0533); }
+.rx-gname .rbadge img { filter: drop-shadow(0 2px 0 #140c0533); }
 .rx-gname > span:last-child { display: grid; min-width: 0; line-height: 1.1; }
 .rx-gname b { font: 700 10.5px var(--ui); letter-spacing: 0.06em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; }
 .rx-gname small { font: 700 11px var(--ui); color: #5a4630; font-variant-numeric: tabular-nums; }
@@ -689,37 +689,120 @@ main { overflow-x: clip; }
   .rx-lv:hover u, .rx-rung:hover, .rx-rung:hover .rx-rbadge .rbadge img { transform: none; }
 }
 
-/* ---------- Round 43 · the opening title card ----------
-   Plays once per session on the home page: two gold rules draw out from the middle, the name fades up letter by
-   letter (letters fade, they never move), the kicker and tape plates slide in, then the card lifts like a shutter. */
-.intro {
-  position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer;
-  background: radial-gradient(70% 30% at 50% 100%, #ec7a2e55, transparent 70%), radial-gradient(60% 50% at 50% 46%, #2a1c10, #0d0a07 70%); color: #f3e7d2;
-  box-shadow: 0 10px 0 #ec7a2e, 0 20px 40px #000a;
+/* ---------- Round 45 · the opening, reworked as a Broadway marquee ----------
+   Plays once per session on the home page. Two dark doors (a skyline along their foot, an orange edge where they
+   meet) close over the page; between them hangs a lit sign: bulbs chase round its frame and the letters light one by
+   one (they glow on, they never move). Then the sign is flicked up and to the right, like a spotlight card, and the
+   doors slide apart. About 2.4 seconds, skippable with any click, key, wheel or swipe; never under reduced motion. */
+.intro { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer; }
+.intro-door {
+  position: absolute; top: 0; bottom: 0; width: 50.5%; overflow: hidden;
+  background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat, radial-gradient(120% 34% at var(--gx) 100%, #ec7a2e66, transparent 70%), radial-gradient(90% 60% at var(--gx) 45%, #2a1c10, #0d0a07 75%);
+  transition: translate 0.7s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.intro::before { content: ''; position: absolute; inset: 0; background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat; opacity: 0.5; pointer-events: none; animation: intro-dust 0.5s steps(3) infinite; }
-.intro::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(28% 40% at var(--sx, 30%) 42%, #efc46a26, transparent 70%); animation: intro-beam 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.intro.lift { animation: intro-lift 0.75s cubic-bezier(0.6, 0, 0.3, 1) forwards; }
-.intro-sky { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34%; object-fit: cover; object-position: center bottom; opacity: 0; filter: brightness(0.35); animation: intro-sky 1.2s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.intro-card { position: relative; z-index: 1; display: grid; justify-items: center; gap: 14px; padding: 0 20px; }
-.intro-rule { display: block; width: min(560px, 80vw); height: 7px; border-block: 2px solid #dfa125; scale: 0 1; animation: intro-rule 0.7s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.intro-door.l { left: 0; --gx: 100%; box-shadow: inset -6px 0 0 #ec7a2e, inset -10px 0 0 #0d0a07; }
+.intro-door.r { right: 0; --gx: 0%; box-shadow: inset 6px 0 0 #ec7a2e, inset 10px 0 0 #0d0a07; }
+.intro-door .intro-sky { position: absolute; bottom: -14vw; width: 100vw; height: auto; max-width: none; filter: brightness(0.3); }
+.intro-door.l .intro-sky { left: 0; } .intro-door.r .intro-sky { right: 0; }
+.intro.lift .intro-door.l { translate: -101% 0; } .intro.lift .intro-door.r { translate: 101% 0; }
+.intro-sign { position: relative; z-index: 1; display: grid; justify-items: center; gap: 0; rotate: -1.5deg; animation: intro-hang 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.12) both; }
+.intro.lift .intro-sign { animation: intro-throw 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+.intro-board {
+  --bulb: #ffd27a; --gap: 22px;
+  position: relative; padding: 26px clamp(22px, 4vw, 48px) 22px; background: #140c05; border-radius: 6px;
+  box-shadow: inset 0 0 0 3px #ec7a2e, inset 0 0 0 7px #140c05, inset 0 0 0 9px #ec7a2e66, 10px 10px 0 #000a;
+}
+/* the bulbs: dots along all four edges, chasing clockwise */
+.intro-board::before {
+  content: ''; position: absolute; inset: -9px; border-radius: 10px; pointer-events: none;
+  background:
+    radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 0 0 / var(--gap) 18px repeat-x,
+    radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 0 100% / var(--gap) 18px repeat-x,
+    radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 0 0 / 18px var(--gap) repeat-y,
+    radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 100% 0 / 18px var(--gap) repeat-y;
+  filter: drop-shadow(0 0 4px #ffb23e);
+  animation: intro-chase 0.6s steps(2) infinite;
+}
+@keyframes intro-chase { to { background-position: calc(var(--gap) / 2) 0, calc(var(--gap) / -2) 100%, 0 calc(var(--gap) / -2), 100% calc(var(--gap) / 2); } }
+.intro-name { display: flex; font: 400 clamp(40px, 10vw, 118px)/1 var(--display); letter-spacing: 0.12em; margin-right: -0.12em; }
+.intro-name span { color: #3a2a1a; animation: intro-light 0.32s calc(0.3s + var(--i) * 0.08s) ease-out forwards; }
+@keyframes intro-light { 0% { color: #3a2a1a; } 40% { color: #fff6df; text-shadow: 0 0 26px #ffd27a, 3px 3px 0 #ec7a2e; } 100% { color: #f7eddc; text-shadow: 0 0 16px #ec7a2e99, 3px 3px 0 #ec7a2e; } }
 .intro-kicker {
-  padding: 6px 14px 5px; background: #ec7a2e; color: #140c05; clip-path: var(--plate); font: 700 12px var(--ui); letter-spacing: 0.22em; text-transform: uppercase;
-  opacity: 0; translate: -40px 0; animation: intro-plate 0.6s 0.45s cubic-bezier(0.2, 0.9, 0.25, 1.12) forwards;
+  position: relative; z-index: 1; margin-bottom: -12px; padding: 6px 14px 5px; background: #ec7a2e; color: #140c05; clip-path: var(--plate);
+  font: 700 12px var(--ui); letter-spacing: 0.24em; text-transform: uppercase;
 }
-.intro-name { display: flex; font: 400 clamp(46px, 11vw, 132px)/1 var(--display); letter-spacing: 0.14em; margin-right: -0.14em; color: #f3e7d2; text-shadow: 4px 4px 0 #ec7a2e, 8px 8px 0 #0d0a07; }
-.intro-name span { opacity: 0; animation: intro-letter 0.5s calc(0.35s + var(--i) * 0.07s) ease-out forwards; }
 .intro-tape {
-  padding: 7px 16px 6px; background: #f3e7d2; color: #140c05; clip-path: var(--plate-b, var(--plate)); font: 700 12.5px var(--ui); letter-spacing: 0.3em; text-transform: uppercase;
-  opacity: 0; translate: 40px 0; animation: intro-plate 0.6s 0.95s cubic-bezier(0.2, 0.9, 0.25, 1.12) forwards;
+  position: relative; z-index: 1; margin-top: -11px; padding: 7px 16px 6px; background: #f3e7d2; color: #140c05; clip-path: var(--plate-b, var(--plate));
+  font: 700 12px var(--ui); letter-spacing: 0.26em; text-transform: uppercase;
 }
-.intro-skip { position: absolute; right: 22px; bottom: 18px; z-index: 1; font: 700 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #f3e7d299; opacity: 0; animation: intro-letter 0.4s 1.2s forwards; }
-@keyframes intro-rule { to { scale: 1 1; } }
-@keyframes intro-plate { to { opacity: 1; translate: 0 0; } }
-@keyframes intro-letter { to { opacity: 1; } }
-@keyframes intro-sky { to { opacity: 1; } }
-@keyframes intro-beam { from { --sx: 20%; opacity: 0; } 30% { opacity: 1; } to { --sx: 70%; opacity: 1; } }
-@keyframes intro-dust { 33% { background-position: 340px 120px; } 66% { background-position: 710px 460px; } }
-@keyframes intro-lift { to { translate: 0 calc(-100% - 40px); } }
-@property --sx { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
+.intro-skip { position: absolute; right: 22px; bottom: 18px; z-index: 1; font: 700 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #f3e7d299; transition: opacity 0.2s; }
+.intro.lift .intro-skip { opacity: 0; }
+@keyframes intro-hang { from { opacity: 0; translate: 0 -40px; rotate: -5deg; } to { opacity: 1; translate: 0 0; rotate: -1.5deg; } }
+@keyframes intro-throw { to { opacity: 0; translate: 62vw -48vh; rotate: 16deg; scale: 0.92; } }
+@media (max-width: 620px) { .intro-board { --gap: 18px; padding: 20px 16px 18px; } .intro-kicker, .intro-tape { font-size: 10.5px; } }
 @media (prefers-reduced-motion: reduce) { .intro { display: none; } }
+
+/* ---------- Round 45 · the ranks page goes dark ----------
+   V found the cream panels glaring on this page. The crowd card, the ladder strips and the rules card are now dark
+   printed cards (near-black paper, a faint cream edge, the same hard shadow); the bars and rank colours do the talking. */
+.ranks-page { --rx-paper: #120d09; --rx-ink: #f3e7d2; --rx-sub: #b9a78c; --rx-line: #f3e7d2cc; }
+.rx-stat.c-cream { --cb: #dfa125; }
+.rx-board, .rx-rung, .rx-how { background: var(--rx-paper); color: var(--rx-ink); }
+.rx-board, .rx-how { box-shadow: inset 0 0 0 1px #f3e7d21f, 6px 6px 0 var(--pop-shadow); }
+.rx-board > header .tape { --tape: #ec7a2e; color: #140c05; }
+.rx-board > header small, .rx-axis i, .rx-gname small, .rx-id small, .rx-share small, .rx-top small, .rx-subs i, .rx-how .muted { color: var(--rx-sub); }
+.rx-scroll { scrollbar-color: #f3e7d244 transparent; }
+.rx-bars { border-bottom-color: var(--rx-line); }
+.rx-lv u { box-shadow: inset 0 0 0 1.5px #0d0a07; }
+.rx-lv.median u { box-shadow: inset 0 0 0 2px #0d0a07, 0 0 0 2px #ec7a2e; }
+.rx-lv.mine::before { border-left-color: #efc46a; }
+.rx-lv.mine u { background: repeating-linear-gradient(135deg, #0d0a0777 0 3px, transparent 3px 7px), var(--rc); box-shadow: inset 0 0 0 2px #0d0a07, 0 0 0 2px #efc46a; }
+.rx-flag { box-shadow: 2px 2px 0 #000; }
+.rx-flag.you { background: #efc46a; color: #140c05; box-shadow: 2px 2px 0 #000; }
+.rx-gname .rbadge img, .rx-rbadge .rbadge img { filter: drop-shadow(0 3px 0 #0009); }
+.rx-rung { box-shadow: inset 8px 0 0 var(--rc), inset 0 0 0 1px #f3e7d21a, 5px 5px 0 var(--pop-shadow); }
+.rx-rung:hover { box-shadow: inset 8px 0 0 var(--rc), inset 0 0 0 1px #f3e7d233, 9px 9px 0 var(--pop-shadow); }
+.rx-rbadge { margin: 0; }
+.rx-subs span { border-bottom-color: var(--rx-line); }
+.rx-subs u { box-shadow: inset 0 0 0 1px #0d0a07; }
+.rx-top small b { color: var(--rx-ink); }
+.rx-top .track { background: #f3e7d214; box-shadow: inset 0 0 0 1px #f3e7d226; }
+.rx-top .track u { background: var(--rc); }
+.rx-how a { color: #ec7a2e; }
+.rx-swipe { color: #ec7a2e; }
+.rx-gname { flex-direction: column; gap: 3px; text-align: center; } .rx-gname > span:last-child { justify-items: center; }
+.rx-gname b { font-size: 10px; letter-spacing: 0.04em; } .rx-gname .rbadge.sm { width: 32px; height: 32px; }
+
+/* ---------- Round 45 · the player banner as a printed card ----------
+   The hero's own background card (with its hard diagonal edge) is gone. A solid band in the hero's colour, with a
+   faint dot screen, sits on the right with the hero standing in it; the rank is a cream card pinned on top of the
+   band with a black "Rank" tape, so the badge always sits inside its card and the name reads in dark ink. */
+.phead { background: var(--s1); border: 0; box-shadow: inset 0 0 0 1px #f3e7d21a, 6px 6px 0 var(--pop-shadow); border-radius: 4px; }
+.phead > .pl-bg { display: none; }
+.phead::before {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 46%; z-index: -2;
+  background: radial-gradient(circle, #0000002e 1.2px, transparent 1.6px) 0 0 / 9px 9px, linear-gradient(160deg, color-mix(in srgb, var(--hc, #ec7a2e) 92%, #fff), color-mix(in srgb, var(--hc, #ec7a2e) 70%, #000));
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+}
+.phead .pl-art { right: 15%; bottom: -22%; height: 136%; max-width: 34%; opacity: 1; -webkit-mask-image: none; mask-image: none; filter: drop-shadow(-6px 6px 0 #0006); }
+.ph-rankbox {
+  position: relative; gap: 4px; min-width: 168px; padding: 22px 18px 14px; margin-right: 4px; border-radius: 4px; rotate: 2deg;
+  background: #efe3cf; color: #140c05; box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 #0009;
+}
+.ph-rankbox::before {
+  content: 'Rank'; position: absolute; left: 50%; top: -11px; translate: -50% 0; padding: 5px 12px 4px; background: #0d0a07; color: #f3e7d2;
+  clip-path: var(--plate); font: 700 10.5px var(--ui); letter-spacing: 0.2em; text-transform: uppercase;
+}
+.ph-rankbox .rbadge.lg { width: 100px; height: 100px; filter: drop-shadow(0 4px 0 #0005); }
+.ph-rankbox .rbadge b { bottom: -2px; }
+.ph-rankbox b { color: #140c05; font-size: 22px; text-shadow: none; padding-bottom: 4px; border-bottom: 4px solid var(--rc); }
+.ph-rankbox .rbadge b { color: var(--rc); border-bottom: 1px solid color-mix(in srgb, var(--rc) 60%, #000); padding-bottom: 0; font-size: 0.7em; }
+@media (max-width: 860px) {
+  .phead::before { width: 100%; height: 42%; top: auto; clip-path: polygon(0 26%, 100% 0, 100% 100%, 0 100%); }
+  .phead .pl-art { right: 4%; bottom: -10%; height: 58%; max-width: 50%; }
+  .ph-rankbox { padding: 18px 14px 12px; min-width: 0; rotate: -1.5deg; margin: 8px 0 0 4px; }
+  .ph-rankbox .rbadge.lg { width: 64px; height: 64px; }
+  .ph-rankbox b { font-size: 18px; }
+}
+.phead .pl-art.bust { right: 19%; bottom: 0; height: 112%; max-width: 30%; object-position: center bottom; filter: drop-shadow(-6px 0 0 #0005); }
+@media (max-width: 860px) { .phead .pl-art.bust { right: 6%; height: 50%; max-width: 46%; } }

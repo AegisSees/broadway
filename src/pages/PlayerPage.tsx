@@ -4,6 +4,7 @@ import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { CopyCode } from '../components/BuildBoard';
 import { HeroFace } from '../components/HeroFace';
 import RankBadge from '../components/RankBadge';
+import { getGloat } from '../data/heroGloat';
 import RankHistory from '../components/RankHistory';
 import { SiteFooter } from '../components/Shell';
 import { getHeroColor } from '../data/heroColors';
@@ -68,7 +69,9 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
   const top = core.heroes[0]?.slug;
   const bg = getHeroBg(top);
   const hero = getHero(top);
-  const art = hero ? hero.art ?? hero.render ?? hero.portrait : undefined;
+  // the cut-out bust first: the card art and renders carry their own painted backdrop, which fights the band behind it
+  const bust = top ? getGloat(top) : undefined;
+  const art = bust ?? (hero ? hero.render ?? hero.art ?? hero.portrait : undefined);
   const steamHref = safeSteamHref(core.profileUrl);
   const r = core.rank;
   const streak = matches ? streakOf(matches) : null;
@@ -76,7 +79,7 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
   return (
     <section className="phead" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
-      {art && <img className="pl-art" src={art} alt="" loading="lazy" />}
+      {art && <img className={`pl-art${bust ? ' bust' : ''}`} src={art} alt="" loading="lazy" />}
       <div className="ph-card">
         <figure className="ph-photo"><span className="ph-tape" aria-hidden="true" /><Avatar src={core.avatar} size={124} /></figure>
         <div className="ph-id">

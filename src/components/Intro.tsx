@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import skyline from '../assets/city/skyline-yellow.webp';
 
 const KEY = 'broadway-intro';
-const HOLD_MS = 2100;
-const LIFT_MS = 750;
+const HOLD_MS = 1750;
+const LIFT_MS = 700;
 
 /** Whether the opening title card should play: once per browser session, never under reduced motion. */
 function shouldPlay() {
@@ -16,8 +16,9 @@ function shouldPlay() {
 }
 
 /**
- * The opening title card on the home page, like the card before a 1940s picture: the rules draw out, the name
- * fades up over the skyline, then the whole card lifts away like a shutter. Any click, key or scroll skips it.
+ * The opening on the home page, as a Broadway marquee: two dark doors close over the page with a lit sign between
+ * them. The sign's bulbs chase round the frame and the letters light one by one; then the sign is flicked away up
+ * and to the right (like a spotlight card) while the doors slide open. Any click, key, wheel or swipe skips it.
  */
 export default function Intro() {
   const [phase, setPhase] = useState<'show' | 'lift' | 'done'>(() => (shouldPlay() ? 'show' : 'done'));
@@ -47,13 +48,14 @@ export default function Intro() {
   if (phase === 'done') return null;
   return (
     <div className={`intro${phase === 'lift' ? ' lift' : ''}`} onClick={() => setPhase('lift')} aria-hidden="true">
-      <img className="intro-sky" src={skyline} alt="" />
-      <div className="intro-card">
-        <span className="intro-rule" />
-        <span className="intro-kicker">The city never sleeps</span>
-        <b className="intro-name">{'BROADWAY'.split('').map((c, i) => <span key={i} style={{ ['--i' as string]: i } as React.CSSProperties}>{c}</span>)}</b>
-        <span className="intro-tape">Deadlock companion</span>
-        <span className="intro-rule" />
+      <span className="intro-door l"><img className="intro-sky" src={skyline} alt="" /></span>
+      <span className="intro-door r"><img className="intro-sky" src={skyline} alt="" /></span>
+      <div className="intro-sign">
+        <span className="intro-kicker">Now showing</span>
+        <div className="intro-board">
+          <b className="intro-name">{'BROADWAY'.split('').map((c, i) => <span key={i} style={{ ['--i' as string]: i } as React.CSSProperties}>{c}</span>)}</b>
+        </div>
+        <span className="intro-tape">A Deadlock companion</span>
       </div>
       <span className="intro-skip">Click to skip</span>
     </div>
