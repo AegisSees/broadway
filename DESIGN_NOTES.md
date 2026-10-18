@@ -325,3 +325,10 @@ Alp found the stepped motion read as a low frame rate, and that the spotlight ph
 - **No lore title plate on the spotlight card.** Alp felt the orange title above each hero's name ("The Rising Artist" and so on) covered the art. The card keeps the hero's own name lettering and tags; only the title plate is gone. (A first pass removed the whole caption; Alp wanted the lettering and tags kept, so they are back.)
 - **The flick goes up and to the right.** In a full-size window the deck sits on the right, so Round 32's throw to the left crossed the headline, the search and the buttons. The leaving card now flicks up and off the right side (a fast start that eases out, 15 degrees, fading after the first third). `.spot-hold` clips anything above its own top edge, so the card never passes over the search or the top bar, and `.hero` already clips sideways so it can't widen the page. Checked at 390, 1100, 1440, 1920 and 2560 px.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion (no flick), Archmother theme, standalone build opened with no errors.
+
+## Round 34: a sharp card under the pointer
+
+- Alp saw the spotlight card go blurry on hover. Two causes: the card had its own compositor layer (`will-change: transform`, added in Round 32 for frame rate), which the browser draws once at normal size and then stretches when the hover scales and turns it; and the hover zoomed the card 3% and the art another 4%, while the hero renders are only about 540 px wide, so any zoom enlarges a small picture.
+- The hover now lifts the card and turns it about 1.4 degrees with the coloured glow, but does not zoom. Only the back cards and the leaving card keep their own layers, since they never grow under the pointer. The meta, tool and directory cards lost theirs too, so their hovers redraw sharp.
+- Frame time is unchanged: 16.7 to 17 ms idle and while scrolling (60 fps).
+- Checked: tsc, 165 tests, standalone build opened with no errors.
