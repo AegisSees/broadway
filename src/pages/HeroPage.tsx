@@ -49,14 +49,14 @@ function Stats({ o }: { o: HeroOverview }) {
   const tier = o.tier ?? tierFromWinRate(o.winRate);
   const items: { label: string; value?: string; hi?: boolean; note?: string; lead?: React.ReactNode; tier?: boolean }[] = [
     { label: 'Tier', tier: true, note: o.tier ? undefined : 'By win rate' },
-    { label: 'Win rate', value: fmtPct(o.winRate), hi: true },
+    // the win rate already leads the stat plates above, so it is not repeated here
     ...(o.overallRank ? [{ label: 'Overall rank', value: `${o.overallRank.rank} / ${o.overallRank.of}` }] : []),
     { label: 'Pick rate', value: fmtPct(o.pickRate) },
     ...(o.banRate !== undefined ? [{ label: 'Ban rate', value: fmtPct(o.banRate) }] : []),
     { label: 'Matches', value: fmtInt(o.matches), note: confidenceLabel[confidence(o.matches)] },
   ];
   return (
-    <div className="panel stats" data-n={items.length} style={{ ['--n' as string]: items.length } as React.CSSProperties}>
+    <div className="panel stats hero-stats" data-n={items.length} style={{ ['--n' as string]: items.length } as React.CSSProperties}>
       {items.map((i) => (
         <div key={i.label} className={i.lead ? 'lead' : i.tier ? 'tiercell' : ''}>
           {i.lead}

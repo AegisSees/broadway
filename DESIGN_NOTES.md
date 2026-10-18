@@ -332,3 +332,10 @@ Alp found the stepped motion read as a low frame rate, and that the spotlight ph
 - The hover now lifts the card and turns it about 1.4 degrees with the coloured glow, but does not zoom. Only the back cards and the leaving card keep their own layers, since they never grow under the pointer. The meta, tool and directory cards lost theirs too, so their hovers redraw sharp.
 - Frame time is unchanged: 16.7 to 17 ms idle and while scrolling (60 fps).
 - Checked: tsc, 165 tests, standalone build opened with no errors.
+
+## Round 35: hero page numbers and builds as printed cards
+
+Alp asked to keep going with the UI. Home now speaks in solid colour printed cards; the inner pages were still dark glass panels. The hero page goes first.
+- **One set of numbers.** The second stat row repeated the win rate that already leads the stat plates. It now shows tier, overall rank, pick rate, ban rate and matches only, each on its own solid card (tier on black, then orange, blue, cream, gold) with the label on a black tape and a hard shadow, like the meta cards on Home. Level at rest, a small lift under the pointer. Three across under 1000 px, two on phones with the last card spanning the row.
+- **Build phases** (Laning, Mid game, Late game, everywhere `BuildPhases` is used) are cream printed cards with dark ink; each phase is named on its own coloured tape (orange, blue, gold), which also colours its bars. Win-rate green and red are darkened to read on cream.
+- Checked: tsc, 165 tests, 390 px on six pages, City and Archmother themes, Hidden King on the stat cards.

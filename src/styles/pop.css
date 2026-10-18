@@ -270,3 +270,56 @@ main { overflow-x: clip; }
 .rv-pre { opacity: 0; translate: 0 46px; rotate: -1.2deg; }
 .rv-pre:is(.mn-card, .tool-card, .tile, .lane-card) { translate: 0 70px; rotate: 3deg; scale: 0.96; }
 .rv-in { transition: opacity 0.6s ease-out, translate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), rotate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), scale 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12) !important; transition-delay: var(--rv-d, 0s) !important; }
+
+/* ---------- Round 35 · hero page numbers as printed cards ----------
+   The second stat row repeated the win rate from the plates above and sat in a dark glass panel. It is now a row of
+   solid colour cards like the meta cards on Home: the tier on a black card, then orange, blue, cream and gold, each
+   with its label on a black tape and a hard shadow. Level at rest, a small lift under the pointer. */
+.panel.stats.hero-stats {
+  display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 16px; margin: 18px 0 8px; padding: 0;
+  background: none; border: 0; box-shadow: none; overflow: visible;
+}
+.panel.stats.hero-stats::before, .panel.stats.hero-stats::after { content: none; }
+.hero-stats > div, .hero-stats[data-n] > div {
+  --cb: #ec7a2e; grid-column: auto; position: relative; display: grid; justify-items: center; align-content: center; gap: 10px;
+  padding: 14px 16px 16px; text-align: center; color: #140c05; background: var(--cb); border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
+}
+.hero-stats > div:nth-child(5n + 2) { --cb: #ec7a2e; }
+.hero-stats > div:nth-child(5n + 3) { --cb: #4f86d6; }
+.hero-stats > div:nth-child(5n + 4) { --cb: #efe3cf; }
+.hero-stats > div:nth-child(5n + 5) { --cb: #dfa125; }
+.hero-stats > div.tiercell { --cb: #0d0a07; color: #f3e7d2; }
+.hero-stats > div:hover { transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
+.hero-stats .val { display: grid; justify-items: center; gap: 8px; }
+.hero-stats small { display: inline-block; background: #0d0a07; color: #f3e7d2; font: 700 10.5px var(--ui); letter-spacing: 0.12em; padding: 5px 10px 4px; }
+.hero-stats .tiercell small { background: #f3e7d2; color: #0d0a07; }
+.hero-stats b, .hero-stats b.hi { font: 700 clamp(28px, 2.6vw, 38px)/1 var(--ui); color: inherit; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.hero-stats em { color: inherit; opacity: 0.72; font-size: 11.5px; font-weight: 600; }
+@media (max-width: 1000px) { .panel.stats.hero-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .panel.stats.hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .hero-stats b, .hero-stats b.hi { font-size: 26px; } .hero-stats > div:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@media (prefers-reduced-motion: reduce) { .hero-stats > div { transition: none; } .hero-stats > div:hover { transform: none; } }
+
+/* ---------- Round 35 · build phases on cream cards ----------
+   Laning, mid game and late game were dark boxes inside the dark build panel. They are now cream printed cards with dark
+   ink and a hard shadow, each phase named on a coloured tape (orange, blue, gold) so the three read apart at a glance.
+   Win rates use darker green and red that hold up on cream. */
+.bb-phases { gap: 20px; }
+.bb-phase:nth-child(1) { --tape: #ec7a2e; }
+.bb-phase:nth-child(2) { --tape: #4f86d6; }
+.bb-phase:nth-child(3) { --tape: #dfa125; }
+.bb-phase {
+  padding: 12px 14px 8px; color: #140c05; background: #efe3cf; border: 0; border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+}
+.bb-phase header { border-bottom: 2px solid #14100a26; align-items: center; }
+.bb-phase h4 { display: inline-block; background: var(--tape); color: #140c05; font: 400 18px var(--display); padding: 5px 11px 3px; box-shadow: 3px 3px 0 #0d0a07; }
+.bb-phase header small { color: #4a3824; }
+.bb-phase .bb-item { border-top-color: #14100a1f; }
+.bb-phase .bb-item .no { background: #0d0a07; color: #f3e7d2; }
+.bb-phase .bb-item .mid b { color: #140c05; }
+.bb-phase .bb-item .mid small { color: #5a4630; }
+.bb-phase .bb-item .bar { background: #14100a1f; }
+.bb-phase .bb-item .bar i { background: var(--tape); }
+.bb-phase .bb-wr.up { color: #1d7a3c; } .bb-phase .bb-wr.down { color: #b2321e; }
