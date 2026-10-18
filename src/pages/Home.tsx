@@ -43,11 +43,12 @@ function Tiles() {
   const pool = [['haze', 'ivy', 'wraith', 'abrams'], ['lash', 'bebop', 'grey-talon', 'seven'], ['viscous', 'vindicta', 'mirage', 'paradox'], ['infernus', 'kelvin', 'mo-and-krill', 'yamato']];
   const pic = (i: number) => bgFor(...[...pool[(seed + i) % 4], ...pool[(seed + i + 1) % 4]]);
   const face = (i: number) => renderFor(...[...pool[(seed + i) % 4], ...pool[(seed + i + 1) % 4]]);
+  // art alternates with emblems and icons, so no two hero pictures sit side by side
   const tiles = [
     { to: '/heroes', label: 'Heroes', note: 'Every hero, stats and builds', bg: face(0), cls: 'heroes' },
-    { to: '/leaderboard', label: 'Ranked', note: 'The top 500, per region and hero', bg: pic(1), cls: 'ranked' },
+    { to: '/leaderboard', label: 'Ranked', note: 'The top 500, per region and hero', cls: 'ranked' },
+    { to: '/items', label: 'Items', note: 'The whole shop, every price', cls: 'items' },
     { to: '/matches', label: 'Live matches', note: 'Games being played right now', bg: face(2), cls: 'live', live: true },
-    { to: '/streams', label: 'Livestreams', note: 'Who is on air', bg: face(3), cls: 'streams', live: true },
     { to: '/builds', label: 'Builds', note: 'Meta, community and Eternus', bg: pic(4), cls: 'builds' },
   ];
   return (
@@ -57,7 +58,8 @@ function Tiles() {
         {tiles.map((t, i) => (
           <Link key={t.to} to={t.to} className={`tile ${t.cls}`} style={{ ['--tilt' as string]: `${[-1.2, 0.8, -0.6, 1, -0.9][i]}deg` } as React.CSSProperties}>
             <span className="pic" style={t.bg ? { backgroundImage: `url(${t.bg})` } : undefined} aria-hidden="true">
-              {t.cls === 'ranked' && <span className="badges">{['Phantom', 'Ascendant', 'Eternus'].map((r) => <img key={r} src={rankBadge(r)} alt="" loading="lazy" />)}</span>}
+              {t.cls === 'ranked' && <img className="emblem" src={rankBadge('Eternus')} alt="" loading="lazy" />}
+              {t.cls === 'items' && <span className="shelf">{['Close Quarters', 'Mystic Burst', 'Extra Health', 'Golden Goose Egg'].map((n) => { const it = getItem(n); return it?.icon ? <img key={n} src={it.icon} alt="" loading="lazy" /> : null; })}</span>}
               {t.cls === 'builds' && <span className="badges">{['Rapid Rounds', 'Ricochet', 'Unstoppable'].map((n) => { const it = getItem(n); return it?.icon ? <img key={n} src={it.icon} alt="" loading="lazy" /> : null; })}</span>}
             </span>
             <span className="tape">{t.label}{t.live && <i className="live-dot" aria-hidden="true" />}</span>

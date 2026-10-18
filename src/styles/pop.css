@@ -503,3 +503,39 @@ main { overflow-x: clip; }
 .rail a.stop:focus { outline: none; }
 .rail a.stop:focus-visible .bullet { outline: 2px solid #efe3cf; outline-offset: 5px; }
 @media (prefers-reduced-motion: reduce) { .rail .bullet, .rail .label { transition: none; } .rail a.stop:hover .bullet { translate: none; } }
+
+/* ---------- Round 41 · the rail opens like a line map ----------
+   Alp liked the stops but wants to read every option at once: hovering anywhere on the rail opens it into a panel
+   with each stop's name printed beside its bullet, like the station list on a subway map. It closes the moment the
+   pointer leaves, clicked or not; keyboard focus opens it too, but a mouse click never holds it open. Hovering one
+   stop inside the open rail lights that name. */
+.rail { transition: width 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.24s; }
+.rail:hover, .rail:has(a.stop:focus-visible) { width: 228px; box-shadow: inset -1px 0 0 var(--line), 18px 0 40px -16px #000, 6px 0 0 -2px var(--pop-shadow); }
+.rail-line { left: 28px; }
+.rail a.stop, .rail a.stop:hover, .rail a.stop.active { justify-items: start; padding-left: 13px; }
+.rail .label, .rail:hover .label, .rail:focus-within .label {
+  left: 54px; translate: -6px -50%; background: none; border-left: 0; box-shadow: none; padding: 4px 8px 3px;
+  color: var(--ink-2, #d9cbb3); font: 700 12.5px var(--ui); letter-spacing: 0.12em;
+}
+.rail:hover .label, .rail:has(a.stop:focus-visible) .label { opacity: 1; translate: 0 -50%; }
+.rail a.stop:hover .label, .rail a.stop:focus-visible .label { background: #0d0a07; color: #f3e7d2; box-shadow: inset 3px 0 0 var(--bc), 3px 3px 0 #0008; }
+.rail a.stop.active .label { color: var(--brass-2, #efc46a); }
+.rail:hover a.stop:nth-child(n) .label { transition-delay: 0.04s; }
+@media (prefers-reduced-motion: reduce) { .rail { transition: none; } }
+
+/* ---------- Round 41 · explore tiles: an Eternus emblem, and the shop in place of livestreams ----------
+   Ranked is the Eternus plaque alone, large, on a dark field lit in its teal. Livestreams is gone (two hero pictures
+   side by side read as one muddle); the shop takes a slot as a shelf of four item cards, and the order alternates
+   pictures with emblems and icons: Heroes, Ranked, Items, Live matches, Builds. */
+.tiles .tile.items { --mat: #9a6be0; }
+.tile.ranked .pic { background: radial-gradient(70% 60% at 50% 46%, #2a6f69, #0f2524 62%, #081413); }
+.tile.ranked .pic::after { background: none; }
+.tile.ranked .emblem { position: absolute; left: 50%; top: 52%; width: 82%; height: auto; translate: -50% -50%; filter: drop-shadow(0 8px 0 #0007) drop-shadow(0 0 30px #5fe3cf55); transition: translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); }
+.tile.ranked:hover .emblem { translate: -50% -54%; }
+.tile.items .pic { background: radial-gradient(80% 70% at 50% 40%, #3b2d58, #1a1426 70%); }
+.tile.items .pic::after { background: none; }
+.tile.items .shelf { position: absolute; inset: 31% 15% 6% 15%; align-content: center; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.tile.items .shelf img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 5px; background: #efe3cf; box-shadow: 3px 3px 0 #0008; }
+.tile.items .shelf img:nth-child(1) { rotate: -3deg; } .tile.items .shelf img:nth-child(2) { rotate: 2deg; }
+.tile.items .shelf img:nth-child(3) { rotate: 1.5deg; } .tile.items .shelf img:nth-child(4) { rotate: -2deg; }
+@media (prefers-reduced-motion: reduce) { .tile.ranked .emblem { transition: none; } .tile.ranked:hover .emblem { translate: -50% -50%; } }
