@@ -11,6 +11,7 @@ import { getItem } from '../data/items';
 import { getHeroBg } from '../data/heroStats';
 import { rankBadge } from '../data/ranks';
 import Spotlight from '../components/Spotlight';
+import Intro from '../components/Intro';
 import MetaNow from '../components/MetaNow';
 import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
 import { dataSource } from '../data/source';
@@ -28,6 +29,8 @@ import titleGreen from '../assets/city/lane-title-green.webp';
 import mapYellow from '../assets/city/map-yellow.webp';
 import mapBlue from '../assets/city/map-blue.webp';
 import mapGreen from '../assets/city/map-green.webp';
+import rankedHall from '../assets/halls/archmother-tall.webp';
+import shopStreet from '../assets/city/chinatown.webp';
 
 const LANES = [
   { n: 1, name: 'York', note: 'The yellow lane', imgs: YORK, cls: 'york', title: titleYellow, map: mapYellow },
@@ -38,6 +41,20 @@ const LANES = [
 const bgFor = (...slugs: string[]) => slugs.map((s) => getHeroBg(s)).find(Boolean);
 const renderFor = (...slugs: string[]) => slugs.map((s) => getHero(s)?.render).find(Boolean);
 
+/** The Builds tile: a cream build sheet pinned over hero art, three phases ticked off like a planner page. */
+function BuildSheet() {
+  const rows: [string, string[]][] = [['Early', ['Headshot Booster', 'Extra Stamina']], ['Mid', ['Tesla Bullets', 'Kinetic Dash']], ['Late', ['Ricochet']]];
+  return (
+    <span className="sheet">
+      <span className="pin" />
+      <b>Build sheet</b>
+      {rows.map(([phase, items]) => (
+        <span key={phase} className="row"><i>{phase}</i>{items.map((n) => { const it = getItem(n); return it?.icon ? <img key={n} src={it.icon} alt="" loading="lazy" /> : null; })}<u /></span>
+      ))}
+    </span>
+  );
+}
+
 function Tiles() {
   const [seed] = useState(() => Math.floor(Math.random() * 4));
   const pool = [['haze', 'ivy', 'wraith', 'abrams'], ['lash', 'bebop', 'grey-talon', 'seven'], ['viscous', 'vindicta', 'mirage', 'paradox'], ['infernus', 'kelvin', 'mo-and-krill', 'yamato']];
@@ -46,8 +63,8 @@ function Tiles() {
   // art alternates with emblems and icons, so no two hero pictures sit side by side
   const tiles = [
     { to: '/heroes', label: 'Heroes', note: 'Every hero, stats and builds', bg: face(0), cls: 'heroes' },
-    { to: '/leaderboard', label: 'Ranked', note: 'The top 500, per region and hero', cls: 'ranked' },
-    { to: '/items', label: 'Items', note: 'The whole shop, every price', cls: 'items' },
+    { to: '/leaderboard', label: 'Ranked', note: 'The top 500, per region and hero', bg: rankedHall, cls: 'ranked' },
+    { to: '/items', label: 'Items', note: 'The whole shop, every price', bg: shopStreet, cls: 'items' },
     { to: '/matches', label: 'Live matches', note: 'Games being played right now', bg: face(2), cls: 'live', live: true },
     { to: '/builds', label: 'Builds', note: 'Meta, community and Eternus', bg: pic(4), cls: 'builds' },
   ];
@@ -59,8 +76,8 @@ function Tiles() {
           <Link key={t.to} to={t.to} className={`tile ${t.cls}`} style={{ ['--tilt' as string]: `${[-1.2, 0.8, -0.6, 1, -0.9][i]}deg` } as React.CSSProperties}>
             <span className="pic" style={t.bg ? { backgroundImage: `url(${t.bg})` } : undefined} aria-hidden="true">
               {t.cls === 'ranked' && <img className="emblem" src={rankBadge('Eternus')} alt="" loading="lazy" />}
-              {t.cls === 'items' && <span className="shelf">{['Close Quarters', 'Mystic Burst', 'Extra Health', 'Golden Goose Egg'].map((n) => { const it = getItem(n); return it?.icon ? <img key={n} src={it.icon} alt="" loading="lazy" /> : null; })}</span>}
-              {t.cls === 'builds' && <span className="badges">{['Rapid Rounds', 'Ricochet', 'Unstoppable'].map((n) => { const it = getItem(n); return it?.icon ? <img key={n} src={it.icon} alt="" loading="lazy" /> : null; })}</span>}
+              {t.cls === 'items' && getItem('Mystic Conduit')?.icon && <span className="showcase"><img src={getItem('Mystic Conduit')!.icon} alt="" loading="lazy" /><b>Mystic Conduit</b></span>}
+              {t.cls === 'builds' && <BuildSheet />}
             </span>
             <span className="tape">{t.label}{t.live && <i className="live-dot" aria-hidden="true" />}</span>
             <small>{t.note}</small>
@@ -131,6 +148,7 @@ export default function Home() {
   const { state: tierState, list: tierList, top, movers } = useMarquee();
   return (
     <>
+      <Intro />
       <section className="hero">
         <HallBackdrop />
         <div className="wash" />

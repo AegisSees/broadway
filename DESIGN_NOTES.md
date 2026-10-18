@@ -386,3 +386,10 @@ V found the rank distribution ugly and asked for a complete rework. The dark gla
 - **Rung by rung**: the ladder from Eternus down as cream strips with the rank colour on the left edge, the badge rising out of the strip, the share, six level bars, and a "Top X%" track.
 - Phones: the chart scrolls sideways inside its card with a "swipe for the higher ranks" hint; each rung stacks its level bars and track under the name.
 - Old rd-* styles are left in pages.css but no longer used by this page.
+
+## Round 43 · explore tiles and an opening title card (2026-10-18)
+
+- **Ranked** now stands the Eternus plaque in the patron's hall (archmother-tall), tinted teal so the emblem still reads.
+- **Items** shows one item, Mystic Conduit, as a printed card over the neon Chinatown street, tinted violet (V's pick).
+- **Builds** drops the three icons on the floor (V: they didn't read as builds) for a cream build sheet pinned over hero art, with Early, Mid and Late rows ticked off like a planner page.
+- **Intro**: a title card plays once per browser session on the home page. Gold rules draw out, BROADWAY fades up letter by letter (letters fade, they never move), the kicker and tape plates slide in over the skyline, then the card lifts away like a shutter after about two seconds. Any click, key, wheel or swipe skips it. It never plays under reduced motion.

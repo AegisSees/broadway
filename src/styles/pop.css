@@ -528,17 +528,42 @@ main { overflow-x: clip; }
    side by side read as one muddle); the shop takes a slot as a shelf of four item cards, and the order alternates
    pictures with emblems and icons: Heroes, Ranked, Items, Live matches, Builds. */
 .tiles .tile.items { --mat: #9a6be0; }
-.tile.ranked .pic { background: radial-gradient(70% 60% at 50% 46%, #2a6f69, #0f2524 62%, #081413); }
-.tile.ranked .pic::after { background: none; }
 .tile.ranked .emblem { position: absolute; left: 50%; top: 52%; width: 82%; height: auto; translate: -50% -50%; filter: drop-shadow(0 8px 0 #0007) drop-shadow(0 0 30px #5fe3cf55); transition: translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); }
 .tile.ranked:hover .emblem { translate: -50% -54%; }
-.tile.items .pic { background: radial-gradient(80% 70% at 50% 40%, #3b2d58, #1a1426 70%); }
-.tile.items .pic::after { background: none; }
-.tile.items .shelf { position: absolute; inset: 31% 15% 6% 15%; align-content: center; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.tile.items .shelf img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 5px; background: #efe3cf; box-shadow: 3px 3px 0 #0008; }
-.tile.items .shelf img:nth-child(1) { rotate: -3deg; } .tile.items .shelf img:nth-child(2) { rotate: 2deg; }
-.tile.items .shelf img:nth-child(3) { rotate: 1.5deg; } .tile.items .shelf img:nth-child(4) { rotate: -2deg; }
 @media (prefers-reduced-motion: reduce) { .tile.ranked .emblem { transition: none; } .tile.ranked:hover .emblem { translate: -50% -50%; } }
+
+/* ---------- Round 43 · explore tiles: real backgrounds, one showcase item, a build sheet ----------
+   Ranked stands the Eternus plaque in the patron's hall, tinted teal; Items puts Mystic Conduit alone on a printed
+   card over the neon shop street, tinted violet; Builds pins a cream build sheet over hero art instead of icons on the floor. */
+.tile.ranked .pic { background-position: center 30%; }
+.tile.ranked .pic { filter: saturate(1.1); }
+.tile.ranked .pic::after { background: radial-gradient(48% 38% at 50% 50%, #08161566, transparent 75%), linear-gradient(180deg, #1d6f6a40, #04100f99); mix-blend-mode: normal; }
+.tile.ranked .emblem { z-index: 1; }
+.tile.items .pic { background-position: 40% center; }
+.tile.items .pic::after { background: linear-gradient(180deg, #4a2a8a40, #0d081699); }
+.tile.items .showcase { position: absolute; left: 50%; top: 54%; z-index: 1; width: 56%; translate: -50% -50%; rotate: -3deg; display: grid; justify-items: center; gap: 0; padding: 9px 9px 7px; background: #efe3cf; border-radius: 4px; box-shadow: 5px 5px 0 #0009; transition: translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12), rotate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); }
+.tile.items .showcase img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 3px; background: radial-gradient(circle at 50% 45%, #c9a6ff, #8d6fc0 70%); }
+.tile.items .showcase b { margin-top: 6px; font: 700 10.5px/1.1 var(--ui); letter-spacing: 0.1em; text-transform: uppercase; color: #140c05; white-space: nowrap; }
+.tile.items:hover .showcase { translate: -50% -55%; rotate: -1deg; }
+.tile.builds .pic::after { background: linear-gradient(180deg, transparent 30%, #0008); }
+.tile.builds .sheet { position: absolute; left: 14%; right: 12%; bottom: 9%; z-index: 1; display: grid; gap: 5px; padding: 12px 11px 10px; rotate: 2.5deg; background: #efe3cf; color: #140c05; border-radius: 3px; box-shadow: 5px 5px 0 #0009; transition: translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12), rotate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); }
+.tile.builds .sheet .pin { position: absolute; left: 50%; top: -6px; width: 13px; height: 13px; translate: -50% 0; border-radius: 50%; background: #c4473a; box-shadow: inset -2px -2px 0 #0004, 1px 2px 0 #0007; }
+.tile.builds .sheet > b { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 2px solid #140c05; padding-bottom: 4px; }
+.tile.builds .sheet .row { display: flex; align-items: center; gap: 5px; }
+.tile.builds .sheet .row i { width: 34px; font: 700 9.5px var(--ui); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; color: #5a4630; }
+.tile.builds .sheet .row img { width: 24px; height: 24px; object-fit: contain; border-radius: 3px; background: #140c05; padding: 2px; }
+.tile.builds .sheet .row u { flex: 1; align-self: end; margin-bottom: 5px; border-bottom: 1.5px dotted #5a463099; }
+.tile.builds:hover .sheet { translate: 0 -5px; rotate: 1deg; }
+.tiles .tile .tape { z-index: 2; }
+@media (max-width: 620px) {
+  .tile.items .showcase { width: 54%; top: 58%; padding: 6px 6px 5px; }
+  .tile.items .showcase b { font-size: 8px; letter-spacing: 0.04em; }
+  .tile.builds .sheet { left: 9%; right: 8%; bottom: 6%; gap: 3px; padding: 9px 8px 7px; }
+  .tile.builds .sheet > b { font-size: 8.5px; letter-spacing: 0.1em; padding-bottom: 3px; }
+  .tile.builds .sheet .row i { width: 28px; font-size: 8px; }
+  .tile.builds .sheet .row img { width: 19px; height: 19px; }
+}
+@media (prefers-reduced-motion: reduce) { .tile.items .showcase, .tile.builds .sheet { transition: none; } .tile.items:hover .showcase { translate: -50% -50%; rotate: -3deg; } .tile.builds:hover .sheet { translate: none; rotate: 2.5deg; } }
 
 /* ---------- Round 42 · the ranks page, reworked as printed cards ----------
    Stat cards up top, then one cream "crowd" card with a solid column per rank (cut into its six levels),
@@ -674,3 +699,38 @@ main { overflow-x: clip; }
   .rx-stack, .rx-rung, .rx-rbadge .rbadge img { transition: none; }
   .rx-colHost:hover .rx-stack, .rx-rung:hover, .rx-rung:hover .rx-rbadge .rbadge img { transform: none; }
 }
+
+/* ---------- Round 43 · the opening title card ----------
+   Plays once per session on the home page: two gold rules draw out from the middle, the name fades up letter by
+   letter (letters fade, they never move), the kicker and tape plates slide in, then the card lifts like a shutter. */
+.intro {
+  position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer;
+  background: radial-gradient(70% 30% at 50% 100%, #ec7a2e55, transparent 70%), radial-gradient(60% 50% at 50% 46%, #2a1c10, #0d0a07 70%); color: #f3e7d2;
+  box-shadow: 0 10px 0 #ec7a2e, 0 20px 40px #000a;
+}
+.intro::before { content: ''; position: absolute; inset: 0; background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat; opacity: 0.5; pointer-events: none; animation: intro-dust 0.5s steps(3) infinite; }
+.intro::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(28% 40% at var(--sx, 30%) 42%, #efc46a26, transparent 70%); animation: intro-beam 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.intro.lift { animation: intro-lift 0.75s cubic-bezier(0.6, 0, 0.3, 1) forwards; }
+.intro-sky { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34%; object-fit: cover; object-position: center bottom; opacity: 0; filter: brightness(0.35); animation: intro-sky 1.2s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.intro-card { position: relative; z-index: 1; display: grid; justify-items: center; gap: 14px; padding: 0 20px; }
+.intro-rule { display: block; width: min(560px, 80vw); height: 7px; border-block: 2px solid #dfa125; scale: 0 1; animation: intro-rule 0.7s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.intro-kicker {
+  padding: 6px 14px 5px; background: #ec7a2e; color: #140c05; clip-path: var(--plate); font: 700 12px var(--ui); letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0; translate: -40px 0; animation: intro-plate 0.6s 0.45s cubic-bezier(0.2, 0.9, 0.25, 1.12) forwards;
+}
+.intro-name { display: flex; font: 400 clamp(46px, 11vw, 132px)/1 var(--display); letter-spacing: 0.14em; margin-right: -0.14em; color: #f3e7d2; text-shadow: 4px 4px 0 #ec7a2e, 8px 8px 0 #0d0a07; }
+.intro-name span { opacity: 0; animation: intro-letter 0.5s calc(0.35s + var(--i) * 0.07s) ease-out forwards; }
+.intro-tape {
+  padding: 7px 16px 6px; background: #f3e7d2; color: #140c05; clip-path: var(--plate-b, var(--plate)); font: 700 12.5px var(--ui); letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0; translate: 40px 0; animation: intro-plate 0.6s 0.95s cubic-bezier(0.2, 0.9, 0.25, 1.12) forwards;
+}
+.intro-skip { position: absolute; right: 22px; bottom: 18px; z-index: 1; font: 700 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #f3e7d299; opacity: 0; animation: intro-letter 0.4s 1.2s forwards; }
+@keyframes intro-rule { to { scale: 1 1; } }
+@keyframes intro-plate { to { opacity: 1; translate: 0 0; } }
+@keyframes intro-letter { to { opacity: 1; } }
+@keyframes intro-sky { to { opacity: 1; } }
+@keyframes intro-beam { from { --sx: 20%; opacity: 0; } 30% { opacity: 1; } to { --sx: 70%; opacity: 1; } }
+@keyframes intro-dust { 33% { background-position: 340px 120px; } 66% { background-position: 710px 460px; } }
+@keyframes intro-lift { to { translate: 0 calc(-100% - 40px); } }
+@property --sx { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
+@media (prefers-reduced-motion: reduce) { .intro { display: none; } }
