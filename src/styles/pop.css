@@ -1,8 +1,8 @@
 /* ==========================================================================================================
    Round 25 · make it pop
    Same City Never Sleeps look, turned up: brighter light behind the page, poster-style hard shadows on every card and
-   panel, cream page titles with a printed offset, cards that jump out in their hero's colour, and a stop-motion pop-in
-   when a page opens. Loaded after everything except tilt.css, so plate angles still come from tilt.css. Plates move,
+   panel, cream page titles with a printed offset, cards that jump out in their hero's colour, and cards that rise in
+   as they come into view. Loaded after everything except tilt.css, so plate angles still come from tilt.css. Plates move,
    text never moves; under reduced motion nothing animates.
    ========================================================================================================== */
 
@@ -79,27 +79,12 @@ table.data tbody tr:hover { background: color-mix(in srgb, var(--brass-2) 9%, tr
 table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label); }
 
 /* ---------- home: the spotlight hangs off the page with a shadow and a glow in the hero's colour ---------- */
-.spot-hold { min-width: 0; filter: drop-shadow(0 0 34px color-mix(in srgb, var(--hc, var(--glow)) 30%, transparent)); }
+.spot-hold { min-width: 0; }
 .lane-card { box-shadow: 6px 6px 0 var(--pop-shadow); }
 
 /* ---------- inputs: a lit edge when in use ---------- */
 .search-box:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 30%, transparent); }
 
-/* ---------- pop-in: cards and panels arrive in three held frames when a page opens ---------- */
-@keyframes pop-in {
-  0% { opacity: 0; scale: 0.94; translate: 0 10px; }
-  50% { opacity: 1; scale: 1.02; translate: 0 -2px; }
-  100% { opacity: 1; scale: 1; translate: 0 0; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  main :is(.dir-card, .tl-row, .panel, .lane-card) { animation: pop-in 0.3s steps(3, jump-end) backwards; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(2) { animation-delay: 0.04s; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(3) { animation-delay: 0.08s; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(4) { animation-delay: 0.12s; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(5) { animation-delay: 0.16s; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(6) { animation-delay: 0.2s; }
-  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(n + 7) { animation-delay: 0.24s; }
-}
 
 /* ---------- Round 26-27 · the meta right now (home) ----------
    Four solid colour cards, as on the official update page's posters: the hero's gloat bust breaks out over the top
@@ -114,7 +99,7 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
   --cb: #ec7a2e; --ck: #140c05;
   position: relative; display: flex; flex-direction: column; min-height: 330px; padding-top: 150px; color: var(--ck); background: var(--cb);
   border-radius: 4px; box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
-  transition: transform 0.24s steps(3, end), box-shadow 0.2s;
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
 }
 .mn-card.mn-1 { --cb: #4f86d6; }
 .mn-card.mn-2 { --cb: #efe3cf; }
@@ -122,7 +107,7 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .mn-card:hover, .mn-card:focus-visible { color: var(--ck); transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
 /* the bust: clipped at the sides and bottom only, so the head rises out of the card */
 .mn-pic { position: absolute; left: 0; right: 0; top: -46px; height: 196px; overflow: hidden; clip-path: inset(-60px 0 0 0); pointer-events: none; }
-.mn-pic img { position: absolute; left: 50%; bottom: -6px; height: 112%; width: auto; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 6px 0 #0004); transition: transform 0.24s steps(3, end); }
+.mn-pic img { position: absolute; left: 50%; bottom: -6px; height: 112%; width: auto; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 6px 0 #0004); transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .mn-card:hover .mn-pic img { transform: translateX(-50%) translateY(-6px) scale(1.04); }
 .mn-pic::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--cb); }
 .mn-body { display: grid; justify-items: start; align-content: start; gap: 6px; padding: 12px 16px 18px; }
@@ -170,7 +155,7 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .tool-card {
   --cb: #d9452f; --ck: #140c05;
   border: 0; border-radius: 4px; background: var(--cb); color: var(--ck); box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
-  transition: transform 0.24s steps(3, end), box-shadow 0.2s;
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
 }
 .tool-card:nth-child(2) { --cb: #efe3cf; }
 .tool-card:nth-child(3) { --cb: #9a6be0; }
@@ -194,7 +179,8 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .spot-back {
   position: absolute; z-index: 1; top: 30px; left: 0; right: 70px; bottom: 0; padding: 0; border: 7px solid #e6dccb; border-bottom-width: 30px;
   background: var(--s3); overflow: hidden; border-radius: 2px; box-shadow: 4px 5px 0 #0007; transform-origin: 50% 100%;
-  animation: deck-shift 0.36s steps(4, end) backwards;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
+  animation: deck-join 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 .spot-back img:first-child { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; filter: brightness(0.62) saturate(0.85); }
 .spot-back .wm { position: absolute; right: 12px; bottom: 12px; height: 34px; width: auto; max-width: 46%; object-fit: contain; filter: drop-shadow(0 2px 4px #000); opacity: 0.85; }
@@ -202,12 +188,12 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .spot-back.d2 { z-index: 1; transform: translate(66px, -16px) rotate(9deg); filter: brightness(0.8); }
 .spot-back:hover { filter: none; }
 .spot-back:hover img:first-child { filter: brightness(0.8); }
-@keyframes deck-shift { from { translate: 32px -6px; rotate: 4.5deg; opacity: 0.6; } }
+@keyframes deck-join { from { opacity: 0; translate: 40px 0; rotate: 4deg; } }
 /* the new front card comes off the top of the pile */
-.spot-deck .spot-slide.in { animation: deal-in 0.4s steps(4, end) both; }
+.spot-deck .spot-slide.in { animation: none; }
+.spot-deck .spot.dealt { animation: deal-in 0.55s cubic-bezier(0.2, 0.9, 0.25, 1.12) backwards; }
 @keyframes deal-in {
-  from { opacity: 0.4; transform: translate(34px, -10px) rotate(4.5deg) scale(0.97); }
-  to { opacity: 1; transform: none; }
+  from { translate: 34px -10px; rotate: 4.5deg; scale: 0.97; }
 }
 @media (max-width: 720px) {
   .spot-deck { padding: 18px 34px 0 0; }
@@ -223,17 +209,58 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .spot-deck .spot {
   clip-path: none; border: 8px solid #efe6d6; border-radius: 3px; background: var(--s3);
   box-shadow: 5px 6px 0 #0008; transform-origin: 50% 90%;
-  transition: transform 0.24s steps(3, end), box-shadow 0.24s steps(3, end);
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .spot-deck .spot:hover, .spot-deck .spot:focus-within {
   transform: translate(-6px, -12px) rotate(-1.4deg) scale(1.03);
   box-shadow: 12px 16px 0 #0009, 0 26px 50px -14px color-mix(in srgb, var(--hc, var(--glow)) 55%, transparent);
 }
 .spot-deck .spot:hover .spot-slide .art { transform: scale(1.04); }
-.spot-deck .spot-slide .art { transition: transform 0.3s steps(3, end); transform-origin: 60% 100%; }
+.spot-deck .spot-slide .art { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: 60% 100%; }
 .spot-back { border-width: 8px; border-color: #e3d9c7; }
 @media (prefers-reduced-motion: reduce) {
   .spot-deck .spot, .spot-deck .spot-slide .art { transition: none; }
   .spot-deck .spot:hover, .spot-deck .spot:focus-within { transform: none; }
   .spot-deck .spot:hover .spot-slide .art { transform: none; }
 }
+
+/* ---------- Round 32 · smooth motion ----------
+   Card hovers, the deck and the page pop-in run on smooth easing now, not held frames (only the label plates keep their
+   stop-motion wobble). The moving cards get their own compositor layers so a hover or a deal does not repaint the
+   blurred art behind them on every frame. */
+.spot-deck .spot, .spot-back, .spot-slide, .mn-card, .tool-card, .dir-card, .tl-card { will-change: transform; }
+.spot-slide .artbg { filter: blur(18px) saturate(1.15) brightness(0.8); transform: translateZ(0); }
+/* The film dust over the whole page was a fixed layer blended with "screen", which made the browser re-blend the entire
+   screen whenever anything under it moved. The same dust as white specks on transparency needs no blending. */
+body::before { mix-blend-mode: normal; background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat; opacity: calc(var(--dust) * 0.75); }
+
+/* ---------- Round 32 · the deck moves as whole cards ----------
+   The picture is part of its card: the front card fills its frame with the art (no inner box), and moving on deals
+   the whole card. The card that leaves is thrown off to the left; the next card comes forward from the pile, and the
+   pile slides up one place. Smooth easing throughout, after Alp's own site. */
+.spot-deck .spot-slide .art { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; -webkit-mask-image: none; mask-image: none; }
+.spot-deck .spot-slide::after { height: 58%; background: linear-gradient(0deg, #000000c4, transparent); }
+.spot-gone {
+  position: absolute; z-index: 4; top: 30px; left: 0; right: 70px; bottom: 0; border: 8px solid #efe6d6; border-radius: 3px; overflow: hidden;
+  background: var(--s3); box-shadow: 5px 6px 0 #0008; pointer-events: none;
+  animation: deck-throw 0.6s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+.spot-gone .spot-slide { opacity: 1; }
+.spot-gone .spot-slide .art { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; -webkit-mask-image: none; mask-image: none; }
+.spot-gone .cap { position: absolute; left: 26px; bottom: 58px; z-index: 4; max-width: 62%; }
+.spot-gone .cap .wm { display: block; height: 70px; width: auto; max-width: 100%; margin: 14px 0 0; object-fit: contain; object-position: left center; }
+.spot-gone.back { animation-name: deck-tuck; z-index: 0; }
+@keyframes deck-throw { to { opacity: 0; translate: -70% 18%; rotate: -16deg; } }
+@keyframes deck-tuck { to { opacity: 0; translate: 66px -16px; rotate: 9deg; scale: 0.96; } }
+@media (max-width: 720px) { .spot-gone { top: 18px; right: 34px; } }
+@media (prefers-reduced-motion: reduce) { .spot-gone { display: none; } .spot-deck .spot.dealt { animation: none; } .spot-back { transition: none; } }
+
+/* ---------- Round 32 · scroll reveal (lib/reveal.ts), after Alp's own site ----------
+   Cards and panels wait just below their place and rise in as they come into view, with a small overshoot; the ones
+   on the first screen arrive in a short stagger. Only translate, rotate and opacity move, so hover transforms are
+   untouched. Nothing is hidden for reduced motion or without script. */
+/* cards waiting to rise in sit slightly turned; keep that from widening the page on phones */
+main { overflow-x: clip; }
+.rv-pre { opacity: 0; translate: 0 46px; rotate: -1.2deg; }
+.rv-pre:is(.mn-card, .tool-card, .tile, .lane-card) { translate: 0 70px; rotate: 3deg; scale: 0.96; }
+.rv-in { transition: opacity 0.6s ease-out, translate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), rotate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), scale 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12) !important; transition-delay: var(--rv-d, 0s) !important; }

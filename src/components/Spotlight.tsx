@@ -11,8 +11,6 @@ import { NEWCOMERS, isOut } from '../data/newHeroes';
 const CYCLE_MS = 5500;
 /** The newest hero opens the spotlight and stays a little longer before the rotation starts. */
 const FIRST_MS = 9000;
-/** Renders that are a full rectangle rather than a cut-out are cropped to fill the card around the character. */
-const FILL: Record<string, string> = {};
 const POOL: Hero[] = HEROES.filter((h) => h.art || h.render);
 
 /** The newest City Never Sleeps hero that is out leads, then everyone else in an order shuffled once per visit. */
@@ -39,35 +37,36 @@ export default function Spotlight() {
   const [order] = useState(openingOrder);
   const [moved, setMoved] = useState(false);
   const [i, setI] = useState(0);
-  const [prev, setPrev] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
-  const clear = useRef<number>();
+  // the card that just left the front, kept for a moment so it can be thrown off the deck
+  const [gone, setGone] = useState<{ h: Hero; back: boolean; n: number } | null>(null);
+  const goneTimer = useRef<number>();
+  const shown = useRef(0);
   const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const go = useCallback((to: number) => {
-    setI((cur) => {
-      const next = (to + order.length) % order.length;
-      if (next === cur) return cur;
-      setPrev(cur);
-      window.clearTimeout(clear.current);
-      clear.current = window.setTimeout(() => setPrev(null), 700);
-      return next;
-    });
-  }, [order.length]);
+    const cur = shown.current;
+    const next = (to + order.length) % order.length;
+    if (next === cur) return;
+    shown.current = next;
+    setI(next);
+    setGone((g) => ({ h: order[cur], back: to < cur, n: (g?.n ?? 0) + 1 }));
+    window.clearTimeout(goneTimer.current);
+    goneTimer.current = window.setTimeout(() => setGone(null), 650);
+  }, [order]);
+  useEffect(() => () => window.clearTimeout(goneTimer.current), []);
 
   useEffect(() => {
     if (paused || reduce) return;
     const t = window.setTimeout(() => { setMoved(true); go(i + 1); }, moved ? CYCLE_MS : FIRST_MS);
     return () => window.clearTimeout(t);
   }, [i, paused, reduce, go, moved]);
-  useEffect(() => () => window.clearTimeout(clear.current), []);
 
   const slide = (h: Hero, state: 'in' | 'out') => {
     const wm = getWordmark(h.slug);
     return (
       <div className={`spot-slide ${state}`} key={h.slug} aria-hidden={state === 'out'} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
-        {!h.art && <img className="artbg" src={h.render as string} alt="" aria-hidden="true" />}
-        <img className={`art${FILL[h.slug] ? ' fill' : ''}`} src={(h.art ?? h.render) as string} alt="" style={FILL[h.slug] ? { objectPosition: FILL[h.slug] } : undefined} />
+        <img className="art" src={(h.art ?? h.render) as string} alt="" />
         <div className="cap">
           <Kicker>{getLore(h.slug)?.title ?? 'In the spotlight'}</Kicker>
           {wm ? <img className="wm" src={wm} alt="" /> : <h2>{h.name}</h2>}
@@ -87,18 +86,22 @@ export default function Spotlight() {
       const depth = 2 - n;
       const wm = getWordmark(h.slug);
       return (
-        <button type="button" key={`${h.slug}-${i}`} className={`spot-back d${depth}`} tabIndex={-1} aria-hidden="true"
+        <button type="button" key={h.slug} className={`spot-back d${depth}`} tabIndex={-1} aria-hidden="true"
           onClick={() => { setMoved(true); go(i + depth); }} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
           <img src={(h.art ?? h.render) as string} alt="" />
           {wm && <img className="wm" src={wm} alt="" />}
         </button>
       );
     })}
+    {gone && (
+      <div key={`gone-${gone.n}`} className={`spot-gone${gone.back ? ' back' : ''}`} aria-hidden="true">
+        {slide(gone.h, 'out')}
+      </div>
+    )}
     <div
-      className="spot" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+      key={cur.slug} className={`spot${gone ? ' dealt' : ''}`} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)} onBlur={() => setPaused(false)} aria-roledescription="carousel" aria-label="Heroes in the spotlight"
     >
-      {prev !== null && slide(order[prev], 'out')}
       {slide(cur, 'in')}
       <Link to={`/hero/${cur.slug}`} className="spot-link" aria-label={`Open ${cur.name}`}><span className="go">Open hero page {'✦'}</span></Link>
       <div className="spot-ctl">
