@@ -127,7 +127,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 export function SiteFooter() {
   return (
     <footer className="site-foot">
-      <span>{'✦'} Broadway is an independent fan project and is not endorsed by Valve. Deadlock is a trademark of Valve Corporation.</span>
+      <span>{'✦'} Broadway is an independent fan project by Alp Kiziltas, not made or endorsed by Valve. Deadlock is a trademark of Valve Corporation.</span>
       <span>
         <Link to="/about">About &amp; methodology</Link> · {dataMode === 'live' ? 'Live data from' : 'Sample mode. Live data comes from'} the <a href="https://github.com/deadlock-api/deadlock-api" rel="noreferrer">Deadlock API</a> (MIT).
       </span>
