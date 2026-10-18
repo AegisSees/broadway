@@ -80,7 +80,10 @@ function Lobby({ m, me, names }: { m: MatchDetail; me: number; names: Names }) {
             return (
               <li key={p.slot} className={p.accountId === me ? 'me' : undefined}>
                 {h?.icon ? <img src={h.icon} alt="" loading="lazy" /> : <i aria-hidden="true" />}
-                <span>{names.get(p.accountId)?.name ?? (p.accountId === me ? 'You' : `Player ${p.accountId}`)}</span>
+                {/* everyone else links straight to their own page, without opening this game */}
+                {p.accountId !== me && p.accountId > 0
+                  ? <Link to={`/player/${p.accountId}`} title={h ? `${h.name} · open their profile` : 'Open their profile'}>{names.get(p.accountId)?.name ?? `Player ${p.accountId}`}</Link>
+                  : <span>{names.get(p.accountId)?.name ?? (p.accountId === me ? 'You' : `Player ${p.accountId}`)}</span>}
               </li>
             );
           })}

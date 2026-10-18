@@ -694,26 +694,26 @@ main { overflow-x: clip; }
    meet) close over the page; between them hangs a lit sign: bulbs chase round its frame and the letters light one by
    one (they glow on, they never move). Then the sign is flicked up and to the right, like a spotlight card, and the
    doors slide apart. About 2.4 seconds, skippable with any click, key, wheel or swipe; never under reduced motion. */
-.intro { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer; }
-.intro-door {
+.opening { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer; }
+.opening-door {
   position: absolute; top: 0; bottom: 0; width: 50.5%; overflow: hidden;
   background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat, radial-gradient(120% 34% at var(--gx) 100%, #ec7a2e66, transparent 70%), radial-gradient(90% 60% at var(--gx) 45%, #2a1c10, #0d0a07 75%);
   transition: translate 0.7s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.intro-door.l { left: 0; --gx: 100%; box-shadow: inset -6px 0 0 #ec7a2e, inset -10px 0 0 #0d0a07; }
-.intro-door.r { right: 0; --gx: 0%; box-shadow: inset 6px 0 0 #ec7a2e, inset 10px 0 0 #0d0a07; }
-.intro-door .intro-sky { position: absolute; bottom: -14vw; width: 100vw; height: auto; max-width: none; filter: brightness(0.3); }
-.intro-door.l .intro-sky { left: 0; } .intro-door.r .intro-sky { right: 0; }
-.intro.lift .intro-door.l { translate: -101% 0; } .intro.lift .intro-door.r { translate: 101% 0; }
-.intro-sign { position: relative; z-index: 1; display: grid; justify-items: center; gap: 0; rotate: -1.5deg; animation: intro-hang 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.12) both; }
-.intro.lift .intro-sign { animation: intro-throw 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
-.intro-board {
+.opening-door.l { left: 0; --gx: 100%; box-shadow: inset -6px 0 0 #ec7a2e, inset -10px 0 0 #0d0a07; }
+.opening-door.r { right: 0; --gx: 0%; box-shadow: inset 6px 0 0 #ec7a2e, inset 10px 0 0 #0d0a07; }
+.opening-door .opening-sky { position: absolute; bottom: -14vw; width: 100vw; height: auto; max-width: none; filter: brightness(0.3); }
+.opening-door.l .opening-sky { left: 0; } .opening-door.r .opening-sky { right: 0; }
+.opening.lift .opening-door.l { translate: -101% 0; } .opening.lift .opening-door.r { translate: 101% 0; }
+.opening-sign { position: relative; z-index: 1; display: grid; justify-items: center; gap: 0; rotate: -1.5deg; animation: opening-hang 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.12) both; }
+.opening.lift .opening-sign { animation: opening-throw 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+.opening-board {
   --bulb: #ffd27a; --gap: 22px;
   position: relative; padding: 26px clamp(22px, 4vw, 48px) 22px; background: #140c05; border-radius: 6px;
   box-shadow: inset 0 0 0 3px #ec7a2e, inset 0 0 0 7px #140c05, inset 0 0 0 9px #ec7a2e66, 10px 10px 0 #000a;
 }
 /* the bulbs: dots along all four edges, chasing clockwise */
-.intro-board::before {
+.opening-board::before {
   content: ''; position: absolute; inset: -9px; border-radius: 10px; pointer-events: none;
   background:
     radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 0 0 / var(--gap) 18px repeat-x,
@@ -721,26 +721,26 @@ main { overflow-x: clip; }
     radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 0 0 / 18px var(--gap) repeat-y,
     radial-gradient(circle, var(--bulb) 0 3px, transparent 3.6px) 100% 0 / 18px var(--gap) repeat-y;
   filter: drop-shadow(0 0 4px #ffb23e);
-  animation: intro-chase 0.6s steps(2) infinite;
+  animation: opening-chase 0.6s steps(2) infinite;
 }
-@keyframes intro-chase { to { background-position: calc(var(--gap) / 2) 0, calc(var(--gap) / -2) 100%, 0 calc(var(--gap) / -2), 100% calc(var(--gap) / 2); } }
-.intro-name { display: flex; font: 400 clamp(40px, 10vw, 118px)/1 var(--display); letter-spacing: 0.12em; margin-right: -0.12em; }
-.intro-name span { color: #3a2a1a; animation: intro-light 0.32s calc(0.3s + var(--i) * 0.08s) ease-out forwards; }
-@keyframes intro-light { 0% { color: #3a2a1a; } 40% { color: #fff6df; text-shadow: 0 0 26px #ffd27a, 3px 3px 0 #ec7a2e; } 100% { color: #f7eddc; text-shadow: 0 0 16px #ec7a2e99, 3px 3px 0 #ec7a2e; } }
-.intro-kicker {
+@keyframes opening-chase { to { background-position: calc(var(--gap) / 2) 0, calc(var(--gap) / -2) 100%, 0 calc(var(--gap) / -2), 100% calc(var(--gap) / 2); } }
+.opening-name { display: flex; font: 400 clamp(40px, 10vw, 118px)/1 var(--display); letter-spacing: 0.12em; margin-right: -0.12em; }
+.opening-name span { color: #3a2a1a; animation: opening-light 0.32s calc(0.3s + var(--i) * 0.08s) ease-out forwards; }
+@keyframes opening-light { 0% { color: #3a2a1a; } 40% { color: #fff6df; text-shadow: 0 0 26px #ffd27a, 3px 3px 0 #ec7a2e; } 100% { color: #f7eddc; text-shadow: 0 0 16px #ec7a2e99, 3px 3px 0 #ec7a2e; } }
+.opening-kicker {
   position: relative; z-index: 1; margin-bottom: -12px; padding: 6px 14px 5px; background: #ec7a2e; color: #140c05; clip-path: var(--plate);
   font: 700 12px var(--ui); letter-spacing: 0.24em; text-transform: uppercase;
 }
-.intro-tape {
+.opening-tape {
   position: relative; z-index: 1; margin-top: -11px; padding: 7px 16px 6px; background: #f3e7d2; color: #140c05; clip-path: var(--plate-b, var(--plate));
   font: 700 12px var(--ui); letter-spacing: 0.26em; text-transform: uppercase;
 }
-.intro-skip { position: absolute; right: 22px; bottom: 18px; z-index: 1; font: 700 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #f3e7d299; transition: opacity 0.2s; }
-.intro.lift .intro-skip { opacity: 0; }
-@keyframes intro-hang { from { opacity: 0; translate: 0 -40px; rotate: -5deg; } to { opacity: 1; translate: 0 0; rotate: -1.5deg; } }
-@keyframes intro-throw { to { opacity: 0; translate: 62vw -48vh; rotate: 16deg; scale: 0.92; } }
-@media (max-width: 620px) { .intro-board { --gap: 18px; padding: 20px 16px 18px; } .intro-kicker, .intro-tape { font-size: 10.5px; } }
-@media (prefers-reduced-motion: reduce) { .intro { display: none; } }
+.opening-skip { position: absolute; right: 22px; bottom: 18px; z-index: 1; font: 700 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #f3e7d299; transition: opacity 0.2s; }
+.opening.lift .opening-skip { opacity: 0; }
+@keyframes opening-hang { from { opacity: 0; translate: 0 -40px; rotate: -5deg; } to { opacity: 1; translate: 0 0; rotate: -1.5deg; } }
+@keyframes opening-throw { to { opacity: 0; translate: 62vw -48vh; rotate: 16deg; scale: 0.92; } }
+@media (max-width: 620px) { .opening-board { --gap: 18px; padding: 20px 16px 18px; } .opening-kicker, .opening-tape { font-size: 10.5px; } }
+@media (prefers-reduced-motion: reduce) { .opening { display: none; } }
 
 /* ---------- Round 45 · the ranks page goes dark ----------
    V found the cream panels glaring on this page. The crowd card, the ladder strips and the rules card are now dark
@@ -806,3 +806,8 @@ main { overflow-x: clip; }
 }
 .phead .pl-art.bust { right: 19%; bottom: 0; height: 112%; max-width: 30%; object-position: center bottom; filter: drop-shadow(-6px 0 0 #0005); }
 @media (max-width: 860px) { .phead .pl-art.bust { right: 6%; height: 50%; max-width: 46%; } }
+
+/* ---------- Round 46 · lobby names on a match card link to that player ----------
+   Each name in the two lobby columns opens that player's page directly; the card itself stays closed. */
+.pc-lobby li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color 0.15s, border-color 0.15s; }
+.pc-lobby li a:hover, .pc-lobby li a:focus-visible { color: var(--ink); border-bottom-color: #ec7a2e; }

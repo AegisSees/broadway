@@ -47,17 +47,17 @@ export default function Intro() {
 
   if (phase === 'done') return null;
   return (
-    <div className={`intro${phase === 'lift' ? ' lift' : ''}`} onClick={() => setPhase('lift')} aria-hidden="true">
-      <span className="intro-door l"><img className="intro-sky" src={skyline} alt="" /></span>
-      <span className="intro-door r"><img className="intro-sky" src={skyline} alt="" /></span>
-      <div className="intro-sign">
-        <span className="intro-kicker">Now showing</span>
-        <div className="intro-board">
-          <b className="intro-name">{'BROADWAY'.split('').map((c, i) => <span key={i} style={{ ['--i' as string]: i } as React.CSSProperties}>{c}</span>)}</b>
+    <div className={`opening${phase === 'lift' ? ' lift' : ''}`} onClick={() => setPhase('lift')} aria-hidden="true">
+      <span className="opening-door l"><img className="opening-sky" src={skyline} alt="" /></span>
+      <span className="opening-door r"><img className="opening-sky" src={skyline} alt="" /></span>
+      <div className="opening-sign">
+        <span className="opening-kicker">Now showing</span>
+        <div className="opening-board">
+          <b className="opening-name">{'BROADWAY'.split('').map((c, i) => <span key={i} style={{ ['--i' as string]: i } as React.CSSProperties}>{c}</span>)}</b>
         </div>
-        <span className="intro-tape">A Deadlock companion</span>
+        <span className="opening-tape">A Deadlock companion</span>
       </div>
-      <span className="intro-skip">Click to skip</span>
+      <span className="opening-skip">Click to skip</span>
     </div>
   );
 }
