@@ -295,3 +295,7 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 - **Tools of the trade** are printed colour cards (red, cream, purple) with black name tags, matching the meta cards.
 - The official City Never Sleeps page renders with script, so its layout could not be read from here; the colour cards and paper fixes follow Alp's screenshots and the asset pack from Round 18.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion, standalone build opened with no errors.
+
+## Round 29: placeholder bug
+
+- **Fixed:** the "All ranks" row in the rank menu showed a huge empty oval. Round 22's player header used the class `.ph`, which is also the site-wide class for an empty placeholder (rank menu, avatars without a picture, skill-tree numbers, leaderboard and match rows). Every placeholder took the header's 250 px height and padding. The header is now `.phead`; placeholders are back to their own sizes.

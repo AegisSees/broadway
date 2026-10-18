@@ -74,7 +74,7 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
   const streak = matches ? streakOf(matches) : null;
   const last = matches?.[0];
   return (
-    <section className="ph" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
+    <section className="phead" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
       {art && <img className="pl-art" src={art} alt="" loading="lazy" />}
       <div className="ph-card">

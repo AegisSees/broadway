@@ -9,13 +9,13 @@
 .pl { --hk: #e0a03a; --am: #4f9fe3; --hk-t: #f2b862; --am-t: #86c2f6; --kc: #8fd47a; --dth: #ef7d6c; --as: #7bb6f4; --souls: #f0a35a; }
 
 /* ---------- header ---------- */
-.ph {
+.phead {
   position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px 30px;
   min-height: 250px; margin-top: 8px; padding: 34px 34px 30px 30px; border: 1px solid color-mix(in srgb, var(--hc, var(--brass)) 40%, var(--line));
   background: radial-gradient(120% 140% at 85% 30%, color-mix(in srgb, var(--hc, var(--brass)) 18%, transparent), transparent 60%), var(--s1);
 }
-.ph > .pl-bg, .ph > .pl-art { z-index: -1; }
-.ph .pl-art { right: 16%; opacity: 0.7; }
+.phead > .pl-bg, .phead > .pl-art { z-index: -1; }
+.phead .pl-art { right: 16%; opacity: 0.7; }
 .ph-card { position: relative; display: flex; align-items: center; gap: 30px; justify-self: start; max-width: 100%; padding: 6px 0 4px 6px; }
 .ph-photo { position: relative; margin: 0; padding: 7px 7px 20px; background: #e9e1cf; transform: rotate(-3.5deg); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.5); flex: none; }
 .ph-photo img, .ph-photo .avatar { display: block; width: 124px; height: 124px; object-fit: cover; }
@@ -250,7 +250,7 @@
   .ph-grid .pl-aside { margin-top: 18px; order: 2; }
 }
 @media (max-width: 860px) {
-  .ph { grid-template-columns: 1fr; padding: 24px 16px; }
+  .phead { grid-template-columns: 1fr; padding: 24px 16px; }
   .ph-rankbox { justify-self: start; grid-auto-flow: column; align-items: center; gap: 14px; min-width: 0; }
   .ph-rankbox .rbadge.lg { width: 72px; height: 72px; }
   .ph-card { flex-direction: column; align-items: flex-start; padding: 0; }
