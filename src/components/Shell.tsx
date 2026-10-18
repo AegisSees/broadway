@@ -6,19 +6,21 @@ import { dataMode, switchDataMode, useDataHealth } from '../data/dataMode';
 import { pageArtFor } from '../lib/pageArt';
 import { useReveal } from '../lib/reveal';
 
-const NAV = [
-  { to: '/', label: 'Home', glyph: '⌂', end: true },
-  { to: '/heroes', label: 'Heroes', glyph: '♘' },
-  { to: '/tiers', label: 'Tier list', glyph: '♛' },
-  { to: '/items', label: 'Items', glyph: '◈' },
-  { to: '/builds', label: 'Builds', glyph: '◇' },
-  { to: '/leaderboard', label: 'Leaderboard', glyph: '♚' },
-  { to: '/player', label: 'Players', glyph: '☺' },
-  { to: '/matches', label: 'Live matches', glyph: '◉' },
-  { to: '/streams', label: 'Livestreams', glyph: '▶' },
-  { to: '/compare', label: 'Compare', glyph: '⚔' },
-  { to: '/planner', label: 'Planner', glyph: '✎' },
-  { to: '/ranks', label: 'Ranks', glyph: '♜' },
+// The side rail is drawn as a subway line, Broadway being one: each page is a stop with its own coloured bullet.
+// The main pages are round local stops; the tools (compare, planner, ranks) are diamonds, like express service.
+const NAV: { to: string; label: string; mark: string; color: string; ink?: string; end?: boolean; express?: boolean }[] = [
+  { to: '/', label: 'Home', mark: '✦', color: '#0d0a07', ink: '#efc46a', end: true },
+  { to: '/heroes', label: 'Heroes', mark: 'H', color: '#ec7a2e' },
+  { to: '/tiers', label: 'Tier list', mark: 'T', color: '#dfa125', ink: '#140c05' },
+  { to: '/items', label: 'Items', mark: 'I', color: '#6c9a3a' },
+  { to: '/builds', label: 'Builds', mark: 'B', color: '#4f86d6' },
+  { to: '/leaderboard', label: 'Leaderboard', mark: 'L', color: '#c4473a' },
+  { to: '/player', label: 'Players', mark: 'P', color: '#8d6fc0' },
+  { to: '/matches', label: 'Live matches', mark: 'M', color: '#e2573b' },
+  { to: '/streams', label: 'Livestreams', mark: 'S', color: '#3fa7c2' },
+  { to: '/compare', label: 'Compare', mark: 'C', color: '#efe3cf', ink: '#140c05', express: true },
+  { to: '/planner', label: 'Planner', mark: 'P', color: '#efe3cf', ink: '#140c05', express: true },
+  { to: '/ranks', label: 'Ranks', mark: 'R', color: '#efe3cf', ink: '#140c05', express: true },
 ];
 
 /** Less-used pages live under "More" so the top bar stays on one line. */
@@ -75,7 +77,6 @@ function DataChip() {
 }
 
 export default function Shell({ children }: { children: React.ReactNode }) {
-  const [pinned, setPinned] = useState(false);
   const { pathname } = useLocation();
   useReveal(pathname);
   // the picture at the top of the page follows the route (see lib/pageArt.ts)
@@ -85,22 +86,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
   return (
     <>
-      <aside className={`rail ${pinned ? 'pinned' : ''}`} aria-label="Primary">
-        <Link to="/" className="logo" aria-label="Broadway home">
-          <span className="glyph" aria-hidden="true">{'✦'}</span>
-          <span className="label">Broadway</span>
-        </Link>
+      <aside className="rail" aria-label="Primary">
+        <span className="rail-line" aria-hidden="true" />
         {NAV.map((n) => (
-          <NavLink key={n.label} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'active' : '')}>
-            <span className="glyph" aria-hidden="true">{n.glyph}</span>
-            <span className="label">{n.label}</span>
+          <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `stop${n.express ? ' express' : ''}${isActive ? ' active' : ''}`} aria-label={n.label}
+            style={{ ['--bc' as string]: n.color, ['--bi' as string]: n.ink ?? '#fff' } as React.CSSProperties}>
+            <span className="bullet" aria-hidden="true"><b>{n.mark}</b></span>
+            <span className="label" aria-hidden="true">{n.label}</span>
           </NavLink>
         ))}
-        <span className="spacer" />
-        <button type="button" className="pin" onClick={() => setPinned((p) => !p)} aria-pressed={pinned}>
-          <span className="glyph" aria-hidden="true">{'☰'}</span>
-          <span className="label">{pinned ? 'Auto-hide menu' : 'Keep menu open'}</span>
-        </button>
       </aside>
       <header className="topbar">
         <Link to="/" className="brand">

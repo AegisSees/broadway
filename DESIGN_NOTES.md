@@ -359,3 +359,14 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 - Items come straight after the title, then the numbers and tags. The one-line description was the same sentence on most cards, so it now opens with the item paths instead of sitting on every card.
 - Opened builds use the cream phase cards from Round 35; the skill order heading is dark ink so it reads on cream.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion, no element left hidden by the scroll reveal on five pages.
+
+## Round 39: the shop in level rows
+
+- Alp found the items page out of balance: each category column broke its price headings at its own height, so 3,200 in one column sat beside 1,600 in the next. The shop is now one section per price running across all three columns, with a single full-width line above it, so 800, 1,600, 3,200, 6,400 and the Legendary row start level everywhere. The Weapon, Spirit and Vitality headers sit once at the top. On phones the columns stack inside each price row and each category gets a small coloured tag.
+
+## Round 40: the side rail is a subway line
+
+- Alp found the rail generic ("very AI": stock symbols that widened into a panel) and it stayed open after a click, because the clicked link kept keyboard focus and the rail opened on any focus inside it.
+- Broadway is a subway line, so the rail is drawn as one: a cream track down the middle and a stop for each page with its own coloured bullet and letter (H Heroes, T Tier list, I Items, B Builds, L Leaderboard, P Players, M Live matches, S Livestreams, the star for Home). Compare, Planner and Ranks are cream diamonds below a short gap, like express service. The current page's bullet wears a cream ring.
+- The rail never widens. Under the pointer the stop's name slides out beside its bullet on a black tape edged in the stop's colour, and it goes away when the pointer leaves, clicked or not. Keyboard focus shows it too, but only for keyboard focus (`:focus-visible`), so a mouse click leaves nothing open. The "Keep menu open" button is gone with the wide panel.
+- Checked: tsc, 165 tests, 390 px on six pages, City, Archmother and Hidden King; a scripted click on a stop followed by moving away leaves no label showing.

@@ -16,7 +16,7 @@ const COLUMNS: { id: ItemCategory; label: string; tag: string }[] = [
 ];
 const TIERS = [1, 2, 3, 4, 5];
 
-/** The shop laid out like the in-game one: three category columns, a row per price, and the card beside it. */
+/** The shop laid out like the in-game one: three category columns and one row per price running across all three. */
 export default function ItemsPage() {
   useTitle('Items');
   const [q, setQ] = useState('');
@@ -41,17 +41,21 @@ export default function ItemsPage() {
         </label>
       </div>
       <p className="muted shop-hint">Hover an item to read its card, or click it to keep the card open (tap on a phone). {needle && <b>{hits} match{hits === 1 ? '' : 'es'}.</b>}</p>
-      <div className="shop2">
-        <div className="shop2-cols">
-          {COLUMNS.map((c) => (
-            <section className={`scol ${c.id}`} key={c.id} aria-label={c.label}>
-              <header><b>{c.label}</b><i>{c.tag}</i></header>
-              {TIERS.map((t) => {
-                const list = all.filter((i) => i.category === c.id && i.tier === t).sort((a, b) => a.name.localeCompare(b.name));
-                if (!list.length) return null;
-                return (
-                  <div className="srow" key={t}>
-                    <div className="sprice">{price(t)}</div>
+      {/* one row per price across all three categories, so every price line runs the full width and the tiers stay level */}
+      <div className="shop2 shop3">
+        <div className="shop3-heads" aria-hidden="true">
+          {COLUMNS.map((c) => <div className={`scol ${c.id}`} key={c.id}><header><b>{c.label}</b><i>{c.tag}</i></header></div>)}
+        </div>
+        {TIERS.map((t) => {
+          const cols = COLUMNS.map((c) => ({ c, list: all.filter((i) => i.category === c.id && i.tier === t).sort((a, b) => a.name.localeCompare(b.name)) }));
+          if (!cols.some((x) => x.list.length)) return null;
+          return (
+            <section className={`stier${t === 5 ? ' leg' : ''}`} key={t} aria-label={price(t)}>
+              <div className="sprice">{price(t)}</div>
+              <div className="stier-cols">
+                {cols.map(({ c, list }) => (
+                  <div className={`scell ${c.id}`} key={c.id} aria-label={`${c.label}, ${price(t)}`}>
+                    <span className="scell-tag">{c.label}</span>
                     <div className="sgrid">
                       {list.map((i) => (
                         <Tip key={i.name} className="stile-host" prefer="side" delay={120} content={<ItemCard item={{ name: i.name, category: i.category }} />}>
@@ -64,11 +68,11 @@ export default function ItemsPage() {
                       ))}
                     </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </section>
-          ))}
-        </div>
+          );
+        })}
       </div>
       {pinned && (
         <>

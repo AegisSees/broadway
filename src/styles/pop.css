@@ -445,3 +445,61 @@ main { overflow-x: clip; }
 .bc-detail .bb-skillhead, .bc-detail .bb-skillhead :is(h4, b, small, span) { color: #140c05; }
 .bc-blurb { font-size: 13.5px; font-weight: 600; color: #4a3824; margin-bottom: 8px; }
 @media (prefers-reduced-motion: reduce) { .bc, .bc-bust { transition: none; } .bc:not(.open):hover, .bc:not(.open):hover .bc-bust { transform: none; translate: none; } }
+
+/* ---------- Round 39 · the shop in level rows ----------
+   Alp found the three category columns out of balance: each column broke its price headings at a different height.
+   The shop is now one section per price running across all three columns, with a single full-width line above it,
+   so 800, 1,600, 3,200 and 6,400 start level everywhere. The column headers sit once at the top. On phones each
+   category in a price row gets a small coloured tag instead. */
+.shop3 { display: block; }
+.shop3-heads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.stier { margin-top: 26px; }
+.stier .sprice { margin-bottom: 12px; }
+.stier-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: start; }
+.scell { container-type: inline-size; min-width: 0; }
+.scell-tag { display: none; }
+@container (max-width: 300px) { .scell .sgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 860px) {
+  .shop3-heads { display: none; }
+  .stier-cols { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .scell-tag { display: inline-block; margin-bottom: 8px; padding: 4px 10px 3px; font: 700 11px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; box-shadow: 3px 3px 0 #0006; }
+  .scell.weapon .scell-tag { background: #d98a32; color: #2a1706; } .scell.spirit .scell-tag { background: #8d6fc0; color: #fff; } .scell.vitality .scell-tag { background: #6c9a3a; color: #0f1f06; }
+  .scell:has(.sgrid:empty) { display: none; }
+}
+
+/* ---------- Round 40 · the side rail is a subway line ----------
+   Alp found the old rail generic (stock symbols that widened into a panel) and it stayed open after a click, because a
+   clicked link keeps focus. Broadway is a subway line, so the rail is drawn as one: a cream track down the middle and a
+   stop for each page, each with its own coloured bullet and letter. The tools are diamonds, like express service. The
+   rail never widens: the stop's name slides out beside it on a black tape under the pointer (or keyboard focus) and
+   goes away when the pointer leaves, clicked or not. The current page's bullet wears a cream ring. */
+.rail, .rail:hover, .rail:focus-within {
+  width: var(--rail); overflow: visible; gap: 0; padding: 14px 0 18px; align-items: center; justify-content: flex-start;
+  background: color-mix(in srgb, var(--s1) 92%, #000); box-shadow: inset -1px 0 0 var(--line), 6px 0 0 -2px var(--pop-shadow);
+}
+.rail-line { position: absolute; left: 50%; top: 36px; height: calc(44px * 11 + 14px); width: 4px; margin-left: -2px; background: #efe3cf; opacity: 0.45; border-radius: 2px; pointer-events: none; z-index: 0; }
+.rail a.stop, .rail a.stop:hover, .rail a.stop.active {
+  position: relative; display: grid; place-items: center; width: 100%; height: 44px; padding: 0; margin: 0; border-radius: 0;
+  background: none; box-shadow: none; color: inherit;
+}
+.rail a.stop.express:first-of-type, .rail a.stop:not(.express) + a.stop.express { margin-top: 14px; }
+.rail .bullet {
+  position: relative; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bc); color: var(--bi); box-shadow: 0 0 0 3px color-mix(in srgb, var(--s1) 92%, #000), 2px 3px 0 3px #0008;
+  transition: translate 0.2s cubic-bezier(0.2, 0.9, 0.25, 1.12), box-shadow 0.2s;
+}
+.rail .bullet b { font: 800 16px/1 var(--ui); letter-spacing: 0; padding-top: 1px; }
+.rail a.stop.express .bullet { border-radius: 3px; rotate: 45deg; width: 25px; height: 25px; }
+.rail a.stop.express .bullet b { rotate: -45deg; font-size: 14px; }
+.rail a.stop:hover .bullet, .rail a.stop:focus-visible .bullet { translate: 3px 0; }
+.rail a.stop.active .bullet { box-shadow: 0 0 0 3px #efe3cf, 0 0 0 6px #0d0a07, 3px 4px 0 6px #0007; }
+.rail .label, .rail:hover .label, .rail:focus-within .label {
+  position: absolute; left: calc(100% - 4px); top: 50%; z-index: 2; translate: -8px -50%; opacity: 0; pointer-events: none;
+  padding: 7px 14px 6px 12px; white-space: nowrap; background: #0d0a07; color: #f3e7d2; font: 700 12px var(--ui); letter-spacing: 0.14em; text-transform: uppercase;
+  border-left: 4px solid var(--bc); box-shadow: 4px 4px 0 #0008;
+  transition: opacity 0.14s ease-out, translate 0.22s cubic-bezier(0.2, 0.9, 0.25, 1.12);
+}
+.rail a.stop:hover .label, .rail a.stop:focus-visible .label { opacity: 1; translate: 0 -50%; }
+.rail a.stop:focus { outline: none; }
+.rail a.stop:focus-visible .bullet { outline: 2px solid #efe3cf; outline-offset: 5px; }
+@media (prefers-reduced-motion: reduce) { .rail .bullet, .rail .label { transition: none; } .rail a.stop:hover .bullet { translate: none; } }
