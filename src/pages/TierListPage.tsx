@@ -6,6 +6,7 @@ import TierTag from '../components/TierTag';
 import { SiteFooter } from '../components/Shell';
 import { getHeroColor } from '../data/heroColors';
 import { getHero, initials } from '../data/roster';
+import { getGloat } from '../data/heroGloat';
 import { dataSource } from '../data/source';
 import { TIER_NOTES, type TierRow } from '../data/tiers';
 import { useAsync } from '../data/useAsync';
@@ -21,9 +22,12 @@ type SortKey = 'score' | 'winRate' | 'pickRate' | 'banRate' | 'matches' | 'delta
 function HeroCard({ r, query }: { r: TierRow; query: string }) {
   const h = getHero(r.slug);
   if (!h) return null;
+  const bust = getGloat(h.slug);
   return (
-    <Link to={`/hero/${h.slug}${query}`} className="tl-card" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+    <Link to={`/hero/${h.slug}${query}`} className={`tl-card${bust ? ' has-bust' : ''}`} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
       <span className="pic">{h.portrait ? <img src={h.portrait} alt="" loading="lazy" /> : h.icon ? <img className="icon-pic" src={h.icon} alt="" loading="lazy" /> : initials(h.name)}</span>
+      {/* under the pointer the hero's gloat bust rises out of the top of the frame, as on the meta cards */}
+      {bust && <span className="bust" aria-hidden="true"><img src={bust} alt="" loading="lazy" /></span>}
       <b>{h.name}</b>
       <small>{fmtPct(r.winRate)}</small><small className="pr">{fmtPct(r.pickRate)} pick</small>
     </Link>

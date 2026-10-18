@@ -339,3 +339,10 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 - **One set of numbers.** The second stat row repeated the win rate that already leads the stat plates. It now shows tier, overall rank, pick rate, ban rate and matches only, each on its own solid card (tier on black, then orange, blue, cream, gold) with the label on a black tape and a hard shadow, like the meta cards on Home. Level at rest, a small lift under the pointer. Three across under 1000 px, two on phones with the last card spanning the row.
 - **Build phases** (Laning, Mid game, Late game, everywhere `BuildPhases` is used) are cream printed cards with dark ink; each phase is named on its own coloured tape (orange, blue, gold), which also colours its bars. Win-rate green and red are darkened to read on cream.
 - Checked: tsc, 165 tests, 390 px on six pages, City and Archmother themes, Hidden King on the stat cards.
+
+## Round 36: tier list and hero directory as prints
+
+- **Tier list, tier-maker style.** Each tier's label column is a solid block of the tier colour, with the tier letter on a black plate lettered in that colour. Heroes are cream-framed prints (104 px, up from 86) with the name on a black tape and the win and pick rates in dark ink; a strip in the hero's colour runs along the bottom of each portrait. On phones the label becomes a coloured band over the row and the cards sit four across.
+- **The bust pops out.** Under the pointer the card lifts and turns a degree, the portrait dims, and the hero's gloat bust rises out of the top of the frame with the small overshoot (the meta cards on Home do the same). No zoom, so nothing goes soft. Reduced motion: the bust appears without moving and the lift is small.
+- **Hero directory** cards take the same cream print, black name tape and bust pop-out, so the two pages read as one set.
+- Checked: tsc, 165 tests, 390 px on six pages, all three themes.

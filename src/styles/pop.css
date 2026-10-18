@@ -323,3 +323,59 @@ main { overflow-x: clip; }
 .bb-phase .bb-item .bar { background: #14100a1f; }
 .bb-phase .bb-item .bar i { background: var(--tape); }
 .bb-phase .bb-wr.up { color: #1d7a3c; } .bb-phase .bb-wr.down { color: #b2321e; }
+
+/* ---------- Round 35 · tier list, tier-maker style ----------
+   Each tier's label column is a solid block of the tier colour with the tier letter on a black plate in that colour,
+   and the heroes are cream-framed prints with a black name tape. Under the pointer the hero's gloat bust rises out of
+   the top of the frame (as on the meta cards on Home) while the card lifts; no zoom, so the art stays sharp. */
+.tl-row { grid-template-columns: 150px minmax(0, 1fr); background-color: color-mix(in srgb, var(--tier, var(--brass)) 5%, var(--s1)); }
+.tl-cap { background: var(--tier, var(--brass)); color: #140c05; border-right: 0; box-shadow: inset -4px 0 0 #0d0a0733; }
+.tl-cap .tier-tag { --tg: #0d0a07; --k: var(--tier, #f3e7d2); }
+.tl-cap .tier-tag::before { box-shadow: 4px 4px 0 #0d0a0755; }
+.tl-cap small { color: #140c05; opacity: 0.8; }
+.tl-cap em { color: #140c05; opacity: 0.62; }
+.tl-heroes { gap: 16px 14px; padding: 18px 16px 16px; min-height: 150px; }
+.tl-card {
+  width: 104px; padding: 5px 5px 8px; gap: 3px; background: #efe3cf; color: #140c05; border-top: 0; border-radius: 3px;
+  box-shadow: inset 0 0 0 1px #0003, 5px 5px 0 var(--pop-shadow);
+}
+.tl-card .pic { border-radius: 1px; box-shadow: inset 0 -3px 0 var(--hc, var(--brass)); }
+.tl-card b { display: block; width: 100%; margin-top: 4px; padding: 4px 4px 3px; background: #0d0a07; color: #f3e7d2; font-size: 12.5px; }
+.tl-card small { color: #140c05; font-size: 12px; }
+.tl-card small.pr { color: #5a4630; }
+.tl-card .bust { position: absolute; left: 5px; right: 5px; top: 5px; aspect-ratio: 177 / 200; clip-path: inset(-60px -14px 0 -14px); pointer-events: none; }
+.tl-card .bust img { position: absolute; left: 50%; bottom: 0; height: 128%; width: auto; max-width: none; opacity: 0; translate: -50% 14px; transition: opacity 0.18s ease-out, translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); filter: drop-shadow(0 4px 0 #0005); }
+.tl-card.has-bust .pic img { transition: opacity 0.18s; }
+:is(.dir-card, .tl-card):is(:hover, :focus-visible) .pic img { transform: none; }
+.tl-card:is(:hover, :focus-visible) { transform: translateY(-8px) rotate(-1deg); }
+.tl-card:is(:hover, :focus-visible) b { color: #f3e7d2; }
+.tl-card.has-bust:is(:hover, :focus-visible) .pic img { opacity: 0.25; }
+.tl-card:is(:hover, :focus-visible) .bust img { opacity: 1; translate: -50% 0; }
+@media (max-width: 720px) {
+  .tl-row { grid-template-columns: 1fr; } .tl-cap { box-shadow: inset 0 -4px 0 #0d0a0733; }
+  .tl-cap .tier-tag.lg { width: 64px; height: 52px; font-size: 38px; }
+  .tl-heroes { gap: 14px 10px; padding: 16px 10px 14px; } .tl-card { width: calc((100% - 30px) / 4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tl-card .bust img { transition: none; translate: -50% 0; }
+  .tl-card:is(:hover, :focus-visible) { transform: translateY(-4px); }
+}
+
+/* ---------- Round 35 · hero directory cards match the tier list ----------
+   Cream-framed prints with the name on a black tape; the gloat bust rises out of the frame under the pointer. */
+.dir-card {
+  overflow: visible; padding: 6px 6px 10px; background: #efe3cf; color: #140c05; border: 0; border-radius: 3px;
+  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+}
+.dir-card .pic { overflow: hidden; border-radius: 1px; box-shadow: inset 0 -4px 0 var(--hc, var(--brass)); }
+.dir-card .nm, .dir-card:is(:hover, :focus-visible) .nm { margin-top: 6px; padding: 7px 10px 5px; border-top: 0; background: #0d0a07; color: #f3e7d2; text-shadow: none; font-size: 16px; }
+.dir-card .dtags { margin-top: 7px; padding: 0 4px; color: #5a4630; }
+.dir-card .favstar { right: 10px; top: 10px; }
+.dir-card .new-flag { left: 14px; }
+.dir-card .bust { position: absolute; left: 6px; right: 6px; top: 6px; aspect-ratio: 177 / 240; clip-path: inset(-70px -16px 0 -16px); pointer-events: none; z-index: 2; }
+.dir-card .bust img { position: absolute; left: 50%; bottom: 0; height: 116%; width: auto; max-width: none; opacity: 0; translate: -50% 16px; transition: opacity 0.18s ease-out, translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); filter: drop-shadow(0 4px 0 #0005); }
+.dir-card.has-bust .pic img { transition: opacity 0.18s; }
+.dir-card:is(:hover, :focus-visible) { transform: translateY(-8px) rotate(-0.8deg); }
+.dir-card.has-bust:is(:hover, :focus-visible) .pic img { opacity: 0.25; }
+.dir-card:is(:hover, :focus-visible) .bust img { opacity: 1; translate: -50% 0; }
+@media (prefers-reduced-motion: reduce) { .dir-card .bust img { transition: none; translate: -50% 0; } .dir-card:is(:hover, :focus-visible) { transform: translateY(-4px); } }

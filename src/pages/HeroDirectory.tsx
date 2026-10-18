@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { SiteFooter } from '../components/Shell';
 import { HEROES, initials } from '../data/roster';
 import { getHeroColor } from '../data/heroColors';
+import { getGloat } from '../data/heroGloat';
 import { getTags } from '../components/HeroTags';
 import FavStar from '../components/FavStar';
 import { useFavorites } from '../lib/favorites';
@@ -41,9 +42,10 @@ export default function HeroDirectory() {
       )}
       <div className="dir-grid">
         {list.map((h) => (
-          <Link key={h.slug} to={`/hero/${h.slug}`} className="dir-card" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+          <Link key={h.slug} to={`/hero/${h.slug}`} className={`dir-card${getGloat(h.slug) ? ' has-bust' : ''}`} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
             <FavStar slug={h.slug} name={h.name} />
             <div className="pic">{h.portrait ? <img src={h.portrait} alt="" loading="lazy" /> : h.icon ? <img className="icon-pic" src={h.icon} alt="" loading="lazy" /> : initials(h.name)}{(h.unreleased || isNewHero(h.slug)) && <span className="new-flag">New</span>}</div>
+            {getGloat(h.slug) && <span className="bust" aria-hidden="true"><img src={getGloat(h.slug)} alt="" loading="lazy" /></span>}
             <div className="nm">{h.name}</div>
             <div className="dtags">{getTags(h.slug).join(' · ') || '\u00a0'}</div>
           </Link>
