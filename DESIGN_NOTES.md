@@ -275,3 +275,14 @@ Feedback: the headline stat plates moved too much, and the corners of the number
 - **The meta right now** (`components/MetaNow.tsx`, home, under the header). Taken structurally from Deadlock Labs' "meta right now" highlight cards, drawn in Broadway's style: four cards lit in the hero's colour with the hero's art, a tape label and one big number. Patch leader (best win rate among heroes with at least 35% of the median sample), Most picked, Sleeper pick (best win rate in the less-picked half), and Climbing (biggest weekly win-rate gain) or Most banned when there is no weekly change. No hero appears twice. Every number comes from the tier list, labelled sample or live. Tests in `MetaNow.test.ts`.
 - **Title pattern**: "The meta *right now*", cream with the second half in the accent colour, as on the reference site's section titles.
 - Checked: tsc, 163 tests, 390 px (no sideways scroll on six pages), reduced motion, standalone build opened with no errors.
+
+## Round 27: Deadlock Labs cues from Alp's screen recording
+
+Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sleeps update page, the item shop). Taken from it, in Broadway's own drawing:
+
+- **The meta right now as solid colour cards.** Orange, blue, cream and gold printed cards (the same in every theme). The hero's gloat bust (`assets/gloat`) rises out over the top edge, clipped at the sides and bottom only; a black tape label, one big black number, the name on a black tag and one line saying why. Under the row: how many heroes are at 52% or better and how many hero games were counted, both straight from the tier list.
+- **New-hero banner** (`NewHeroStrip.tsx`) over the home header: the newest City Never Sleeps hero with her card and name lettering, "Meet the hero", and the next unlock date. Driven by `newHeroes.ts`, so it moves on by itself on Oct 20.
+- **Explore tiles in coloured frames** (green, red, teal, purple, gold) instead of cream, like the reference site's mode cards.
+- **Calmer surface:** the film dust over the page is down from 0.5 to 0.32.
+- Not taken (for now): the fanned card stack in the home header, the in-game-style item shop, the ballot and release schedule.
+- Checked: tsc, 163 tests, 390 px on six pages, reduced motion, standalone build opened with no errors.

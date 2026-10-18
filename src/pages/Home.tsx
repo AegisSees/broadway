@@ -12,6 +12,7 @@ import { getHeroBg } from '../data/heroStats';
 import { rankBadge } from '../data/ranks';
 import Spotlight from '../components/Spotlight';
 import MetaNow from '../components/MetaNow';
+import NewHeroStrip from '../components/NewHeroStrip';
 import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
 import { dataSource } from '../data/source';
 import { DEFAULT_FILTERS } from '../data/types';
@@ -133,6 +134,7 @@ export default function Home() {
         <div className="wrap">
           <div className="inner">
             <div>
+              <NewHeroStrip />
               <Kicker>The city has its secrets</Kicker>
               <h1>Find your edge.<em>Rule Manhattan.</em></h1>
               <p className="lede">Ranked hero stats, builds and matchups, with the sample size shown next to every number.</p>

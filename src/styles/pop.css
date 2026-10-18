@@ -101,29 +101,71 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
   main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(n + 7) { animation-delay: 0.24s; }
 }
 
-/* ---------- Round 26 · the meta right now (home): four headline picks, each lit in its hero's colour ---------- */
-.meta-now { margin: 34px 0 6px; }
-.meta-now-title { margin: 10px 0 18px; font-size: clamp(30px, 4vw, 44px); text-transform: uppercase; color: var(--ink); text-shadow: 3px 3px 0 var(--pop-shadow); }
-.meta-now-title em { color: var(--glow-2); }
-.mn-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+/* ---------- Round 26-27 · the meta right now (home) ----------
+   Four solid colour cards, as on the official update page's posters: the hero's gloat bust breaks out over the top
+   edge, a black tape label, one big black number, the name on a black tag and a line saying why. The colours are the
+   same in every theme (orange, blue, cream, gold), like printed cards. */
+.meta-now { margin: 40px 0 6px; }
+.meta-now-title { margin: 10px 0 4px; font-size: clamp(30px, 4.4vw, 52px); text-transform: uppercase; color: var(--ink); text-shadow: 3px 3px 0 var(--pop-shadow); }
+.meta-now-title em { font-style: normal; color: var(--glow-2); }
+.mn-lede { color: var(--ink-2); font-size: 14px; }
+.mn-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 54px; }
 .mn-card {
-  position: relative; display: flex; align-items: flex-end; min-height: 250px; overflow: hidden; isolation: isolate; color: var(--ink);
-  border: 1px solid color-mix(in srgb, var(--hc) 55%, var(--line)); border-top: 4px solid var(--hc); border-radius: 3px;
-  background: radial-gradient(110% 80% at 70% 20%, color-mix(in srgb, var(--hc) 46%, var(--s3)), var(--s2) 75%);
-  box-shadow: 6px 6px 0 var(--pop-shadow);
+  --cb: #ec7a2e; --ck: #140c05;
+  position: relative; display: flex; flex-direction: column; min-height: 330px; padding-top: 150px; color: var(--ck); background: var(--cb);
+  border-radius: 4px; box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
   transition: transform 0.24s steps(3, end), box-shadow 0.2s;
 }
-.mn-card:hover, .mn-card:focus-visible { color: var(--ink); transform: translate(-3px, -4px); box-shadow: 0 0 0 2px var(--hc), 9px 10px 0 var(--pop-shadow), 0 20px 40px -12px color-mix(in srgb, var(--hc) 70%, transparent); }
-.mn-art { position: absolute; z-index: -1; right: -12%; top: -4%; width: 92%; height: 108%; object-fit: cover; object-position: 50% 15%;
-  -webkit-mask-image: linear-gradient(200deg, #000 40%, transparent 85%); mask-image: linear-gradient(200deg, #000 40%, transparent 85%); transition: transform 0.3s steps(3, end); }
-.mn-card:hover .mn-art { transform: scale(1.05); }
-.mn-card::after { content: ''; position: absolute; inset: 40% 0 0; z-index: -1; background: linear-gradient(0deg, color-mix(in srgb, var(--s0) 88%, transparent), transparent); }
-.mn-card .tape { position: absolute; left: -2px; top: 16px; font-size: 12.5px; padding: 7px 16px 6px; transform: rotate(calc((var(--mi) - 1.5) * 1.1deg)); }
+.mn-card.mn-1 { --cb: #4f86d6; }
+.mn-card.mn-2 { --cb: #efe3cf; }
+.mn-card.mn-3 { --cb: #dfa125; }
+.mn-card:hover, .mn-card:focus-visible { color: var(--ck); transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
+/* the bust: clipped at the sides and bottom only, so the head rises out of the card */
+.mn-pic { position: absolute; left: 0; right: 0; top: -46px; height: 196px; overflow: hidden; clip-path: inset(-60px 0 0 0); pointer-events: none; }
+.mn-pic img { position: absolute; left: 50%; bottom: -6px; height: 112%; width: auto; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 6px 0 #0004); transition: transform 0.24s steps(3, end); }
+.mn-card:hover .mn-pic img { transform: translateX(-50%) translateY(-6px) scale(1.04); }
+.mn-pic::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--cb); }
+.mn-body { display: grid; justify-items: start; align-content: start; gap: 6px; padding: 12px 16px 18px; }
+.mn-body .tape { --tape: #0d0a07; color: #f3e7d2; font-size: 11.5px; padding: 6px 13px 5px; }
 .mn-card:nth-child(odd) .tape { --shape: var(--plate-b); }
-.mn-txt { display: grid; gap: 2px; padding: 16px 18px 16px; }
-.mn-name { font: 700 22px/1.05 var(--display); text-shadow: 2px 2px 0 var(--pop-shadow); }
-.mn-stat { font: 700 38px/1 var(--ui); color: color-mix(in srgb, var(--hc) 45%, #fff); text-shadow: 2px 2px 0 var(--pop-shadow); font-variant-numeric: lining-nums tabular-nums; }
-.mn-txt small { color: var(--ink-2); font: 600 10.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; }
-@media (max-width: 1000px) { .mn-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 520px) { .meta-now-title { font-size: 25px; } .mn-row { gap: 12px; } .mn-card { min-height: 200px; } .mn-stat { font-size: 30px; } .mn-name { font-size: 18px; } }
-@media (prefers-reduced-motion: reduce) { .mn-card, .mn-art { transition: none; } .mn-card:hover .mn-art { transform: none; } }
+.mn-stat { display: flex; align-items: baseline; gap: 8px; font: 700 clamp(34px, 3.2vw, 44px)/1 var(--ui); letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.mn-stat small { font: 700 10.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; color: inherit; opacity: 0.7; }
+.mn-name { display: inline-block; background: #0d0a07; color: #f3e7d2; font: 700 15px/1 var(--display); letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 10px 5px; }
+.mn-note { font-size: 13px; line-height: 1.35; font-weight: 600; opacity: 0.86; }
+.mn-foot { margin-top: 18px; font-size: 13px; color: var(--muted); }
+.mn-foot b { color: var(--glow-2); font: 700 15px var(--ui); }
+@media (max-width: 1000px) { .mn-row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 64px; } }
+@media (max-width: 520px) {
+  .meta-now-title { font-size: 25px; }
+  .mn-row { gap: 58px 12px; } .mn-card { min-height: 0; padding-top: 112px; }
+  .mn-pic { height: 152px; } .mn-stat { font-size: 28px; } .mn-name { font-size: 12.5px; } .mn-note { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .mn-card, .mn-pic img { transition: none; } .mn-card:hover .mn-pic img { transform: translateX(-50%); } }
+
+/* ---------- Round 27 · new-hero banner over the home header ---------- */
+.nh-strip {
+  display: inline-flex; align-items: center; gap: 14px; max-width: 100%; margin: 0 0 22px; padding: 6px 16px 6px 6px; position: relative; overflow: hidden;
+  background: linear-gradient(90deg, #4a2a80, #6a3fb0 60%, #3a2468); border-radius: 3px; color: #f3e7d2; box-shadow: 5px 5px 0 var(--pop-shadow);
+  transition: transform 0.2s steps(3, end);
+}
+.nh-strip:hover { color: #f3e7d2; transform: translateY(-3px); }
+.nh-face { width: 46px; height: 52px; object-fit: cover; object-position: 50% 15%; border-radius: 2px; box-shadow: 0 0 0 2px #f3e7d2; }
+.nh-txt { display: grid; gap: 2px; }
+.nh-txt small { color: #e6d6ff; font: 700 9.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; }
+.nh-mark { height: 26px; width: auto; max-width: 140px; object-fit: contain; object-position: left center; }
+.nh-txt b { font: 700 20px var(--display); }
+.nh-strip .tape { font-size: 11px; padding: 6px 12px 5px; }
+.nh-next { color: #e6d6ff; font: 700 9.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
+@media (max-width: 520px) { .nh-next { display: none; } }
+
+/* ---------- Round 27 · explore tiles get coloured frames, like printed cards ---------- */
+.tiles .tile { --mat-ink: #120c06; }
+.tiles .tile.heroes { --mat: #8cc63f; }
+.tiles .tile.ranked { --mat: #e0533a; }
+.tiles .tile.live { --mat: #49c0b0; }
+.tiles .tile.streams { --mat: #9a6be0; }
+.tiles .tile.builds { --mat: #e3a62c; }
+.tiles .tile small { color: #120c06; font-weight: 600; }
+
+/* a calmer page surface: less film dust over everything */
+:root { --dust: 0.32; }
