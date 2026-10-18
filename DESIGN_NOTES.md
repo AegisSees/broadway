@@ -286,3 +286,12 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 - **Calmer surface:** the film dust over the page is down from 0.5 to 0.32.
 - Not taken (for now): the fanned card stack in the home header, the in-game-style item shop, the ballot and release schedule.
 - Checked: tsc, 163 tests, 390 px on six pages, reduced motion, standalone build opened with no errors.
+
+## Round 28: paper that reads, Violet first, fewer sections
+
+- **Torn-paper notes** (patch notes on Home, the hero dossier). The paper art is drawn at a slant and stretched to each note, so the writing sat level on a slanted sheet. `lib/paperTilt.ts` works out the slant of the paper's top edge at the note's actual size and the writing is turned to match (`--pt`), so lines run parallel to the paper. The ink is now fixed dark brown in every theme (the paper is tan in every theme), and the small print and the source line, which were nearly invisible, are dark enough to read.
+- **The six newcomers** row at the foot of the new heroes' pages is removed (`Newcomers.tsx` deleted). Its now unused `.pols` styles remain in `vitals.css`/`tilt.css`.
+- **Home:** the new-hero banner from Round 27 is gone. Instead the spotlight opens on the newest City Never Sleeps hero that is out (Violet now, Nurse Harrow from Oct 20), holds her for 9 seconds, then rotates through everyone every 5.5 s in a shuffled order. The progress bar under the card shows the longer first hold.
+- **Tools of the trade** are printed colour cards (red, cream, purple) with black name tags, matching the meta cards.
+- The official City Never Sleeps page renders with script, so its layout could not be read from here; the colour cards and paper fixes follow Alp's screenshots and the asset pack from Round 18.
+- Checked: tsc, 165 tests, 390 px on six pages, reduced motion, standalone build opened with no errors.

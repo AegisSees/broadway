@@ -32,7 +32,6 @@ import { getHeroBg, getHeroStats } from '../data/heroStats';
 import { getHeroColor } from '../data/heroColors';
 import SectionHeading from '../components/SectionHeading';
 import StatPlates from '../components/StatPlates';
-import Newcomers from '../components/Newcomers';
 import { HeroFaq, Lore } from '../components/NewHeroExtras';
 import { getNewcomer, isOut, releaseDay, releaseWeekday } from '../data/newHeroes';
 import { getLore } from '../data/heroLore';
@@ -246,7 +245,6 @@ export default function HeroPage() {
               <Lore slug={hero.slug} name={hero.name} />
               <div><HeroFaq slug={hero.slug} name={hero.name} overview={overview} /></div>
             </div>
-            <Newcomers current={hero.slug} />
           </>
         ) : lore && (
           <div className="dossier-band">

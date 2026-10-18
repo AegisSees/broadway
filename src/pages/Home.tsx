@@ -12,7 +12,6 @@ import { getHeroBg } from '../data/heroStats';
 import { rankBadge } from '../data/ranks';
 import Spotlight from '../components/Spotlight';
 import MetaNow from '../components/MetaNow';
-import NewHeroStrip from '../components/NewHeroStrip';
 import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
 import { dataSource } from '../data/source';
 import { DEFAULT_FILTERS } from '../data/types';
@@ -22,6 +21,7 @@ import { fmtInt, fmtPct } from '../lib/stats';
 import type { PatchNote } from '../data/patches';
 import type { TierRow } from '../data/tiers';
 import { useTitle } from '../lib/useTitle';
+import { usePaperTilt } from '../lib/paperTilt';
 import titleYellow from '../assets/city/lane-title-yellow.webp';
 import titleBlue from '../assets/city/lane-title-blue.webp';
 import titleGreen from '../assets/city/lane-title-green.webp';
@@ -74,10 +74,11 @@ const fmtDate = (unix: number) => { const d = new Date(unix * 1000); return `${M
 
 /** The game's own update posts, newest first. Falls back to a labelled example block when the source has none. */
 function Patches() {
+  const paper = usePaperTilt<HTMLElement>();
   const state = useAsync((signal) => dataSource.patchNotes(signal), []);
   const notes: PatchNote[] | null = state.status === 'ready' ? state.value : null;
   return (
-    <aside className="paper-note" aria-labelledby="patch-h">
+    <aside className="paper-note" aria-labelledby="patch-h" ref={paper}>
       <Kicker>Latest patch</Kicker>
       <h2 id="patch-h">What changed</h2>
       {state.status === 'loading' && <p className="muted" role="status">Reading the notice board…</p>}
@@ -134,7 +135,6 @@ export default function Home() {
         <div className="wrap">
           <div className="inner">
             <div>
-              <NewHeroStrip />
               <Kicker>The city has its secrets</Kicker>
               <h1>Find your edge.<em>Rule Manhattan.</em></h1>
               <p className="lede">Ranked hero stats, builds and matchups, with the sample size shown next to every number.</p>

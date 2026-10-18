@@ -142,22 +142,6 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 }
 @media (prefers-reduced-motion: reduce) { .mn-card, .mn-pic img { transition: none; } .mn-card:hover .mn-pic img { transform: translateX(-50%); } }
 
-/* ---------- Round 27 · new-hero banner over the home header ---------- */
-.nh-strip {
-  display: inline-flex; align-items: center; gap: 14px; max-width: 100%; margin: 0 0 22px; padding: 6px 16px 6px 6px; position: relative; overflow: hidden;
-  background: linear-gradient(90deg, #4a2a80, #6a3fb0 60%, #3a2468); border-radius: 3px; color: #f3e7d2; box-shadow: 5px 5px 0 var(--pop-shadow);
-  transition: transform 0.2s steps(3, end);
-}
-.nh-strip:hover { color: #f3e7d2; transform: translateY(-3px); }
-.nh-face { width: 46px; height: 52px; object-fit: cover; object-position: 50% 15%; border-radius: 2px; box-shadow: 0 0 0 2px #f3e7d2; }
-.nh-txt { display: grid; gap: 2px; }
-.nh-txt small { color: #e6d6ff; font: 700 9.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; }
-.nh-mark { height: 26px; width: auto; max-width: 140px; object-fit: contain; object-position: left center; }
-.nh-txt b { font: 700 20px var(--display); }
-.nh-strip .tape { font-size: 11px; padding: 6px 12px 5px; }
-.nh-next { color: #e6d6ff; font: 700 9.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
-@media (max-width: 520px) { .nh-next { display: none; } }
-
 /* ---------- Round 27 · explore tiles get coloured frames, like printed cards ---------- */
 .tiles .tile { --mat-ink: #120c06; }
 .tiles .tile.heroes { --mat: #8cc63f; }
@@ -169,3 +153,30 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 
 /* a calmer page surface: less film dust over everything */
 :root { --dust: 0.32; }
+
+/* ---------- Round 28 · torn-paper notes: the writing follows the paper, in dark ink ----------
+   The paper art is drawn at a slant; --pt (lib/paperTilt.ts) is that slant at the note's own size, so every line
+   sits parallel to the paper's top edge. The ink is fixed (not the theme's), since the paper is the same tan in
+   every theme, and the small print is dark enough to read. */
+.paper-note { --ink-a: #20160b; --ink-b: #4a3824; }
+.paper-note > :not(.kicker) { transform: rotate(var(--pt, 0deg)); transform-origin: 0 50%; }
+.paper-note h2, .paper-note .patch, .paper-note .patch b, .paper-note.lore p { color: var(--ink-a); }
+.paper-note .patch small, .paper-note small, .paper-note .patch-src small, .paper-note.lore p.lore-role, .paper-note.lore p.lore-src small { color: var(--ink-b); }
+.paper-note .patch small { font-size: 13px; line-height: 1.45; font-weight: 500; }
+.paper-note .patch { border-color: color-mix(in srgb, var(--ink-a) 25%, transparent); }
+.paper-note .patch a:hover b { text-decoration: underline; }
+
+/* ---------- Round 28 · Tools of the trade as printed colour cards (red, cream, purple), matching the meta cards ---------- */
+.tool-card {
+  --cb: #d9452f; --ck: #140c05;
+  border: 0; border-radius: 4px; background: var(--cb); color: var(--ck); box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+  transition: transform 0.24s steps(3, end), box-shadow 0.2s;
+}
+.tool-card:nth-child(2) { --cb: #efe3cf; }
+.tool-card:nth-child(3) { --cb: #9a6be0; }
+.tool-card:hover { color: var(--ck); border: 0; transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
+.tool-card b { justify-self: start; background: #0d0a07; color: #f3e7d2; font-size: 19px; padding: 6px 11px 4px; }
+.tool-card span { color: var(--ck); font-weight: 600; opacity: 0.86; }
+.tool-card .art.duel img { border-color: #0d0a07; box-shadow: 3px 3px 0 #0006; } .tool-card .art.duel i { color: #0d0a07; }
+.tool-card .art.items img { box-shadow: 3px 3px 0 #0006; }
+@media (prefers-reduced-motion: reduce) { .tool-card { transition: none; } }

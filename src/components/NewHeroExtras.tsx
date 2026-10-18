@@ -8,14 +8,16 @@ import { getHero } from '../data/roster';
 import type { HeroOverview } from '../data/types';
 import { fmtInt, fmtPct } from '../lib/stats';
 import Kicker from './Kicker';
+import { usePaperTilt } from '../lib/paperTilt';
 import SectionHeading from './SectionHeading';
 
 /** The hero's dossier on a torn paper card: who they are, in a few sentences, with the game's one-line role. */
 export function Lore({ slug, name }: { slug: string; name: string }) {
   const lore = getLore(slug);
+  const paper = usePaperTilt<HTMLElement>();
   if (!lore) return null;
   return (
-    <aside className="paper-note lore" id="dossier" aria-labelledby="lore-h">
+    <aside className="paper-note lore" id="dossier" aria-labelledby="lore-h" ref={paper}>
       <Kicker>Dossier</Kicker>
       <h2 id="lore-h">Who is {name}?</h2>
       {lore.role && <p className="lore-role">{lore.role}.</p>}
