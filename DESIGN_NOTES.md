@@ -376,3 +376,13 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 - **Rail.** Alp liked the subway stops but wanted to read every option at once. Hovering anywhere on the rail now opens it into a 228 px panel with each stop's name printed beside its bullet, like the station list on a subway map; the stop under the pointer gets the black tape and the current page's name is lit. It closes the moment the pointer leaves, clicked or not (checked by script: after a click and moving away the rail is back to 56 px with no names showing). Keyboard focus opens it too, through `:focus-visible` only.
 - **Explore the city.** Ranked is now the Eternus plaque alone, large, on a dark field lit in its teal; it rises a little under the pointer. Livestreams is gone from the row: next to Live matches it made two hero pictures side by side. Its slot goes to the shop (Items), drawn as a shelf of four item cards on a purple mat. The order alternates pictures with emblems and icons: Heroes, Ranked, Items, Live matches, Builds. Livestreams stays in the top bar and the rail.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion.
+
+## Round 42 · the ranks page, reworked (2026-10-18)
+
+V found the rank distribution ugly and asked for a complete rework. The dark glass chart with 66 thin bars and the eleven dark tier cards are gone.
+
+- **Stat cards** across the top in the printed-card colours: ranked players (orange), median rank with its badge (cream), still in placements (blue), and a black "find your rank" card whose answer reads "Top X% of players".
+- **The crowd**: one cream card with a solid column per rank, as tall as that rank's share. Each column is cut into its six levels (I at the bottom), so the levels still show without 66 bars. The badge stands on top with a black percentage tape. The median rank and your rank get a hatched lane and a flag, and their level is outlined in the column. Pointing at a column opens a small card with the six levels.
+- **Rung by rung**: the ladder from Eternus down as cream strips with the rank colour on the left edge, the badge rising out of the strip, the share, six level bars, and a "Top X%" track.
+- Phones: the chart scrolls sideways inside its card with a "swipe for the higher ranks" hint; each rung stacks its level bars and track under the name.
+- Old rd-* styles are left in pages.css but no longer used by this page.
