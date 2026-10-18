@@ -16,48 +16,39 @@ const n0 = (n: number) => n.toLocaleString('en-US');
 const pctText = (p: number) => (p >= 10 ? p.toFixed(1) : p >= 1 ? p.toFixed(1) : p >= 0.1 ? p.toFixed(2) : p.toFixed(3));
 type Tier = DistributionStats['tiers'][number];
 
-/** Everything about one rank on hover: its share, where it starts, and its six levels. */
-function RankTip({ t, st, unit }: { t: Tier; st: DistributionStats; unit: string }) {
+/** One level on hover: its badge, share, and where it sits on the ladder. */
+function LevelTip({ level, st, unit, color }: { level: number; st: DistributionStats; unit: string; color: string }) {
+  const l = st.byLevel.get(level)!;
   return (
-    <div className="rx-tip" style={{ ['--rc' as string]: t.color } as React.CSSProperties}>
-      <header><RankBadge rank={t.rank} size="sm" /><b>{t.rank}</b><span>{pctText(t.share)}%</span></header>
-      <p>{n0(t.count)} {unit} {'·'} top {pctText(t.top)}% from {t.rank} I</p>
-      <ol>
-        {[...t.levels].reverse().map((l) => (
-          <li key={l.level}><i>{ROMAN[l.level % 10]}</i><span><u style={{ width: `${Math.max(3, (l.share / Math.max(...t.levels.map((x) => x.share), 0.0001)) * 100)}%` }} /></span><b>{pctText(st.byLevel.get(l.level)!.share)}%</b></li>
-        ))}
-      </ol>
+    <div className="rx-tip" style={{ ['--rc' as string]: color } as React.CSSProperties}>
+      <header><RankBadge rank={badgeParts(level).rank} size="sm" /><b>{badgeLabel(level)}</b><span>{pctText(l.share)}%</span></header>
+      <p>{n0(l.count)} {unit} {'·'} top {pctText(l.top)}% from here up</p>
     </div>
   );
 }
 
 /**
- * The crowd: one solid column per rank on a cream card, as tall as its share of players, with the badge standing on
- * top. Each column is cut into its six levels (I at the bottom, VI at the top), so the levels show without 66 bars.
+ * The crowd: every one of the 66 levels as its own bar on a cream card, coloured by its rank and grouped six to a
+ * rank, with the badge and the rank's share under each group. The median level (and yours, once picked) is flagged.
  */
 function Crowd({ st, unit, mine }: { st: DistributionStats; unit: string; mine: number | null }) {
-  const top = Math.max(...st.tiers.map((t) => t.share)) * 1.04;
-  const medianTier = Math.floor(st.median / 10);
-  const mineTier = mine ? Math.floor(mine / 10) : null;
+  const max = Math.max(...st.tiers.flatMap((t) => t.levels.map((l) => l.share)), 0.0001) * 1.02;
   return (
     <div className="rx-scroll">
-      <div className="rx-chart" role="img" aria-label={`Rank distribution. Median rank ${badgeLabel(st.median)}.`}>
+      <div className="rx-chart" role="img" aria-label={`Rank distribution across 66 levels. Median rank ${badgeLabel(st.median)}.`}>
         {st.tiers.map((t) => (
-          <Tip key={t.rank} className="rx-colHost" prefer="above" delay={60} content={<RankTip t={t} st={st} unit={unit} />}>
-            <div className={`rx-col${medianTier === t.tier ? ' median' : ''}${mineTier === t.tier ? ' mine' : ''}`} style={{ ['--rc' as string]: t.color } as React.CSSProperties}>
-              <div className="rx-room">
-                <div className="rx-stack" style={{ height: `${Math.max(1.5, (t.share / top) * 100)}%` }}>
-                  <span className="rx-badge"><RankBadge rank={t.rank} size="md" /></span>
-                  <b className="rx-pct">{pctText(t.share)}%</b>
-                  {mineTier === t.tier ? <em className="rx-flag you">You</em> : medianTier === t.tier && <em className="rx-flag">Median</em>}
-                  {[...t.levels].reverse().map((l) => (
-                    <i key={l.level} className={`rx-seg${l.level === st.median ? ' median' : ''}${l.level === mine ? ' mine' : ''}`} style={{ flexGrow: Math.max(l.share, 0.0001) }} />
-                  ))}
-                </div>
-              </div>
-              <span className="rx-name">{t.rank}</span>
+          <div key={t.rank} className="rx-group" style={{ ['--rc' as string]: t.color } as React.CSSProperties}>
+            <div className="rx-bars">
+              {t.levels.map((l) => (
+                <Tip key={l.level} className={`rx-lv${l.level === st.median ? ' median' : ''}${l.level === mine ? ' mine' : ''}`} prefer="above" delay={40} content={<LevelTip level={l.level} st={st} unit={unit} color={t.color} />}>
+                  {l.level === mine ? <em className="rx-flag you">You</em> : l.level === st.median && <em className="rx-flag">Median</em>}
+                  <u style={{ height: `${Math.max(0.8, (l.share / max) * 100)}%` }} />
+                </Tip>
+              ))}
             </div>
-          </Tip>
+            <div className="rx-axis" aria-hidden="true">{t.levels.map((l) => <i key={l.level}>{ROMAN[l.level % 10]}</i>)}</div>
+            <div className="rx-gname"><RankBadge rank={t.rank} size="sm" /><span><b>{t.rank}</b><small>{pctText(t.share)}%</small></span></div>
+          </div>
         ))}
       </div>
     </div>
@@ -99,7 +90,7 @@ export default function RanksPage() {
   return (
     <div className="wrap ranks-page">
       <div className="dir-head"><div><Kicker>The ladder</Kicker><h1>Rank <em>distribution</em></h1></div></div>
-      <p className="muted rk-lead">Eleven ranks, six levels each. Each column is the share of {unitWord} in that rank, so the tall columns are where the crowd is. Eternus levels are set by percentile of Eternus itself rather than by points.</p>
+      <p className="muted rk-lead">Eleven ranks, six levels each. Each bar is the share of {unitWord} at that level, so the tall bars are where the crowd is. Eternus levels are set by percentile of Eternus itself rather than by points.</p>
 
       {state.status === 'loading' && <p className="muted" role="status">Loading the ladder…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load the distribution</h3><p>{state.message}. Try again in a moment.</p></div>}
@@ -128,7 +119,7 @@ export default function RanksPage() {
           </div>
 
           <section className="rx-board" aria-label="Distribution chart">
-            <header><span className="tape">The crowd</span><small>One column per rank, cut into its six levels with I at the bottom. Point at a column for the numbers.</small></header>
+            <header><span className="tape">The crowd</span><small>Every rank level as its own bar, six to a rank. Point at a bar for the numbers.</small></header>
             <small className="rx-swipe" aria-hidden="true">Swipe for the higher ranks {'→'}</small>
             <Crowd st={st} unit={unitWord} mine={mine} />
           </section>

@@ -393,3 +393,7 @@ V found the rank distribution ugly and asked for a complete rework. The dark gla
 - **Items** shows one item, Mystic Conduit, as a printed card over the neon Chinatown street, tinted violet (V's pick).
 - **Builds** drops the three icons on the floor (V: they didn't read as builds) for a cream build sheet pinned over hero art, with Early, Mid and Late rows ticked off like a planner page.
 - **Intro**: a title card plays once per browser session on the home page. Gold rules draw out, BROADWAY fades up letter by letter (letters fade, they never move), the kicker and tape plates slide in over the skyline, then the card lifts away like a shutter after about two seconds. Any click, key, wheel or swipe skips it. It never plays under reduced motion.
+
+## Round 44 · the crowd chart, one bar per level (2026-10-18)
+
+V liked a reference chart with a bar for each of the 66 levels coloured by rank, and wanted the median on it. The crowd card now draws every level as its own bar, six to a rank, in the rank's colour with a dark outline. Roman numerals sit under each bar. Under each group of six are a rank-coloured rule, the badge, the rank name and its share. The median level gets an orange dashed lane and a "Median" flag. Your level, once picked, gets a black lane, a hatched bar and a "You" flag. Pointing at a bar shows its badge, its share, its count and its top-percent. On phones the chart scrolls sideways (min 860px) and the group labels stack.

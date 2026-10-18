@@ -597,51 +597,39 @@ main { overflow-x: clip; }
 .rx-board > header small { font: 600 12.5px/1.35 var(--ui); color: #5a4630; max-width: 62ch; }
 .rx-swipe { display: none; }
 .rx-scroll { overflow-x: auto; overflow-y: visible; scrollbar-width: thin; scrollbar-color: #5a463066 transparent; }
-.rx-chart { display: grid; grid-template-columns: repeat(11, minmax(52px, 1fr)); gap: 0 10px; min-width: 640px; height: 420px; padding: 0 4px; }
-.rx-colHost { display: block; height: 100%; outline-offset: 2px; border-radius: 4px; }
-.rx-col { display: flex; flex-direction: column; height: 100%; }
-/* the room above each column holds the badge, the percentage tape and, on two columns, a flag */
-.rx-room { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-top: 134px; border-bottom: 3px solid #140c05; }
-.rx-col.median .rx-room, .rx-col.mine .rx-room { background: repeating-linear-gradient(135deg, #140c050c 0 6px, transparent 6px 12px); }
-.rx-stack {
-  position: relative; display: flex; flex-direction: column; width: 74%; min-height: 6px;
-  background: var(--rc); border: 2px solid #140c05; border-bottom: 0; border-radius: 3px 3px 0 0; box-shadow: 4px 0 0 #140c0526;
-  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
-}
-.rx-seg { display: block; flex-basis: 0; min-height: 0; }
-.rx-seg + .rx-seg { border-top: 1px solid #140c0559; }
-.rx-seg:nth-child(odd) { background: #ffffff1f; }
-.rx-seg.median { box-shadow: inset 0 0 0 2px #ec7a2e; }
-.rx-seg.mine { box-shadow: inset 0 0 0 2px #140c05; background: repeating-linear-gradient(135deg, #140c0544 0 3px, transparent 3px 7px); }
-.rx-badge { position: absolute; left: 50%; bottom: calc(100% + 30px); transform: translateX(-50%); pointer-events: none; }
-.rx-badge .rbadge.md { width: 54px; height: 54px; font-size: 13px; }
-.rx-badge .rbadge img { filter: drop-shadow(0 3px 0 #140c0533); }
-.rx-pct {
-  position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap;
-  padding: 3px 7px 2px; background: #0d0a07; color: #f3e7d2; border-radius: 2px; font: 700 12px/1.2 var(--ui); font-variant-numeric: lining-nums tabular-nums;
-}
+.rx-chart { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 0 8px; min-width: 900px; padding: 0 2px; }
+.rx-group { display: grid; grid-template-rows: auto auto auto; min-width: 0; }
+.rx-bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; height: 330px; border-bottom: 3px solid #140c05; }
+.rx-lv { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding-top: 30px; outline-offset: 1px; }
+.rx-lv u { display: block; width: 100%; min-height: 2px; background: var(--rc); box-shadow: inset 0 0 0 1.5px #140c05; border-radius: 2px 2px 0 0; transform-origin: bottom; transition: filter 0.2s, transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.rx-lv:hover u, .rx-lv:focus-visible u { filter: brightness(1.12); transform: scaleY(1.03); }
+/* the median level (and yours): a dashed lane up the chart with a flag on top */
+.rx-lv.median::before, .rx-lv.mine::before { content: ''; position: absolute; left: 50%; top: 24px; bottom: 0; border-left: 2px dashed #ec7a2e; translate: -1px 0; }
+.rx-lv.mine::before { border-left-color: #140c05; }
+.rx-lv.median u { box-shadow: inset 0 0 0 2px #140c05, 0 0 0 2px #ec7a2e; position: relative; }
+.rx-lv.mine u { position: relative; background: repeating-linear-gradient(135deg, #140c0566 0 3px, transparent 3px 7px), var(--rc); box-shadow: inset 0 0 0 2px #140c05, 0 0 0 2px #140c05; }
 .rx-flag {
-  position: absolute; left: 50%; bottom: calc(100% + 98px); transform: translateX(-50%) rotate(-3deg); white-space: nowrap;
+  position: absolute; left: 50%; top: 0; z-index: 1; transform: translateX(-50%) rotate(-3deg); white-space: nowrap;
   padding: 3px 8px 2px; background: #ec7a2e; color: #140c05; border-radius: 2px; font: 700 10.5px/1.2 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; font-style: normal;
   box-shadow: 2px 2px 0 #140c05;
 }
 .rx-flag.you { background: #140c05; color: #efc46a; box-shadow: 2px 2px 0 #ec7a2e; }
-.rx-name { padding-top: 8px; text-align: center; font: 700 11px/1.2 var(--ui); letter-spacing: 0.08em; text-transform: uppercase; color: #140c05; overflow: hidden; text-overflow: ellipsis; }
-.rx-colHost:hover .rx-stack, .rx-colHost:focus-visible .rx-stack { transform: translateY(-4px); box-shadow: 6px 0 0 #140c0540; }
+.rx-axis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding-top: 4px; }
+.rx-axis i { text-align: center; font: 700 8.5px var(--ui); font-style: normal; color: #5a4630; letter-spacing: 0; }
+.rx-gname { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 6px; border-top: 4px solid var(--rc); margin-top: 6px; min-width: 0; }
+.rx-gname .rbadge.sm { width: 30px; height: 30px; flex: none; }
+.rx-gname .rbadge img { width: 100%; height: 100%; max-height: 30px; filter: drop-shadow(0 2px 0 #140c0533); }
+.rx-gname > span:last-child { display: grid; min-width: 0; line-height: 1.1; }
+.rx-gname b { font: 700 10.5px var(--ui); letter-spacing: 0.06em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; }
+.rx-gname small { font: 700 11px var(--ui); color: #5a4630; font-variant-numeric: tabular-nums; }
 
 /* the hover card for a column (sits inside the site's tooltip) */
-.tip:has(.rx-tip) { width: 260px; }
+.tip:has(.rx-tip) { width: 250px; }
 .rx-tip header { display: flex; align-items: center; gap: 8px; }
 .rx-tip header .rbadge.sm { width: 34px; height: 34px; }
 .rx-tip header b { font: 400 18px var(--display); color: var(--rc); }
 .rx-tip header span { margin-left: auto; font: 700 16px var(--ui); font-variant-numeric: tabular-nums; }
 .rx-tip p { color: var(--muted); font-size: 12px; }
-.rx-tip ol { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
-.rx-tip li { display: grid; grid-template-columns: 26px 1fr 52px; align-items: center; gap: 8px; font-size: 12px; }
-.rx-tip li i { font: 700 11px var(--ui); font-style: normal; color: var(--muted); }
-.rx-tip li span { height: 8px; background: color-mix(in srgb, var(--rc) 16%, transparent); border-radius: 1px; }
-.rx-tip li u { display: block; height: 100%; background: var(--rc); }
-.rx-tip li b { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* the ladder, rung by rung */
 .rx-ladder { list-style: none; margin: 0 0 40px; padding: 0; display: grid; gap: 14px; }
@@ -689,15 +677,16 @@ main { overflow-x: clip; }
   .rx-find { grid-column: 1 / -1; }
   .rx-board { padding: 16px 12px 12px; margin-bottom: 36px; }
   .rx-swipe { display: block; margin: 2px 0 -4px; text-align: right; font: 700 10.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; color: #b2321e; }
-  .rx-chart { height: 360px; min-width: 600px; gap: 0 6px; } .rx-name { font-size: 9.5px; letter-spacing: 0.04em; }
+  .rx-chart { min-width: 860px; gap: 0 6px; } .rx-bars { height: 280px; }
+  .rx-gname { flex-direction: column; gap: 2px; text-align: center; } .rx-gname > span:last-child { justify-items: center; } .rx-gname b { font-size: 9.5px; letter-spacing: 0.03em; }
   .rx-rung { grid-template-columns: 58px minmax(0, 1fr) auto; grid-template-areas: 'b id sh' 'subs subs subs' 'top top top'; gap: 8px 12px; padding: 12px 14px 14px 20px; }
   .rx-rbadge .rbadge.lg { width: 64px; height: 64px; }
   .rx-id b { font-size: 20px; } .rx-share b { font-size: 20px; }
   .rx-rung .rx-top { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rx-stack, .rx-rung, .rx-rbadge .rbadge img { transition: none; }
-  .rx-colHost:hover .rx-stack, .rx-rung:hover, .rx-rung:hover .rx-rbadge .rbadge img { transform: none; }
+  .rx-lv u, .rx-rung, .rx-rbadge .rbadge img { transition: none; }
+  .rx-lv:hover u, .rx-rung:hover, .rx-rung:hover .rx-rbadge .rbadge img { transform: none; }
 }
 
 /* ---------- Round 43 · the opening title card ----------
