@@ -411,3 +411,11 @@ V's notes: half the rank badges spilled out of their boxes, the cream panels on 
 
 - **Lobby links:** on a player's match cards, every other name in the two lobby columns now links straight to that player's page. The card stays closed, so there's no need to open the game first. The player's own name stays plain.
 - **Bug:** the Round 43/45 intro used the class `.intro`, and the hero page already used `.intro` for its one-line intro (the "one of the six heroes" note on new heroes). The note picked up the overlay's fixed positioning and floated over the side rail. The opening's classes are now `.opening-*`, and the hero note is back in place.
+
+## Round 47 · City Never Sleeps without the Hidden King, in forest grey (2026-10-18)
+
+V asked for two things on the default theme: drop the Hidden King background, and change the bold orange to the forest grey of the update's own page (playdeadlock.com/cityneversleeps). That page couldn't be reached from the build machine, so the grey is chosen by eye: #7d8f78 for accents, #9fb29a and #a9bba3 for lighter text.
+
+- **Backdrop:** the home hero's backdrop in City Never Sleeps is now uptown's theatre row (`HALL_CITY`). The Hidden King hall shows only in the Hidden King theme, and the Archmother hall only in hers.
+- **Accent:** the city theme's `--glow`, `--label`, `--brass` and the warm halo are forest grey. The printed-card orange in pop.css is now `--pop-orange`: forest grey in City Never Sleeps, still #ec7a2e in Hidden King and Archmother. That covers the stat cards, the tapes, the kicker plates, the median flag, the "Right now" heading word and the brand's offset shadow.
+- Left as they were on purpose: faction colours (the Hidden King's amber, the Archmother's blue), souls and gold-tier colours, and the coloured subway stops on the side rail.

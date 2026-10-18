@@ -8,7 +8,7 @@
 
 /* ---------- light: stronger glows and a clearer city behind the page ---------- */
 :root, :root[data-theme='city'] {
-  --halo-a: rgba(96, 205, 227, 0.26); --halo-b: rgba(221, 102, 56, 0.24); --halo-c: rgba(151, 218, 121, 0.08);
+  --halo-a: rgba(96, 205, 227, 0.26); --halo-b: rgba(125, 143, 120, 0.24); --halo-c: rgba(151, 218, 121, 0.08);
   --line: rgba(96, 205, 227, 0.34); --muted: #b3a792; --city-o: 0.46;
   --pop-shadow: #020506;
 }
@@ -98,7 +98,7 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .mn-lede { color: var(--ink-2); font-size: 14px; }
 .mn-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 54px; }
 .mn-card {
-  --cb: #ec7a2e; --ck: #140c05;
+  --cb: var(--pop-orange); --ck: #140c05;
   position: relative; display: flex; flex-direction: column; min-height: 330px; padding-top: 150px; color: var(--ck); background: var(--cb);
   border-radius: 4px; box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
   transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
@@ -281,12 +281,12 @@ main { overflow-x: clip; }
 }
 .panel.stats.hero-stats::before, .panel.stats.hero-stats::after { content: none; }
 .hero-stats > div, .hero-stats[data-n] > div {
-  --cb: #ec7a2e; grid-column: auto; position: relative; display: grid; justify-items: center; align-content: center; gap: 10px;
+  --cb: var(--pop-orange); grid-column: auto; position: relative; display: grid; justify-items: center; align-content: center; gap: 10px;
   padding: 14px 16px 16px; text-align: center; color: #140c05; background: var(--cb); border-radius: 4px;
   box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
   transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
 }
-.hero-stats > div:nth-child(5n + 2) { --cb: #ec7a2e; }
+.hero-stats > div:nth-child(5n + 2) { --cb: var(--pop-orange); }
 .hero-stats > div:nth-child(5n + 3) { --cb: #4f86d6; }
 .hero-stats > div:nth-child(5n + 4) { --cb: #efe3cf; }
 .hero-stats > div:nth-child(5n + 5) { --cb: #dfa125; }
@@ -306,7 +306,7 @@ main { overflow-x: clip; }
    ink and a hard shadow, each phase named on a coloured tape (orange, blue, gold) so the three read apart at a glance.
    Win rates use darker green and red that hold up on cream. */
 .bb-phases { gap: 20px; }
-.bb-phase:nth-child(1) { --tape: #ec7a2e; }
+.bb-phase:nth-child(1) { --tape: var(--pop-orange); }
 .bb-phase:nth-child(2) { --tape: #4f86d6; }
 .bb-phase:nth-child(3) { --tape: #dfa125; }
 .bb-phase {
@@ -574,7 +574,7 @@ main { overflow-x: clip; }
   position: relative; display: grid; align-content: start; gap: 8px; min-height: 108px; padding: 16px 18px 15px; border-radius: 4px;
   background: var(--cb); color: var(--ck); box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
 }
-.rx-stat.c-orange { --cb: #ec7a2e; } .rx-stat.c-blue { --cb: #4f86d6; } .rx-stat.c-black { --cb: #0d0a07; --ck: #f3e7d2; }
+.rx-stat.c-orange { --cb: var(--pop-orange); } .rx-stat.c-blue { --cb: #4f86d6; } .rx-stat.c-black { --cb: #0d0a07; --ck: #f3e7d2; }
 .rx-stat small { font: 700 10.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: inherit; opacity: 0.78; }
 .rx-stat > b, .rx-stat > span > b { font: 700 clamp(26px, 2.6vw, 36px)/1 var(--ui); letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
 .rx-stat > span { display: flex; align-items: center; gap: 10px; }
@@ -604,16 +604,16 @@ main { overflow-x: clip; }
 .rx-lv u { display: block; width: 100%; min-height: 2px; background: var(--rc); box-shadow: inset 0 0 0 1.5px #140c05; border-radius: 2px 2px 0 0; transform-origin: bottom; transition: filter 0.2s, transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .rx-lv:hover u, .rx-lv:focus-visible u { filter: brightness(1.12); transform: scaleY(1.03); }
 /* the median level (and yours): a dashed lane up the chart with a flag on top */
-.rx-lv.median::before, .rx-lv.mine::before { content: ''; position: absolute; left: 50%; top: 24px; bottom: 0; border-left: 2px dashed #ec7a2e; translate: -1px 0; }
+.rx-lv.median::before, .rx-lv.mine::before { content: ''; position: absolute; left: 50%; top: 24px; bottom: 0; border-left: 2px dashed var(--pop-orange); translate: -1px 0; }
 .rx-lv.mine::before { border-left-color: #140c05; }
-.rx-lv.median u { box-shadow: inset 0 0 0 2px #140c05, 0 0 0 2px #ec7a2e; position: relative; }
+.rx-lv.median u { box-shadow: inset 0 0 0 2px #140c05, 0 0 0 2px var(--pop-orange); position: relative; }
 .rx-lv.mine u { position: relative; background: repeating-linear-gradient(135deg, #140c0566 0 3px, transparent 3px 7px), var(--rc); box-shadow: inset 0 0 0 2px #140c05, 0 0 0 2px #140c05; }
 .rx-flag {
   position: absolute; left: 50%; top: 0; z-index: 1; transform: translateX(-50%) rotate(-3deg); white-space: nowrap;
-  padding: 3px 8px 2px; background: #ec7a2e; color: #140c05; border-radius: 2px; font: 700 10.5px/1.2 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; font-style: normal;
+  padding: 3px 8px 2px; background: var(--pop-orange); color: #140c05; border-radius: 2px; font: 700 10.5px/1.2 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; font-style: normal;
   box-shadow: 2px 2px 0 #140c05;
 }
-.rx-flag.you { background: #140c05; color: #efc46a; box-shadow: 2px 2px 0 #ec7a2e; }
+.rx-flag.you { background: #140c05; color: #efc46a; box-shadow: 2px 2px 0 var(--pop-orange); }
 .rx-axis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding-top: 4px; }
 .rx-axis i { text-align: center; font: 700 8.5px var(--ui); font-style: normal; color: #5a4630; letter-spacing: 0; }
 .rx-gname { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 6px; border-top: 4px solid var(--rc); margin-top: 6px; min-width: 0; }
@@ -697,11 +697,11 @@ main { overflow-x: clip; }
 .opening { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; overflow: hidden; cursor: pointer; }
 .opening-door {
   position: absolute; top: 0; bottom: 0; width: 50.5%; overflow: hidden;
-  background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat, radial-gradient(120% 34% at var(--gx) 100%, #ec7a2e66, transparent 70%), radial-gradient(90% 60% at var(--gx) 45%, #2a1c10, #0d0a07 75%);
+  background: url('../assets/ui/film-dust-alpha.webp') 0 0 / 1100px auto repeat, radial-gradient(120% 34% at var(--gx) 100%, color-mix(in srgb, var(--pop-orange) 40%, transparent), transparent 70%), radial-gradient(90% 60% at var(--gx) 45%, #2a1c10, #0d0a07 75%);
   transition: translate 0.7s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.opening-door.l { left: 0; --gx: 100%; box-shadow: inset -6px 0 0 #ec7a2e, inset -10px 0 0 #0d0a07; }
-.opening-door.r { right: 0; --gx: 0%; box-shadow: inset 6px 0 0 #ec7a2e, inset 10px 0 0 #0d0a07; }
+.opening-door.l { left: 0; --gx: 100%; box-shadow: inset -6px 0 0 var(--pop-orange), inset -10px 0 0 #0d0a07; }
+.opening-door.r { right: 0; --gx: 0%; box-shadow: inset 6px 0 0 var(--pop-orange), inset 10px 0 0 #0d0a07; }
 .opening-door .opening-sky { position: absolute; bottom: -14vw; width: 100vw; height: auto; max-width: none; filter: brightness(0.3); }
 .opening-door.l .opening-sky { left: 0; } .opening-door.r .opening-sky { right: 0; }
 .opening.lift .opening-door.l { translate: -101% 0; } .opening.lift .opening-door.r { translate: 101% 0; }
@@ -710,7 +710,7 @@ main { overflow-x: clip; }
 .opening-board {
   --bulb: #ffd27a; --gap: 22px;
   position: relative; padding: 26px clamp(22px, 4vw, 48px) 22px; background: #140c05; border-radius: 6px;
-  box-shadow: inset 0 0 0 3px #ec7a2e, inset 0 0 0 7px #140c05, inset 0 0 0 9px #ec7a2e66, 10px 10px 0 #000a;
+  box-shadow: inset 0 0 0 3px var(--pop-orange), inset 0 0 0 7px #140c05, inset 0 0 0 9px color-mix(in srgb, var(--pop-orange) 40%, transparent), 10px 10px 0 #000a;
 }
 /* the bulbs: dots along all four edges, chasing clockwise */
 .opening-board::before {
@@ -726,9 +726,9 @@ main { overflow-x: clip; }
 @keyframes opening-chase { to { background-position: calc(var(--gap) / 2) 0, calc(var(--gap) / -2) 100%, 0 calc(var(--gap) / -2), 100% calc(var(--gap) / 2); } }
 .opening-name { display: flex; font: 400 clamp(40px, 10vw, 118px)/1 var(--display); letter-spacing: 0.12em; margin-right: -0.12em; }
 .opening-name span { color: #3a2a1a; animation: opening-light 0.32s calc(0.3s + var(--i) * 0.08s) ease-out forwards; }
-@keyframes opening-light { 0% { color: #3a2a1a; } 40% { color: #fff6df; text-shadow: 0 0 26px #ffd27a, 3px 3px 0 #ec7a2e; } 100% { color: #f7eddc; text-shadow: 0 0 16px #ec7a2e99, 3px 3px 0 #ec7a2e; } }
+@keyframes opening-light { 0% { color: #3a2a1a; } 40% { color: #fff6df; text-shadow: 0 0 26px #ffd27a, 3px 3px 0 var(--pop-orange); } 100% { color: #f7eddc; text-shadow: 0 0 16px color-mix(in srgb, var(--pop-orange) 60%, transparent), 3px 3px 0 var(--pop-orange); } }
 .opening-kicker {
-  position: relative; z-index: 1; margin-bottom: -12px; padding: 6px 14px 5px; background: #ec7a2e; color: #140c05; clip-path: var(--plate);
+  position: relative; z-index: 1; margin-bottom: -12px; padding: 6px 14px 5px; background: var(--pop-orange); color: #140c05; clip-path: var(--plate);
   font: 700 12px var(--ui); letter-spacing: 0.24em; text-transform: uppercase;
 }
 .opening-tape {
@@ -749,12 +749,12 @@ main { overflow-x: clip; }
 .rx-stat.c-cream { --cb: #dfa125; }
 .rx-board, .rx-rung, .rx-how { background: var(--rx-paper); color: var(--rx-ink); }
 .rx-board, .rx-how { box-shadow: inset 0 0 0 1px #f3e7d21f, 6px 6px 0 var(--pop-shadow); }
-.rx-board > header .tape { --tape: #ec7a2e; color: #140c05; }
+.rx-board > header .tape { --tape: var(--pop-orange); color: #140c05; }
 .rx-board > header small, .rx-axis i, .rx-gname small, .rx-id small, .rx-share small, .rx-top small, .rx-subs i, .rx-how .muted { color: var(--rx-sub); }
 .rx-scroll { scrollbar-color: #f3e7d244 transparent; }
 .rx-bars { border-bottom-color: var(--rx-line); }
 .rx-lv u { box-shadow: inset 0 0 0 1.5px #0d0a07; }
-.rx-lv.median u { box-shadow: inset 0 0 0 2px #0d0a07, 0 0 0 2px #ec7a2e; }
+.rx-lv.median u { box-shadow: inset 0 0 0 2px #0d0a07, 0 0 0 2px var(--pop-orange); }
 .rx-lv.mine::before { border-left-color: #efc46a; }
 .rx-lv.mine u { background: repeating-linear-gradient(135deg, #0d0a0777 0 3px, transparent 3px 7px), var(--rc); box-shadow: inset 0 0 0 2px #0d0a07, 0 0 0 2px #efc46a; }
 .rx-flag { box-shadow: 2px 2px 0 #000; }
@@ -768,8 +768,8 @@ main { overflow-x: clip; }
 .rx-top small b { color: var(--rx-ink); }
 .rx-top .track { background: #f3e7d214; box-shadow: inset 0 0 0 1px #f3e7d226; }
 .rx-top .track u { background: var(--rc); }
-.rx-how a { color: #ec7a2e; }
-.rx-swipe { color: #ec7a2e; }
+.rx-how a { color: var(--pop-orange); }
+.rx-swipe { color: var(--pop-orange); }
 .rx-gname { flex-direction: column; gap: 3px; text-align: center; } .rx-gname > span:last-child { justify-items: center; }
 .rx-gname b { font-size: 10px; letter-spacing: 0.04em; } .rx-gname .rbadge.sm { width: 32px; height: 32px; }
 
@@ -781,7 +781,7 @@ main { overflow-x: clip; }
 .phead > .pl-bg { display: none; }
 .phead::before {
   content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 46%; z-index: -2;
-  background: radial-gradient(circle, #0000002e 1.2px, transparent 1.6px) 0 0 / 9px 9px, linear-gradient(160deg, color-mix(in srgb, var(--hc, #ec7a2e) 92%, #fff), color-mix(in srgb, var(--hc, #ec7a2e) 70%, #000));
+  background: radial-gradient(circle, #0000002e 1.2px, transparent 1.6px) 0 0 / 9px 9px, linear-gradient(160deg, color-mix(in srgb, var(--hc, var(--pop-orange)) 92%, #fff), color-mix(in srgb, var(--hc, var(--pop-orange)) 70%, #000));
   clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
 }
 .phead .pl-art { right: 15%; bottom: -22%; height: 136%; max-width: 34%; opacity: 1; -webkit-mask-image: none; mask-image: none; filter: drop-shadow(-6px 6px 0 #0006); }
@@ -810,4 +810,12 @@ main { overflow-x: clip; }
 /* ---------- Round 46 · lobby names on a match card link to that player ----------
    Each name in the two lobby columns opens that player's page directly; the card itself stays closed. */
 .pc-lobby li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color 0.15s, border-color 0.15s; }
-.pc-lobby li a:hover, .pc-lobby li a:focus-visible { color: var(--ink); border-bottom-color: #ec7a2e; }
+.pc-lobby li a:hover, .pc-lobby li a:focus-visible { color: var(--ink); border-bottom-color: var(--pop-orange); }
+
+/* ---------- Round 47 · City Never Sleeps without the Hidden King ----------
+   The default theme has no patron, so the home backdrop is a street of the city (uptown's theatre row) instead of the
+   Hidden King's hall, and its bold accents are forest grey (--pop-orange and the theme's glow/label) instead of orange.
+   Hidden King and Archmother keep their halls and the orange printed cards. */
+.city.hall.lane-city { opacity: 0; }
+:root:not([data-theme='hidden-king']):not([data-theme='archmother']) .city.hall.lane-hk { opacity: 0; }
+:root:not([data-theme='hidden-king']):not([data-theme='archmother']) .city.hall.lane-city { opacity: var(--lane-o, 0.5); }
