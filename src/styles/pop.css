@@ -379,3 +379,30 @@ main { overflow-x: clip; }
 .dir-card.has-bust:is(:hover, :focus-visible) .pic img { opacity: 0.25; }
 .dir-card:is(:hover, :focus-visible) .bust img { opacity: 1; translate: -50% 0; }
 @media (prefers-reduced-motion: reduce) { .dir-card .bust img { transition: none; translate: -50% 0; } .dir-card:is(:hover, :focus-visible) { transform: translateY(-4px); } }
+
+/* ---------- Round 37 · leaderboard podium ----------
+   Number one keeps its big hero card, now in a gold frame with a gold numeral. Two and three are solid silver and
+   bronze printed cards, four and five cream, all with dark ink, a black number tape and a hard shadow. They sit level. */
+.t1 { border: 0; box-shadow: 8px 8px 0 var(--pop-shadow); }
+/* the frame sits above the hero art so the art never covers it */
+.t1 > .t1-frame:not(.t1-bg):not(.t1-art) { position: absolute; inset: 0; z-index: 3; border: 6px solid #dfa125; border-radius: inherit; pointer-events: none; }
+.t1-no span { background: linear-gradient(180deg, #ffe08a, #dfa125 70%, #9a6a12); -webkit-background-clip: text; background-clip: text; }
+.t-row { gap: 18px; }
+.t-card, .t-card:nth-child(odd), .t-card:nth-child(even) {
+  --cb: #efe3cf; transform: none; color: #140c05; background: var(--cb); border: 0; border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
+}
+.t-card:nth-child(1) { --cb: #cdd4dc; }
+.t-card:nth-child(2) { --cb: #d49a5e; }
+.t-card:hover { transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
+.t-card::before { border-color: #14100a26; }
+.t-card .t-bg { display: none; }
+.t-card .t-no { --tape: #0d0a07; color: #f3e7d2; }
+.t-card .t-av img, .t-card .t-av .ph { box-shadow: 4px 4px 0 #0d0a0766; }
+.t-card h3, .t-card h3 a { color: #140c05; text-shadow: none; } .t-card h3 a:hover { color: #6a3a10; }
+.t-card .t-rank span { color: #140c05 !important; }
+.t-card .t-meta .wl .w { color: #1d7a3c; } .t-card .t-meta .wl .l { color: #b2321e; } .t-card .t-meta .wl i { color: #14100a80; }
+.t-card .wr b.up { color: #1d7a3c; } .t-card .wr b.down { color: #b2321e; }
+.t-card .wr .bar { background: #14100a1f; border-color: #14100a33; } .t-card .wr .bar u { background: #140c05; }
+@media (prefers-reduced-motion: reduce) { .t-card { transition: none; } .t-card:hover { transform: none; } }

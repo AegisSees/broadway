@@ -81,6 +81,7 @@ function TopFive({ rows, label }: { rows: LeaderboardEntry[]; label: string }) {
       <article className="t1 panel paint">
         {bg && <div className="t1-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
         {art(heroOf) && <img className="t1-art" src={art(heroOf)} alt="" loading="lazy" />}
+        <span className="t1-frame" aria-hidden="true" />
         <div className="t1-no" aria-hidden="true"><span>1</span></div>
         <div className="t1-av"><Avatar src={one.avatar} size={96} /></div>
         <div className="t1-info">

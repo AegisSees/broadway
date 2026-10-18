@@ -346,3 +346,9 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 - **The bust pops out.** Under the pointer the card lifts and turns a degree, the portrait dims, and the hero's gloat bust rises out of the top of the frame with the small overshoot (the meta cards on Home do the same). No zoom, so nothing goes soft. Reduced motion: the bust appears without moving and the lift is small.
 - **Hero directory** cards take the same cream print, black name tape and bust pop-out, so the two pages read as one set.
 - Checked: tsc, 165 tests, 390 px on six pages, all three themes.
+
+## Round 37: the leaderboard podium
+
+- **Number one** keeps its big hero card and gains a 6 px gold frame (drawn above the hero art, so the art never covers it) and a gold numeral.
+- **Two to five** are solid printed cards instead of dark panels with a hero backdrop: silver for second, bronze for third, cream for fourth and fifth, all with dark ink, a black number tape and the hard shadow. They sit level and lift a little under the pointer. Records and win rates use the darker green and red that read on light card stock.
+- Checked: tsc, 165 tests, 390 px on six pages, City and Hidden King themes.
