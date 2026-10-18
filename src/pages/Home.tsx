@@ -145,7 +145,7 @@ export default function Home() {
                 <Link to="/hero/haze?mode=street_brawl" className="plain">Street Brawl</Link>
               </div>
             </div>
-            <Spotlight />
+            <div className="spot-hold"><Spotlight /></div>
           </div>
         </div>
       </section>

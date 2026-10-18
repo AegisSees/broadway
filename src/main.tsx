@@ -14,6 +14,7 @@ import './styles/textures.css';
 import './styles/city-assets.css';
 import './styles/vitals.css';
 import './styles/profile.css';
+import './styles/pop.css';
 import './styles/tilt.css';
 import { initTheme } from './lib/theme';
 import { installPlateLean } from './lib/plateLean';

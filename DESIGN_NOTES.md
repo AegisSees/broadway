@@ -252,3 +252,17 @@ Alp supplied the pack extracted from the official update page (`deadlock_city_as
 - The rank moved to the right side, where the "Last game" plate was: just the medallion and the rank name below it, as on the older design. The streak or last result is now a small chip next to the account number.
 - Copy Steam ID has its own line; Steam profile, Share and Refresh sit under it.
 - The portrait pop-out on match cards now runs in eight quick held frames instead of three: smoother, with a touch of stop-motion left.
+
+## Round 25: make it pop
+
+Feedback: the site should "pop more" before it goes public. Kept inside the City Never Sleeps look and the plate rules; everything is in `styles/pop.css`, loaded after every sheet except `tilt.css`, so no plate angle changed.
+
+- **Light.** Stronger glows behind the page and a clearer district picture at the top, in all three themes; brighter panel lines and muted text for contrast.
+- **Titles.** The grey tail of the two-tone page titles is cream now, both halves sit on a hard printed offset with a soft glow in the accent colour, and they are a little bigger. The home headline and section titles get the same offset.
+- **Poster shadows.** Panels, hero cards, tier rows, lane cards and the home spotlight carry a hard black offset shadow, like the official page's pasted-up cards. The spotlight sits in a `.spot-hold` wrapper because its torn-edge `clip-path` would cut a shadow on itself.
+- **Hero cards.** The portrait sits on a glow in the hero's own colour, the top stripe is thicker, and hover adds a hard shadow plus a ring and glow in the hero's colour.
+- **Top bar.** BROADWAY is stamped in cream over an orange and a black offset; the current page gets an orange plate under its link; the rail marks the current page with an orange edge.
+- **Tables and tier rows.** Tier rows are lit faintly in their tier colour with a tier-coloured left edge; table rows light up under the pointer.
+- **Pop-in.** Cards, panels and tier rows arrive in three held frames (scale and rise, slight overshoot) when a page opens, staggered by position. It uses the individual `scale`/`translate` properties and `animation-fill-mode: backwards`, so it never fights the hover transforms. Off under reduced motion.
+- **Deploy.** `vercel.json` added (SPA rewrites, long cache on hashed assets) and a Deploying section in the README. Live data was already the default unless `VITE_DATA_SOURCE=fixture`.
+- Checked: tsc, 159 tests, all three themes, 390 px (no sideways scroll on six pages), reduced motion, standalone build (28.7 MB) opened and four routes rendered with no errors.

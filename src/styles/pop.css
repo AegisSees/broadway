@@ -1,0 +1,102 @@
+/* ==========================================================================================================
+   Round 25 · make it pop
+   Same City Never Sleeps look, turned up: brighter light behind the page, poster-style hard shadows on every card and
+   panel, cream page titles with a printed offset, cards that jump out in their hero's colour, and a stop-motion pop-in
+   when a page opens. Loaded after everything except tilt.css, so plate angles still come from tilt.css. Plates move,
+   text never moves; under reduced motion nothing animates.
+   ========================================================================================================== */
+
+/* ---------- light: stronger glows and a clearer city behind the page ---------- */
+:root, :root[data-theme='city'] {
+  --halo-a: rgba(96, 205, 227, 0.26); --halo-b: rgba(221, 102, 56, 0.24); --halo-c: rgba(151, 218, 121, 0.08);
+  --line: rgba(96, 205, 227, 0.34); --muted: #b3a792; --city-o: 0.46;
+  --pop-shadow: #020506;
+}
+:root[data-theme='hidden-king'] {
+  --halo-a: rgba(247, 160, 64, 0.38); --halo-b: rgba(196, 70, 24, 0.34); --halo-c: rgba(255, 190, 80, 0.12);
+  --line: rgba(236, 142, 50, 0.4); --muted: #b8ab96; --city-o: 0.4;
+  --pop-shadow: #050302;
+}
+:root[data-theme='archmother'] {
+  --halo-a: rgba(112, 182, 255, 0.38); --halo-b: rgba(36, 104, 200, 0.34); --halo-c: rgba(80, 200, 230, 0.14);
+  --line: rgba(116, 168, 228, 0.4); --muted: #9cacc2; --city-o: 0.4;
+  --pop-shadow: #020409;
+}
+
+/* ---------- top bar: the name stamped in, the current page underlined with a plate ---------- */
+.brand { color: var(--ink); text-shadow: 2px 2px 0 var(--glow), 4px 4px 0 var(--pop-shadow); }
+.brand small { color: var(--brass-2); text-shadow: none; }
+.topbar { border-bottom: 2px solid color-mix(in srgb, var(--brass) 55%, transparent); box-shadow: 0 10px 30px -14px #000; }
+.topbar nav a { position: relative; color: var(--ink-2); transition: color 0.12s; }
+.topbar nav a:hover { color: var(--ink); }
+.topbar nav a.active { color: var(--ink); }
+.topbar nav a.active::after {
+  content: ''; position: absolute; left: -3px; right: -3px; bottom: -8px; height: 4px; background: var(--label);
+  box-shadow: 2px 2px 0 var(--pop-shadow); clip-path: polygon(0 30%, 100% 0, 99% 100%, 1% 90%);
+}
+.rail a.active { box-shadow: inset 3px 0 0 var(--label); }
+
+/* ---------- page titles: cream tail instead of grey, printed offset and a glow behind ---------- */
+.dir-head h1, .city-title {
+  font-size: clamp(38px, 5.8vw, 64px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--glow-2) 70%, #fff) 0%, var(--glow-2) 38%, var(--glow) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(3px 3px 0 var(--pop-shadow)) drop-shadow(0 0 26px color-mix(in srgb, var(--glow) 38%, transparent));
+}
+.dir-head h1 em, .city-title em { -webkit-text-fill-color: var(--ink); }
+.hero h1 { filter: drop-shadow(3px 3px 0 var(--pop-shadow)) drop-shadow(0 0 30px color-mix(in srgb, var(--glow) 30%, transparent)); }
+.hero h1 em { color: var(--brass-2); }
+.section-heading h2 { font-size: 28px; text-shadow: 2px 2px 0 var(--pop-shadow); }
+.section-heading::after { height: 2px; background: linear-gradient(90deg, var(--brass), transparent 70%); }
+
+/* ---------- panels: a hard poster shadow and a lit top edge ---------- */
+.panel {
+  border-top-color: color-mix(in srgb, var(--brass-2) 55%, var(--line));
+  box-shadow: 6px 6px 0 var(--pop-shadow), 0 24px 44px -24px #000, inset 0 1px 0 color-mix(in srgb, var(--brass-2) 18%, transparent);
+}
+
+/* ---------- hero cards: a hard shadow, a hero-coloured glow in the portrait, and a bigger jump on hover ---------- */
+.dir-card, .tl-card { box-shadow: 5px 5px 0 var(--pop-shadow); }
+.dir-card { border-top-width: 4px; }
+.dir-card .pic, .tl-card .pic {
+  background: radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, var(--hc, var(--brass)) 42%, var(--s4)), var(--s3) 80%);
+}
+.dir-card .nm { font-size: 18px; color: var(--ink); text-shadow: 1px 1px 0 var(--pop-shadow); }
+:is(.dir-card, .tl-card):is(:hover, :focus-visible) {
+  box-shadow: 0 0 0 2px var(--hc, var(--brass)), 8px 10px 0 var(--pop-shadow), 0 22px 40px -10px color-mix(in srgb, var(--hc, var(--brass)) 70%, transparent);
+}
+:is(.dir-card, .tl-card):is(:hover, :focus-visible) .pic img { filter: saturate(1.15) brightness(1.06); }
+
+/* ---------- tier rows: the tier's colour lights the row ---------- */
+.tl-row {
+  border-left: 4px solid var(--tier, var(--line)); box-shadow: 6px 6px 0 var(--pop-shadow);
+  background-color: color-mix(in srgb, var(--tier, var(--brass)) 6%, var(--panel));
+}
+
+/* ---------- tables: the row under the pointer lights up ---------- */
+table.data tbody tr { transition: background-color 0.12s; }
+table.data tbody tr:hover { background: color-mix(in srgb, var(--brass-2) 9%, transparent); }
+table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label); }
+
+/* ---------- home: the spotlight hangs off the page with a shadow and a glow in the hero's colour ---------- */
+.spot-hold { min-width: 0; filter: drop-shadow(8px 8px 0 var(--pop-shadow)) drop-shadow(0 0 34px color-mix(in srgb, var(--hc, var(--glow)) 30%, transparent)); }
+.lane-card { box-shadow: 6px 6px 0 var(--pop-shadow); }
+
+/* ---------- inputs: a lit edge when in use ---------- */
+.search-box:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 30%, transparent); }
+
+/* ---------- pop-in: cards and panels arrive in three held frames when a page opens ---------- */
+@keyframes pop-in {
+  0% { opacity: 0; scale: 0.94; translate: 0 10px; }
+  50% { opacity: 1; scale: 1.02; translate: 0 -2px; }
+  100% { opacity: 1; scale: 1; translate: 0 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  main :is(.dir-card, .tl-row, .panel, .lane-card) { animation: pop-in 0.3s steps(3, jump-end) backwards; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(2) { animation-delay: 0.04s; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(3) { animation-delay: 0.08s; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(4) { animation-delay: 0.12s; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(5) { animation-delay: 0.16s; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(6) { animation-delay: 0.2s; }
+  main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(n + 7) { animation-delay: 0.24s; }
+}

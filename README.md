@@ -108,3 +108,13 @@ Build codes start with `sample-` so they cannot be mistaken for real in-game bui
 4. Optional: Steam sign-in so a visitor lands on their own page (needs a server; today they paste an id, name or link).
 
 See **API_GUIDE.md** for what is live, the verified facts about the API, and how the leaderboard resolves names to accounts.
+
+## Deploying (Vercel)
+
+`vercel.json` holds everything Vercel needs: it runs `npm run build`, serves `dist/`, sends every page route to
+`index.html` (the site uses normal browser routing) and caches the hashed files under `/assets` for a year.
+
+1. Push the repo to a **private** GitHub repository (it contains Valve art and fonts).
+2. On vercel.com, *Add New → Project*, import that repository, keep the detected settings and deploy.
+3. Leave `VITE_DATA_SOURCE` unset so visitors land on live Deadlock API data. Set `VITE_API_BASE` / `VITE_STREAMS_BASE`
+   only if you also host `server/proxy.mjs` somewhere (see `.env.example`).
