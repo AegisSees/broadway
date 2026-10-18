@@ -79,7 +79,7 @@ table.data tbody tr:hover { background: color-mix(in srgb, var(--brass-2) 9%, tr
 table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label); }
 
 /* ---------- home: the spotlight hangs off the page with a shadow and a glow in the hero's colour ---------- */
-.spot-hold { min-width: 0; filter: drop-shadow(8px 8px 0 var(--pop-shadow)) drop-shadow(0 0 34px color-mix(in srgb, var(--hc, var(--glow)) 30%, transparent)); }
+.spot-hold { min-width: 0; filter: drop-shadow(0 0 34px color-mix(in srgb, var(--hc, var(--glow)) 30%, transparent)); }
 .lane-card { box-shadow: 6px 6px 0 var(--pop-shadow); }
 
 /* ---------- inputs: a lit edge when in use ---------- */
@@ -216,3 +216,24 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
   .spot-back.d2 { transform: translate(32px, -10px) rotate(6deg); }
 }
 @media (prefers-reduced-motion: reduce) { .spot-back, .spot-deck .spot-slide.in { animation: none; } }
+
+/* ---------- Round 31 · the front of the deck is a card too ----------
+   The torn-edge panel is gone: the spotlight is a framed print like the cards behind it, and under the pointer it
+   lifts off the pile, turns a little and grows, in three held frames. */
+.spot-deck .spot {
+  clip-path: none; border: 8px solid #efe6d6; border-radius: 3px; background: var(--s3);
+  box-shadow: 5px 6px 0 #0008; transform-origin: 50% 90%;
+  transition: transform 0.24s steps(3, end), box-shadow 0.24s steps(3, end);
+}
+.spot-deck .spot:hover, .spot-deck .spot:focus-within {
+  transform: translate(-6px, -12px) rotate(-1.4deg) scale(1.03);
+  box-shadow: 12px 16px 0 #0009, 0 26px 50px -14px color-mix(in srgb, var(--hc, var(--glow)) 55%, transparent);
+}
+.spot-deck .spot:hover .spot-slide .art { transform: scale(1.04); }
+.spot-deck .spot-slide .art { transition: transform 0.3s steps(3, end); transform-origin: 60% 100%; }
+.spot-back { border-width: 8px; border-color: #e3d9c7; }
+@media (prefers-reduced-motion: reduce) {
+  .spot-deck .spot, .spot-deck .spot-slide .art { transition: none; }
+  .spot-deck .spot:hover, .spot-deck .spot:focus-within { transform: none; }
+  .spot-deck .spot:hover .spot-slide .art { transform: none; }
+}

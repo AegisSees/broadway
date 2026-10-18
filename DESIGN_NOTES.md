@@ -305,3 +305,8 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 - **Rank menu:** "All ranks" shows a plain brass star, without the dashed ring the rank placeholders use (`.all-star`).
 - **Spotlight deck** (`Spotlight.tsx`, `pop.css`). Alp wanted one big card rather than Deadlock Labs' three-card fan, but with a feeling of cards rotating. The big card is now more square, and the next two heroes wait behind it as cream-framed prints with their name lettering, fanned up and to the right (about 4.5 and 9 degrees). When the spotlight moves on, the new front card is dealt off the pile (from the first back card's angle, in four held frames) and the pile shuffles forward. Clicking a back card jumps to that hero. Under reduced motion the deck is still. On phones the fan is smaller.
 - Checked: tsc, 165 tests, 390 px, standalone build opened with no errors.
+
+## Round 31: the front card is a card
+
+- The torn-edge spotlight panel is retired. The front of the deck is a cream-framed print like the cards behind it (8 px frame, hard shadow). Under the pointer (or keyboard focus inside it) it lifts off the pile, turns about 1.4 degrees, grows 3% and casts a glow in the hero's colour, in three held frames; the art pushes in a little. Reduced motion: no lift.
+- The old hard drop shadow on the whole deck was removed so the cards' own shadows are the only ones.
