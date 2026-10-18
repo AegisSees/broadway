@@ -9,6 +9,7 @@ import { fmtDuration, kdaRatio, QUEUE_LABEL, timeAgo, type PlayerHit, type Playe
 import { getHero } from '../data/roster';
 import { dataSource } from '../data/source';
 import { useAsync } from '../data/useAsync';
+import { criticalIsLocalOnly, moodFor, moodImage, type Mood } from '../data/heroMoods';
 import { fmtInt } from '../lib/stats';
 
 const k1 = (n: number | undefined) => (n === undefined ? '–' : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(Math.round(n)));
@@ -28,6 +29,24 @@ export function placeSelf(m: MatchDetail, line: PlayerMatchLine, accountId: numb
   };
   const swap = (p: MatchPlayer) => (p === stand ? me : p);
   return { ...m, players: m.players.map(swap), teams: m.teams.map((t) => ({ ...t, players: t.players.map(swap) })) as MatchDetail['teams'] };
+}
+
+/**
+ * The hero's card in the mood of the game: bloodied (critical) for a loss, normal for a win, proud (gloat) for a win
+ * in the top three. A critical card that cannot be loaded falls back to the normal one, washed red.
+ */
+function MoodFace({ slug, mood }: { slug: string; mood: Mood }) {
+  const pick = moodImage(slug, mood);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [pick.src]);
+  const src = failed ? pick.fallback : pick.src;
+  const tint = pick.tintOnFallback && (failed || criticalIsLocalOnly(slug));
+  if (!src) return null;
+  return (
+    <span className={`pc-mood ${mood}${tint ? ' tinted' : ''}`}>
+      <img src={src} alt="" loading="lazy" onError={() => { if (!failed) setFailed(true); }} />
+    </span>
+  );
 }
 
 /** Starts loading a card's game once the card comes near the screen. */
@@ -208,8 +227,8 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
     <li ref={ref} className={`pc ${line.won ? 'win' : 'loss'}${open ? ' open' : ''}`} style={{ ['--hc' as string]: getHeroColor(line.heroSlug ?? 'haze') } as React.CSSProperties}>
       <div className="pc-row">
         <Link className="pc-face" to={h ? `/hero/${h.slug}` : '#'} aria-label={h ? `${h.name} hero page` : 'Retired hero'} tabIndex={h ? 0 : -1}>
-          {h?.portrait ? <img src={h.portrait} alt="" loading="lazy" /> : <span className="init">{h?.name[0] ?? '?'}</span>}
-          <span className="pc-res">{result}</span>
+          {h?.portrait ? <MoodFace slug={h.slug} mood={moodFor(line.won, me?.mvp)} /> : <span className="init">{h?.name[0] ?? '?'}</span>}
+          <span className="pc-res">{result}{me?.mvp && line.won ? <i>{me.mvp === 1 ? ' · MVP' : ` · #${me.mvp}`}</i> : null}</span>
         </Link>
         <div className="pc-main">
           <h3>{h?.name ?? 'Retired hero'}</h3>

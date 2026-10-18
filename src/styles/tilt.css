@@ -50,6 +50,18 @@
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(8) { --bi: 8; }
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(n+9) { --bi: 9; }
 
+/* Round 23: selected tabs and pills are level by default (the plain label), with only a hair of wobble. When a new
+   one is picked, plateLean.ts sometimes gives it a lean: data-lean="up" or "down" swaps in a slanted cut. No mirroring
+   here, the cut does the work. (:root lifts these above the shared derivation rule above.) */
+:root :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) {
+  --sx: 1; --amp: 0.3;
+  --j1: calc(sin(var(--tn, 1) * 4.7rad + 1rad) * 0.3deg);
+  --j2: calc(sin(var(--tn, 1) * 3.3rad + 2rad) * 0.3deg);
+  --j3: 0deg;
+}
+:root :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle)[data-lean='up'] { --cut: var(--plate); --amp: 0.6; }
+:root :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle)[data-lean='down'] { --cut: var(--plate-b); --amp: 0.6; }
+
 /* ---------- tier labels ----------
    Each tier has its own base angle (S+ and A lean one way, S, B and D the other), and in a long table the row
    changes it again, so a column of S labels is not a column of identical tilts. */

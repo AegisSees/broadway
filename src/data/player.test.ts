@@ -32,3 +32,20 @@ describe('placeSelf', () => {
     expect(placeSelf(live, line(true), 999)).toBe(live);
   });
 });
+
+import { moodFor, moodImage } from './heroMoods';
+
+describe('hero moods', () => {
+  it('picks critical for a loss, normal for a win, proud for a top-three win', () => {
+    expect(moodFor(false, 1)).toBe('critical');
+    expect(moodFor(true)).toBe('normal');
+    expect(moodFor(true, 4)).toBe('normal');
+    expect(moodFor(true, 3)).toBe('proud');
+  });
+  it('has a critical card address for the long-standing heroes and a tinted fallback otherwise', () => {
+    expect(moodImage('abrams', 'critical').src).toMatch(/bull_card_critical\.webp$/);
+    expect(moodImage('abrams', 'critical').tintOnFallback).toBe(true);
+    expect(moodImage('violet', 'critical').tintOnFallback).toBe(true);
+    expect(moodImage('haze', 'normal').tintOnFallback).toBe(false);
+  });
+});

@@ -1,6 +1,7 @@
 import type { AssetHero } from '../api/types';
 import { allHeroStats } from './heroStats';
 import { HEROES } from './roster';
+import { rememberMoodImages } from './heroMoods';
 
 /** Translates between the API's numeric hero ids and Broadway's slugs. */
 export interface HeroIdMap {
@@ -22,6 +23,7 @@ export function buildHeroIdMap(assets: readonly AssetHero[]): HeroIdMap {
   for (const a of assets) {
     const slug = byKey.get(a.class_name) ?? byName.get(norm(a.name));
     if (!slug) continue;
+    rememberMoodImages(slug, a.images);
     slugOf.set(a.id, slug);
     idOf.set(slug, a.id);
   }

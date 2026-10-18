@@ -122,13 +122,28 @@
   display: grid; grid-template-columns: 86px minmax(120px, 1fr) minmax(118px, auto) auto minmax(214px, 250px) 34px; align-items: center; gap: 12px 14px;
   padding: 12px 12px 12px 12px;
 }
-.pc-face { position: relative; display: block; width: 86px; height: 112px; overflow: visible; background: color-mix(in srgb, var(--hc) 55%, #120e0b); border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); }
+.pc-face {
+  position: relative; z-index: 1; display: block; width: 86px; height: 112px; overflow: visible; background: color-mix(in srgb, var(--hc) 55%, #120e0b);
+  border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); transition: transform 0.3s steps(3, end), box-shadow 0.3s steps(3, end);
+}
 .pc-face img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; display: block; }
+/* the hero's card sits in the frame; it may break out of the top of the frame (never the sides or bottom) */
+.pc-mood { position: absolute; inset: 0; display: block; clip-path: inset(-60% 0 0 0); }
+.pc-mood img { transform-origin: 50% 100%; transition: transform 0.3s steps(3, end), filter 0.3s steps(3, end); }
+.pc-mood.critical.tinted img { filter: grayscale(0.55) sepia(0.5) saturate(2.2) hue-rotate(-28deg) brightness(0.78) contrast(1.1); }
+.pc-mood.critical.tinted::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(160, 20, 12, 0.45)); mix-blend-mode: multiply; }
+.pc-mood.proud img { filter: drop-shadow(0 0 5px color-mix(in srgb, #f1c232 70%, transparent)); }
+/* hover: like a print lifted off the board, in three held frames, and the hero leans out over the top of the frame */
+.pc-face:hover, .pc-face:focus-visible { transform: translateY(-7px) rotate(-3deg) scale(1.06); box-shadow: 6px 9px 0 rgba(0, 0, 0, 0.45); z-index: 3; outline: none; }
+.pc.win .pc-face:hover, .pc.win .pc-face:focus-visible { transform: translateY(-7px) rotate(2.6deg) scale(1.06); }
+.pc-face:hover .pc-mood img, .pc-face:focus-visible .pc-mood img { transform: scale(1.22) translateY(-3%); }
+.pc-face:focus-visible { box-shadow: 0 0 0 2px var(--brass-2), 6px 9px 0 rgba(0, 0, 0, 0.45); }
 .pc-face .init { display: grid; place-items: center; height: 100%; font: 400 34px var(--display); color: var(--ink-2); }
 .pc-res {
   position: absolute; left: 50%; bottom: -9px; padding: 4px 9px 3px; transform: translateX(-50%) rotate(-3deg); white-space: nowrap;
   background: var(--bad); color: #fff; font: 700 10px / 1 var(--ui); letter-spacing: 0.16em; text-transform: uppercase; clip-path: var(--plate-c); filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.5));
 }
+.pc-res i { font-style: normal; }
 .pc.win .pc-res { background: #3c9a48; transform: translateX(-50%) rotate(2.4deg); clip-path: var(--plate-b); }
 .pc-main { display: grid; gap: 5px; justify-items: start; min-width: 0; }
 .pc-main h3 { margin: 0; font: 400 21px / 1.05 var(--display); color: var(--ink); }
@@ -251,4 +266,5 @@
 @media (prefers-reduced-motion: reduce) {
   .pc-items .pc-slot.busy { animation: none; }
   .pc-toggle svg { transition: none; }
+  .pc-face, .pc-mood img { transition: none; }
 }
