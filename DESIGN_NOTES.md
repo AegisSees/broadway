@@ -245,3 +245,10 @@ Alp supplied the pack extracted from the official update page (`deadlock_city_as
 - **Hero moods on match cards** (`data/heroMoods.ts`): a loss shows the hero's critical (low-health) card, a win the normal card, a win in the game's top three the gloat card. Gloat cards ship with the site; critical cards are not in the game-file snapshot, so they load from the Deadlock API asset bucket (addresses saved in `heroMoods.json` from the API's hero list, refreshed from the live list for newer heroes). If one does not load, the normal card is shown washed red. The Victory label now also says MVP or #2 / #3.
 - **Pop-out on hover**: the portrait frame lifts and tilts in three held frames, and the hero leans out over the top of the frame (clipped at the sides and bottom only), as on the reference site's cards.
 - The critical cards are in the game too (`*_card_critical_psd` in pak01 chunks 005, 077, 083, 227, 271, 280, 283, 288, 292, 302 and 316); with those chunks uploaded they can be bundled locally like the gloat cards.
+
+## Round 24: player header without the slab
+
+- The torn black slab behind the name is gone, so the hero behind the header shows. The name sits in a marquee instead: a straight dashed border in the colour of the hero in the background, the dashes running clockwise round it like theatre-sign bulbs (`.ph-marquee`; still under reduced motion).
+- The rank moved to the right side, where the "Last game" plate was: just the medallion and the rank name below it, as on the older design. The streak or last result is now a small chip next to the account number.
+- Copy Steam ID has its own line; Steam profile, Share and Refresh sit under it.
+- The portrait pop-out on match cards now runs in eight quick held frames instead of three: smoother, with a touch of stop-motion left.

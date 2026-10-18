@@ -80,35 +80,26 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
       <div className="ph-card">
         <figure className="ph-photo"><span className="ph-tape" aria-hidden="true" /><Avatar src={core.avatar} size={124} /></figure>
         <div className="ph-id">
-          <h1>{core.name}</h1>
+          <div className="ph-marquee"><h1>{core.name}</h1></div>
           <div className="ph-tags">
-            {r ? (
-              <span className="ph-rank" style={{ ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties}>
-                <RankBadge rank={r.name} sub={r.sub} size="xs" /><b>{r.label}</b>
-              </span>
-            ) : <span className="ph-rank none"><b>Unranked</b></span>}
             <span className="ph-acct">#{core.accountId}</span>
             {last ? <span className="ph-seen">Last game {timeAgo(last.start)}</span> : null}
+            {streak && streak.n >= 2
+              ? <span className={`ph-run ${streak.won ? 'w' : 'l'}`}>{streak.n}{streak.won ? 'W' : 'L'} streak</span>
+              : last ? <span className={`ph-run ${last.won ? 'w' : 'l'}`}>{last.won ? 'Won' : 'Lost'} last game</span> : null}
           </div>
-          <div className="ph-actions">
-            <CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" />
+          <div className="ph-actions"><CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" /></div>
+          <div className="ph-actions sub">
             {steamHref && <a className="chip" href={steamHref} target="_blank" rel="noreferrer noopener">Steam profile {'↗'}</a>}
             <ShareChip />
             <button type="button" className="chip" onClick={onRefresh}>Refresh</button>
           </div>
         </div>
       </div>
-      {streak && streak.n >= 2 ? (
-        <div className={`ph-streak ${streak.won ? 'w' : 'l'}`} aria-label={`${streak.n} ${streak.won ? 'wins' : 'losses'} in a row`}>
-          <small>{streak.won ? 'Win streak' : 'Loss streak'}</small>
-          <b>{streak.n}<i>{streak.won ? 'W' : 'L'}</i></b>
-        </div>
-      ) : last ? (
-        <div className={`ph-streak ${last.won ? 'w' : 'l'} quiet`}>
-          <small>Last game</small>
-          <b>{last.won ? 'Won' : 'Lost'}</b>
-        </div>
-      ) : null}
+      <div className="ph-rankbox" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined} aria-label={r ? `Rank: ${r.label}` : 'Unranked'}>
+        {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
+        <b>{r ? r.label : 'Unranked'}</b>
+      </div>
     </section>
   );
 }

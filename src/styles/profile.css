@@ -16,48 +16,49 @@
 }
 .ph > .pl-bg, .ph > .pl-art { z-index: -1; }
 .ph .pl-art { right: 16%; opacity: 0.7; }
-.ph-card {
-  position: relative; isolation: isolate; display: flex; align-items: center; gap: 28px; justify-self: start; max-width: 100%;
-  padding: 26px 40px 24px 26px; transform: rotate(-0.8deg); filter: drop-shadow(5px 6px 0 rgba(0, 0, 0, 0.45));
-}
-.ph-card::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, #14100c, #0b0907);
-  clip-path: polygon(0 3%, 6% 0, 41% 2%, 77% 0, 100% 4%, 99% 38%, 100% 71%, 98.6% 100%, 62% 97.8%, 24% 100%, 1.2% 97%, 0.4% 62%, 1.4% 30%);
-}
-.ph-card > * { transform: rotate(0.8deg); }
+.ph-card { position: relative; display: flex; align-items: center; gap: 30px; justify-self: start; max-width: 100%; padding: 6px 0 4px 6px; }
 .ph-photo { position: relative; margin: 0; padding: 7px 7px 20px; background: #e9e1cf; transform: rotate(-3.5deg); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.5); flex: none; }
 .ph-photo img, .ph-photo .avatar { display: block; width: 124px; height: 124px; object-fit: cover; }
 .ph-tape { position: absolute; left: 50%; top: -12px; width: 78px; height: 24px; margin-left: -39px; background: rgba(233, 225, 207, 0.62); transform: rotate(5deg); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); z-index: 2; }
 .ph-id { display: grid; gap: 12px; justify-items: start; min-width: 0; }
 .ph-id h1 {
   margin: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(32px, 4.4vw, 54px) / 1 var(--display);
-  letter-spacing: 0.02em; text-transform: uppercase; color: #f4ead8;
+  letter-spacing: 0.02em; text-transform: uppercase; color: #f7eddc; text-shadow: 0 3px 0 rgba(0, 0, 0, 0.55), 0 0 22px rgba(0, 0, 0, 0.6);
+}
+/* the name in a marquee: a straight dashed border in the colour of the hero behind it, the dashes running round
+   the frame like the bulbs on a theatre sign */
+.ph-marquee {
+  --mq: color-mix(in srgb, var(--hc, var(--label)) 78%, #fff); --dash: 22px; --t: 3px;
+  position: relative; max-width: 100%; padding: 12px 24px 10px; background: color-mix(in srgb, var(--hc, var(--label)) 9%, rgba(5, 7, 8, 0.22));
+}
+.ph-marquee::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--mq) 55%, transparent 0) 0 0 / var(--dash) var(--t) repeat-x,
+    linear-gradient(90deg, var(--mq) 55%, transparent 0) 0 100% / var(--dash) var(--t) repeat-x,
+    linear-gradient(0deg, var(--mq) 55%, transparent 0) 0 0 / var(--t) var(--dash) repeat-y,
+    linear-gradient(0deg, var(--mq) 55%, transparent 0) 100% 0 / var(--t) var(--dash) repeat-y;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--hc, var(--label)) 80%, transparent));
+  animation: ph-march 0.9s linear infinite;
+}
+/* clockwise: along the top to the right, down the right side, back along the bottom, up the left side */
+@keyframes ph-march {
+  to { background-position: var(--dash) 0, calc(var(--dash) * -1) 100%, 0 calc(var(--dash) * -1), 100% var(--dash); }
 }
 .ph-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.ph-rank {
-  position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 4px 8px; color: var(--on-accent);
-  font: 700 12.5px / 1 var(--ui); letter-spacing: 0.14em; text-transform: uppercase; transform: rotate(-1.6deg); filter: drop-shadow(var(--hard));
-}
-.ph-rank::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--label); clip-path: var(--plate-b); }
-.ph-rank.none::before { background: #6d6558; }
-.ph-rank .rbadge { width: 22px; height: 22px; }
 .ph-acct { font: 600 12px var(--mono, ui-monospace, monospace); color: var(--muted); letter-spacing: 0.04em; }
 .ph-seen { font-size: 12.5px; color: var(--muted); }
 .ph-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .ph-actions .chip { margin: 0; }
+.ph-actions.sub { margin-top: -4px; }
+.ph-run { font: 700 10.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px 2px; }
+.ph-run.w { color: #fff; background: #3f8a3c; } .ph-run.l { color: #fff; background: #a8322a; }
 
-/* the current run of results, on its own plate */
-.ph-streak {
-  position: relative; isolation: isolate; display: grid; justify-items: center; gap: 2px; padding: 14px 26px 12px; align-self: start; min-width: 132px;
-  color: #fff3e6; transform: rotate(2.4deg); filter: drop-shadow(4px 5px 0 rgba(0, 0, 0, 0.45));
-}
-.ph-streak::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #a8322a; clip-path: var(--plate-d); }
-.ph-streak.w::before { background: #3f8a3c; }
-.ph-streak.quiet::before { background: #1c1712; } .ph-streak.quiet { transform: rotate(-1.4deg); }
-.ph-streak small { font: 700 10.5px var(--ui); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.85; }
-.ph-streak b { font: 400 46px / 1 var(--display); }
-.ph-streak b i { font-style: normal; font-size: 0.55em; margin-left: 3px; }
-.ph-streak.quiet b { font-size: 28px; }
+/* the rank on the right: just the medallion and its name, as on the older design */
+.ph-rankbox { --rc: var(--brass); display: grid; justify-items: center; gap: 8px; align-self: center; min-width: 170px; padding: 0 6px; text-align: center; }
+.ph-rankbox .rbadge.lg { width: 118px; height: 118px; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6)); }
+.ph-rankbox b { font: 400 25px / 1.05 var(--display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--rc); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7), 0 0 14px rgba(0, 0, 0, 0.6); }
+.ph-rankbox .pl-unranked { width: 96px; height: 96px; }
 
 .ph-tabs { margin-top: 18px; }
 
@@ -124,16 +125,16 @@
 }
 .pc-face {
   position: relative; z-index: 1; display: block; width: 86px; height: 112px; overflow: visible; background: color-mix(in srgb, var(--hc) 55%, #120e0b);
-  border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); transition: transform 0.3s steps(3, end), box-shadow 0.3s steps(3, end);
+  border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); transition: transform 0.32s steps(8, end), box-shadow 0.32s steps(8, end);
 }
 .pc-face img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; display: block; }
 /* the hero's card sits in the frame; it may break out of the top of the frame (never the sides or bottom) */
 .pc-mood { position: absolute; inset: 0; display: block; clip-path: inset(-60% 0 0 0); }
-.pc-mood img { transform-origin: 50% 100%; transition: transform 0.3s steps(3, end), filter 0.3s steps(3, end); }
+.pc-mood img { transform-origin: 50% 100%; transition: transform 0.32s steps(8, end), filter 0.32s steps(8, end); }
 .pc-mood.critical.tinted img { filter: grayscale(0.55) sepia(0.5) saturate(2.2) hue-rotate(-28deg) brightness(0.78) contrast(1.1); }
 .pc-mood.critical.tinted::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(160, 20, 12, 0.45)); mix-blend-mode: multiply; }
 .pc-mood.proud img { filter: drop-shadow(0 0 5px color-mix(in srgb, #f1c232 70%, transparent)); }
-/* hover: like a print lifted off the board, in three held frames, and the hero leans out over the top of the frame */
+/* hover: like a print lifted off the board, in eight quick held frames (still a touch of stop-motion), and the hero leans out over the top of the frame */
 .pc-face:hover, .pc-face:focus-visible { transform: translateY(-7px) rotate(-3deg) scale(1.06); box-shadow: 6px 9px 0 rgba(0, 0, 0, 0.45); z-index: 3; outline: none; }
 .pc.win .pc-face:hover, .pc.win .pc-face:focus-visible { transform: translateY(-7px) rotate(2.6deg) scale(1.06); }
 .pc-face:hover .pc-mood img, .pc-face:focus-visible .pc-mood img { transform: scale(1.22) translateY(-3%); }
@@ -250,8 +251,10 @@
 }
 @media (max-width: 860px) {
   .ph { grid-template-columns: 1fr; padding: 24px 16px; }
-  .ph-streak { justify-self: start; }
-  .ph-card { flex-direction: column; align-items: flex-start; padding: 22px 22px 20px; }
+  .ph-rankbox { justify-self: start; grid-auto-flow: column; align-items: center; gap: 14px; min-width: 0; }
+  .ph-rankbox .rbadge.lg { width: 72px; height: 72px; }
+  .ph-card { flex-direction: column; align-items: flex-start; padding: 0; }
+  .ph-marquee { padding: 10px 14px 8px; }
   .ph-id h1 { white-space: normal; overflow-wrap: anywhere; font-size: 30px; }
   .pc-row { grid-template-columns: 70px minmax(0, 1fr) 34px; gap: 10px 12px; }
   .pc-face { width: 70px; height: 92px; }
@@ -267,4 +270,5 @@
   .pc-items .pc-slot.busy { animation: none; }
   .pc-toggle svg { transition: none; }
   .pc-face, .pc-mood img { transition: none; }
+  .ph-marquee::before { animation: none; }
 }
