@@ -39,6 +39,8 @@ export function sampleTierList(f: Filters): TierRow[] {
     if (defaults && slug === 'haze' && f.mode === 'standard') return { ...row, winRate: 53.4, pickRate: 21.7, banRate: 6.2, matches: 18642, delta: 0.6 };
     return row;
   });
+  // the per-hero jitter must never put a hero above the one ranked before her, however many heroes are in the list
+  for (let i = 1; i < rows.length; i++) if (rows[i].winRate > rows[i - 1].winRate) rows[i] = { ...rows[i], winRate: rows[i - 1].winRate };
   return scoreAndTier(rows, defaults && f.mode === 'standard');
 }
 

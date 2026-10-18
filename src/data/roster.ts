@@ -1,4 +1,5 @@
 import manifest from '../assets/heroes/manifest.json';
+import { isOut } from './newHeroes';
 import celesteArt from '../assets/art/celeste-art.webp';
 import hazeArt from '../assets/art/haze-art.webp';
 
@@ -36,14 +37,16 @@ const EXTRA: Hero[] = [
   { slug: 'baba', name: 'Baba' },
   { slug: 'venator', name: 'Venator' },
   { slug: 'rat-king', name: 'Rat King' },
-  { slug: 'deadman-danny', name: 'Deadman Danny', unreleased: true },
+  { slug: 'deadman-danny', name: 'Deadman Danny' },
   { slug: 'nurse-harrow', name: 'Nurse Harrow', unreleased: true },
-  { slug: 'solomon', name: 'Solomon', unreleased: true },
-  { slug: 'violet', name: 'Violet', unreleased: true },
+  { slug: 'solomon', name: 'Solomon' },
+  { slug: 'violet', name: 'Violet' },
 ];
 
 const withImages = (h: Hero): Hero => ({
   ...h,
+  /** An announced hero counts as released once her unlock time has passed. */
+  unreleased: h.unreleased && !isOut(h.slug) ? true : undefined,
   portrait: h.portrait ?? portraitUrls[`../assets/heroes/${h.slug}.png`],
   icon: iconUrls[`../assets/icons/${h.slug}.png`],
   render: renderUrls[`../assets/renders/${h.slug}.webp`],

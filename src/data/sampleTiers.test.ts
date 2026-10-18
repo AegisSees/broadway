@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sampleTierList } from './sampleTiers';
+import { HEROES } from './roster';
 import { HAZE_BRAWL, HAZE_OVERVIEW } from './fixtures';
 
 const std = { mode: 'standard', queue: 'ranked', rank: 'all' } as const;
@@ -10,7 +11,9 @@ describe('sampleTierList', () => {
     const a = sampleTierList(std), b = sampleTierList(std);
     expect(a).toEqual(b);
     expect(new Set(a.map((r) => r.slug)).size).toBe(a.length);
-    expect(a.some((r) => r.slug === 'deadman-danny')).toBe(false);
+    // announced heroes whose unlock time has not come stay out of the list
+    expect(a.some((r) => HEROES.find((h) => h.slug === r.slug)?.unreleased)).toBe(false);
+    expect(a.some((r) => r.slug === 'violet')).toBe(true);
   });
   it('is sorted by win rate and agrees with the sample Haze pages', () => {
     const a = sampleTierList(std);

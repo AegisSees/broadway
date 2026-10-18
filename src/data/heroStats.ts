@@ -3,10 +3,13 @@ import raw from './heroStats.json';
 /** Base stats and weapon data read straight from the game files (heroes.vdata and abilities.vdata). */
 export interface HeroBaseStats {
   key: string; name: string; type: string; complexity: number | null; dev: string;
+  /** False for heroes read from their release page only: base stats and weapon are known, level scaling is not. */
+  scaling?: boolean;
   health: number; regen: number; move: number; sprint: number; crouch: number; stamina: number;
   light: number; heavy: number; reloadSpeed: number; dashDist: number;
   perBoon: { health: number | null; bullet: number | null; melee: number | null; spirit: number | null };
   weapon: {
+    name?: string;
     bulletDamage: number | null; clip: number | null; reload: number | null; pellets: number; cycle: number | null; rps: number | null;
     bulletSpeed: number | null; falloffStart: number | null; falloffEnd: number | null; falloffEndScale: number | null; burst: number | null; attrs: string[];
   };
@@ -55,3 +58,17 @@ export const ATTR_LABEL: Record<string, string> = {
 };
 export const attrLabel = (a: string): string => ATTR_LABEL[a] ?? a.replace(/([a-z])([A-Z])/g, '$1 $2');
 export const isPreRelease = (s: HeroBaseStats): boolean => s.dev.includes('PreRelease');
+export const hasScaling = (s: HeroBaseStats): boolean => s.scaling !== false && s.perBoon.health !== null;
+
+/** Gun damage per second at level 1 (damage x pellets x shots per second). */
+export const baseDps = (s: HeroBaseStats): number | null => (s.weapon.bulletDamage && s.weapon.rps ? s.weapon.bulletDamage * s.weapon.pellets * s.weapon.rps : null);
+
+/** Where a hero sits among every released hero for one stat (1 = highest). Ties share a place. */
+export function rankAmong(slug: string, pick: (s: HeroBaseStats) => number | null): { rank: number; of: number } | undefined {
+  const me = STATS[slug];
+  const mine = me ? pick(me) : null;
+  if (!me || mine === null) return undefined;
+  const all = Object.values(STATS).filter((s) => !isPreRelease(s)).map(pick).filter((x): x is number => x !== null && Number.isFinite(x));
+  const eps = 1e-9;
+  return { rank: 1 + all.filter((x) => x > mine + eps).length, of: all.length };
+}

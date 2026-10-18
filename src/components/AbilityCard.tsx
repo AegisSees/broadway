@@ -16,7 +16,7 @@ export default function AbilityCard({ ability, slot, inline = false }: { ability
     return (
       <div className={`abc plain${inline ? ' inline' : ''}`}>
         <div className="abc-head"><div><div className="abc-slot">{SLOT[slot]}</div><h3>{ability.name}</h3></div>
-          <div className="abc-chips top"><span className="chip-c">{GLYPH.cooldown} {ability.cooldown ? `${ability.cooldown}s` : 'Passive'}</span></div></div>
+          <div className="abc-chips top"><span className="chip-c">{GLYPH.cooldown} {ability.cooldown ? `${ability.cooldown}s` : ability.desc || ability.stats ? 'Passive' : 'Details soon'}</span></div></div>
         {ability.desc && <p className="abc-desc">{ability.desc}</p>}
         {ability.stats && <ul className="abc-stats">{ability.stats.split(';').map((s) => <li key={s}>{s.trim()}</li>)}</ul>}
       </div>

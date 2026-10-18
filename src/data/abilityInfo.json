@@ -1171,28 +1171,28 @@
  },
  "deadman-danny": {
   "role": "Reckless, high-flying, explosive aggressive airborne combatant",
-  "released": false,
+  "released": true,
   "abilities": [
    {
-    "name": null,
+    "name": "Strix Salvo",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Chimera Mk1",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Jettison Fuel",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Close The Deal",
     "desc": null,
     "cooldown": null,
     "stats": null
@@ -1231,28 +1231,28 @@
  },
  "solomon": {
   "role": "Strategist, focused, checkmate: chess-themed hero",
-  "released": false,
+  "released": true,
   "abilities": [
    {
-    "name": null,
+    "name": "Setup Bishop",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Kingside Knight",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Rook Battery",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Develop Queen",
     "desc": null,
     "cooldown": null,
     "stats": null
@@ -1261,28 +1261,28 @@
  },
  "violet": {
   "role": "Ambitious, nimble, creative hero",
-  "released": false,
+  "released": true,
   "abilities": [
    {
-    "name": null,
+    "name": "Living Ink",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Flow State",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Still Life",
     "desc": null,
     "cooldown": null,
     "stats": null
    },
    {
-    "name": null,
+    "name": "Abstract Landscape",
     "desc": null,
     "cooldown": null,
     "stats": null

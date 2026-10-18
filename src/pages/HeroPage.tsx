@@ -31,6 +31,10 @@ import HeroStatsPanel from '../components/HeroStatsPanel';
 import { getHeroBg, getHeroStats } from '../data/heroStats';
 import { getHeroColor } from '../data/heroColors';
 import SectionHeading from '../components/SectionHeading';
+import StatPlates from '../components/StatPlates';
+import Newcomers from '../components/Newcomers';
+import { HeroFaq, Lore } from '../components/NewHeroExtras';
+import { getNewcomer, isOut, releaseDay, releaseWeekday } from '../data/newHeroes';
 
 function CopyChip({ id }: { id: string }) {
   const [done, setDone] = useState(false);
@@ -82,6 +86,8 @@ export default function HeroPage() {
   const wordmark = getWordmark(hero.slug);
   const overview = state.status === 'ready' ? state.value : null;
   const isHaze = hero.slug === 'haze';
+  const newcomer = getNewcomer(hero.slug);
+  const out = newcomer ? isOut(hero.slug) : true;
   const brawl = filters.mode === 'street_brawl';
   const tabs: { id: string; label: string }[] = [
     { id: 'overview', label: 'Overview' },
@@ -108,9 +114,10 @@ export default function HeroPage() {
               {hero.portrait || hero.icon ? <img src={(hero.portrait || hero.icon) as string} alt={hero.name} className={hero.portrait ? undefined : 'icon-fill'} /> : <div className="fallback" aria-hidden="true">{initials(hero.name)}</div>}
             </div>
             <div className="hero-name">
-              <Kicker key={hero.slug}>{isHaze ? 'The unseen threat' : hero.unreleased ? 'New hero' : 'Hero dossier'}</Kicker>
+              <Kicker key={hero.slug}>{isHaze ? 'The unseen threat' : newcomer ? `New hero ${'·'} ${out ? 'Out' : 'Unlocks'} ${releaseDay(newcomer)}` : hero.unreleased ? 'New hero' : 'Hero dossier'}</Kicker>
               {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
+              {newcomer && <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>}
               {abilities ? (
                 <div className="abil">
                   {abilities.map((a, i) => (
@@ -126,6 +133,7 @@ export default function HeroPage() {
       </section>
 
       <div className="wrap">
+        <StatPlates slug={hero.slug} overview={overview} status={state.status === 'ready' ? 'ready' : state.status === 'error' ? 'error' : 'loading'} />
         <Controls filters={filters} onChange={setFilters} />
         {state.status === 'loading' && <p className="muted" role="status">Loading {hero.name}…</p>}
         {state.status === 'error' && (
@@ -225,6 +233,15 @@ export default function HeroPage() {
           </div>
         )}
         {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} />}
+        {newcomer && (
+          <>
+            <div className={`new-band${newcomer.lore ? ' has-lore' : ''}`}>
+              <Lore slug={hero.slug} name={hero.name} />
+              <div><HeroFaq slug={hero.slug} name={hero.name} overview={overview} /></div>
+            </div>
+            <Newcomers current={hero.slug} />
+          </>
+        )}
         <SiteFooter />
       </div>
     </>
