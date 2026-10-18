@@ -27,7 +27,7 @@ export default function StatPlates({ slug, overview, status }: { slug: string; o
   const wr = overview ? fmtPct(overview.winRate) : status === 'loading' ? '…' : '–';
   const soon = pending ? <> <i>{'·'}</i> <em>after unlock</em></> : null;
   return (
-    <ul className="vitals" aria-label={`${s.name} headline numbers`} style={{ ['--hk' as string]: tiltSeed(slug) } as React.CSSProperties}>
+    <ul className="vitals" aria-label={`${s.name} headline numbers`} style={{ ['--hk' as string]: tiltSeed(slug), ['--hf' as string]: tiltSeed(slug) % 2 ? 1 : -1 } as React.CSSProperties}>
       <li className="vital">
         <Plate tone="hot">{pending ? '–' : Math.round(s.health).toLocaleString('en-US')}</Plate>
         <span className="cap">Health{hp ? <> <i>{'·'}</i> <em>{rankText(hp)}</em></> : soon}</span>

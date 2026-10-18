@@ -13,6 +13,7 @@ import './styles/tier-tags.css';
 import './styles/textures.css';
 import './styles/city-assets.css';
 import './styles/vitals.css';
+import './styles/profile.css';
 import './styles/tilt.css';
 import { initTheme } from './lib/theme';
 import { loadLiveHeroColors } from './data/heroColors';

@@ -340,3 +340,12 @@ export function sampleMates(accountId: number): PlayerMate[] {
     return { accountId: id, name, avatar: sampleAvatar(name), matches: n, wins: Math.round(n * (0.42 + r() * 0.2)) };
   });
 }
+
+/** The current run of results, newest game first: three wins in a row is { won: true, n: 3 }. Abandoned losses count. */
+export function streakOf(matches: readonly PlayerMatchLine[]): { won: boolean; n: number } | null {
+  if (!matches.length) return null;
+  const won = matches[0].won;
+  let n = 0;
+  while (n < matches.length && matches[n].won === won) n++;
+  return { won, n };
+}

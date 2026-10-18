@@ -3,15 +3,13 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { CopyCode } from '../components/BuildBoard';
 import Avatar from '../components/Avatar';
 import { HeroFace } from '../components/HeroFace';
-import ItemCard from '../components/ItemCard';
+import { ItemIcon, MvpTag } from '../components/MatchBits';
 import Kicker from '../components/Kicker';
 import RankBadge from '../components/RankBadge';
 import { SiteFooter } from '../components/Shell';
-import Tip from '../components/Tip';
-import { getItem } from '../data/items';
 import { badgeLabel, badgeParts } from '../data/leaderboard';
 import {
-  itemUse, LANE_NAME, leader, SIDE_NAME, SIDE_SHORT, type MatchDetail, type MatchItem, type MatchPlayer, type TeamTotals,
+  itemUse, LANE_NAME, leader, SIDE_NAME, SIDE_SHORT, type MatchDetail, type MatchPlayer, type TeamTotals,
 } from '../data/matchDetail';
 import { fmtDuration, kdaRatio, QUEUE_LABEL, timeAgo, type PlayerHit } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
@@ -32,18 +30,6 @@ const nameOf = (names: Names, id: number) => names.get(id)?.name ?? `Player ${id
 // ---------------------------------------------------------------------------------------------------------
 // Items
 // ---------------------------------------------------------------------------------------------------------
-
-function ItemIcon({ item, size = 'md', note }: { item: MatchItem; size?: 'sm' | 'md' | 'lg'; note?: string }) {
-  const info = getItem(item.name);
-  const face = (
-    <span className={`mt-it ${size}${item.held ? '' : ' sold'}`} data-cat={info?.category ?? 'none'} data-tier={info?.tier ?? 0}>
-      {item.icon ? <img src={item.icon} alt={item.name} loading="lazy" /> : <b>{item.name.slice(0, 1)}</b>}
-      {note ? <i>{note}</i> : null}
-    </span>
-  );
-  if (!info) return <span title={item.name}>{face}</span>;
-  return <Tip content={<ItemCard item={{ name: info.name, category: info.category }} />}>{face}</Tip>;
-}
 
 // ---------------------------------------------------------------------------------------------------------
 // Header
@@ -172,11 +158,6 @@ function LeadChart({ m }: { m: MatchDetail }) {
 // ---------------------------------------------------------------------------------------------------------
 // Teams
 // ---------------------------------------------------------------------------------------------------------
-
-function MvpTag({ rank }: { rank?: number }) {
-  if (!rank) return null;
-  return <i className={`mt-mvp r${rank}`} title={rank === 1 ? 'Best player of the game' : `Number ${rank} player of the game`}>{rank === 1 ? 'MVP' : `#${rank}`}</i>;
-}
 
 function PlayerRow({ p, names, sel, maxDmg, onPick }: { p: MatchPlayer; names: Names; sel: boolean; maxDmg: number; onPick: (p: MatchPlayer) => void }) {
   const h = getHero(p.heroSlug);

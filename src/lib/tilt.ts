@@ -16,6 +16,12 @@ export function hash01(s: string): number {
 /** A whole number from 0 to 11 that shifts every plate on a hero's page. */
 export const tiltSeed = (slug: string): number => Math.floor(hash01(`${slug}/plates`) * 12);
 
+/** Resting angle for a section title's tape strip, from its text: either direction, 0.6 to 1.8 degrees. */
+export function headTilt(title: string): number {
+  const sign = hash01(`${title}/dir`) < 0.5 ? -1 : 1;
+  return Number((sign * (0.6 + hash01(`${title}/deg`) * 1.2)).toFixed(2));
+}
+
 /**
  * Multiplier for the hero trait tags: its sign decides which way the first tag leans, its size how far. Always at
  * least 0.7 either way, so no hero gets tags that sit dead straight.

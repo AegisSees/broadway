@@ -64,11 +64,11 @@
 .pol .wm-text { position: absolute; left: 8%; right: 8%; bottom: 21%; text-align: center; font: 400 20px/1 var(--display); color: #fff; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); }
 .pol .utag {
   position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%) rotate(-2.5deg); padding: 5px 13px 4px; white-space: nowrap;
-  background: #0b0805; color: #f3e7d2; font: 700 clamp(11px, 1.15vw, 15px) / 1 var(--ui); letter-spacing: 0.02em; clip-path: var(--plate);
+  background: #0b0805; color: #f3e7d2; font: 700 clamp(11px, 1.15vw, 15px) / 1 var(--ui); letter-spacing: 0.02em; clip-path: var(--shape, var(--plate));
 }
 .pol .lock { position: absolute; right: 12%; bottom: 20%; width: 26px; height: 26px; fill: #e6dac2; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7)); }
 .pol .meet {
-  position: absolute; left: -3%; bottom: 10%; padding: 6px 12px 5px; white-space: nowrap; background: var(--label); color: var(--on-accent); clip-path: var(--plate);
+  position: absolute; left: -3%; bottom: 10%; padding: 6px 12px 5px; white-space: nowrap; background: var(--label); color: var(--on-accent); clip-path: var(--mshape, var(--plate));
   font: 700 11px / 1 var(--ui); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0; transform: translateY(5px) rotate(-1.5deg); transition: opacity 0.15s, transform 0.2s;
 }
 .pol .when { position: absolute; left: 0; right: 0; bottom: 3.6%; text-align: center; font: 700 9.5px / 1 var(--ui); letter-spacing: 0.15em; text-transform: uppercase; color: #3b3226; }
@@ -81,7 +81,7 @@
 @media (max-width: 980px) { .new-band.has-lore { grid-template-columns: minmax(0, 1fr); } .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 16px; } }
 @media (max-width: 560px) { .pols { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vital .plate { min-width: min(100%, 150px); } }
 @media (prefers-reduced-motion: reduce) {
-  .vital .plate::before { animation: none; transform: rotate(var(--r, -0.5deg)); }
+  .vital .plate::before { animation: none; transform: rotate(var(--r, -0.5deg)) scaleX(var(--sx, 1)); }
   .pol, .pol .meet { transition: none; }
 }
 
@@ -91,7 +91,7 @@
   position: relative; isolation: isolate; display: inline-block; padding: 5px 13px 4px; color: #f3e7d2; font: 700 11px / 1 var(--ui); letter-spacing: 0.16em; text-transform: uppercase;
   transform: rotate(1.8deg); filter: drop-shadow(0 0 1px rgba(243, 231, 210, 0.6)) drop-shadow(var(--hard));
 }
-.out-plate::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #0b0805; clip-path: var(--plate); }
+.out-plate::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #0b0805; clip-path: var(--plate-b); }
 .hero-name .intro a { color: var(--brass-2); text-decoration: underline transparent 2px; text-underline-offset: 3px; white-space: nowrap; }
 .hero-name .intro a:hover { text-decoration-color: currentColor; }
 .paper-note.lore p.lore-role { font: 700 12px / 1.3 var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--paper-ink-2); margin-bottom: 2px; }
@@ -110,7 +110,7 @@
 .case-print .mat { position: absolute; inset: 6% 6% 17% 6%; overflow: hidden; background: #15110d; }
 .case-print .mat img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
 .case-print .utag {
-  position: absolute; right: -6%; top: 12%; padding: 5px 12px 4px; background: #0b0805; color: #f3e7d2; clip-path: var(--plate); transform: rotate(-6deg);
+  position: absolute; right: -6%; top: 12%; padding: 5px 12px 4px; background: #0b0805; color: #f3e7d2; clip-path: var(--plate-c); transform: rotate(-4deg);
   font: 700 12px / 1 var(--ui); letter-spacing: 0.14em; text-transform: uppercase;
 }
 .case-print figcaption { position: absolute; left: 0; right: 0; bottom: 5%; text-align: center; font: 400 22px / 1 var(--display); color: #2a2118; }

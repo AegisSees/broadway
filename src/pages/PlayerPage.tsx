@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
+import PlayerMatchCard from '../components/PlayerMatchCard';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { CopyCode } from '../components/BuildBoard';
 import { HeroFace } from '../components/HeroFace';
-import Kicker from '../components/Kicker';
 import RankBadge from '../components/RankBadge';
 import RankHistory from '../components/RankHistory';
 import { SiteFooter } from '../components/Shell';
 import { getHeroColor } from '../data/heroColors';
 import { getHeroBg } from '../data/heroStats';
-import { badgeLabel } from '../data/leaderboard';
+import { badgeLabel, badgeParts } from '../data/leaderboard';
 import {
-  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, timeAgo, winPct,
+  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, streakOf, timeAgo, winPct,
   type PlayerCore, type PlayerHeroLine, type PlayerMate, type PlayerMatchLine, type PlayerMatches, type QueueKind,
 } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
@@ -50,66 +50,66 @@ function HeroLine({ slug }: { slug: string }) {
 // Header: the dossier
 // ---------------------------------------------------------------------------------------------------------
 
-function Dossier({ core, lastSeen }: { core: PlayerCore; lastSeen?: number }) {
+function ShareChip() {
+  const [done, setDone] = useState(false);
+  return (
+    <button type="button" className="chip" onClick={() => { void navigator.clipboard?.writeText(window.location.href).then(() => { setDone(true); window.setTimeout(() => setDone(false), 1500); }); }}>
+      {done ? 'Link copied' : 'Share'}
+    </button>
+  );
+}
+
+/**
+ * The top of a player page, as a case file: the Steam picture pinned on like a photo with a strip of tape, the
+ * name, the rank on an orange label, the account number and the actions, with the hero they play most standing
+ * behind. On the right, the current run of results on its own plate.
+ */
+function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: PlayerMatchLine[] | null; onRefresh: () => void }) {
   const top = core.heroes[0]?.slug;
   const bg = getHeroBg(top);
   const hero = getHero(top);
   const art = hero ? hero.art ?? hero.render ?? hero.portrait : undefined;
   const steamHref = safeSteamHref(core.profileUrl);
   const r = core.rank;
-  const t = core.totals;
-  const wr = t ? winPct(t.wins, t.matches) : null;
+  const streak = matches ? streakOf(matches) : null;
+  const last = matches?.[0];
   return (
-    <section className="pl-head panel paint" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
+    <section className="ph" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
       {art && <img className="pl-art" src={art} alt="" loading="lazy" />}
-      <div className="pl-av"><Avatar src={core.avatar} size={120} /></div>
-      <div className="pl-info">
-        <Kicker>Player dossier</Kicker>
-        <h1>{core.name}</h1>
-        <div className="pl-ids">
-          <CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" />
-          {steamHref && <a className="chip" href={steamHref} target="_blank" rel="noreferrer noopener">Steam profile {'↗'}</a>}
-          {lastSeen ? <small>Last game {timeAgo(lastSeen)}</small> : null}
+      <div className="ph-card">
+        <figure className="ph-photo"><span className="ph-tape" aria-hidden="true" /><Avatar src={core.avatar} size={124} /></figure>
+        <div className="ph-id">
+          <h1>{core.name}</h1>
+          <div className="ph-tags">
+            {r ? (
+              <span className="ph-rank" style={{ ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties}>
+                <RankBadge rank={r.name} sub={r.sub} size="xs" /><b>{r.label}</b>
+              </span>
+            ) : <span className="ph-rank none"><b>Unranked</b></span>}
+            <span className="ph-acct">#{core.accountId}</span>
+            {last ? <span className="ph-seen">Last game {timeAgo(last.start)}</span> : null}
+          </div>
+          <div className="ph-actions">
+            <CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" />
+            {steamHref && <a className="chip" href={steamHref} target="_blank" rel="noreferrer noopener">Steam profile {'↗'}</a>}
+            <ShareChip />
+            <button type="button" className="chip" onClick={onRefresh}>Refresh</button>
+          </div>
         </div>
-        <dl className="pl-quick">
-          <div><dt>Record</dt><dd className="wl">{t ? <><b className="w">{n0(t.wins)}</b><i>/</i><b className="l">{n0(t.matches - t.wins)}</b></> : <span className="muted">–</span>}</dd></div>
-          <div><dt>Win rate</dt><dd>{t ? <WinRate wins={t.wins} matches={t.matches} /> : <span className="muted">–</span>}</dd></div>
-          <div><dt>Most played</dt><dd className="hs"><div>{core.heroes.slice(0, 3).map((h) => { const x = getHero(h.slug); const src = x?.icon ?? x?.portrait; return x ? <Link key={h.slug} to={`/hero/${x.slug}`} className="lb-hero" title={`${x.name}: ${h.matches} matches`} aria-label={x.name}>{src ? <img src={src} alt="" loading="lazy" /> : <span>{x.name.slice(0, 1)}</span>}</Link> : null; })}</div></dd></div>
-        </dl>
       </div>
-      <div className="pl-rank" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
-        {r ? (
-          <>
-            <RankBadge rank={r.name} sub={r.sub} size="lg" />
-            <b>{r.label}</b>
-            <small>{r.streak && r.streak >= 3 ? `${r.streak} win streak` : 'Current rank'}</small>
-          </>
-        ) : (
-          <>
-            <span className="pl-unranked" aria-hidden="true">?</span>
-            <b>Unranked</b>
-            <small>No ranked rating yet</small>
-          </>
-        )}
-      </div>
-      {wr === null && !t && <p className="pl-nodata muted">No match record yet.</p>}
+      {streak && streak.n >= 2 ? (
+        <div className={`ph-streak ${streak.won ? 'w' : 'l'}`} aria-label={`${streak.n} ${streak.won ? 'wins' : 'losses'} in a row`}>
+          <small>{streak.won ? 'Win streak' : 'Loss streak'}</small>
+          <b>{streak.n}<i>{streak.won ? 'W' : 'L'}</i></b>
+        </div>
+      ) : last ? (
+        <div className={`ph-streak ${last.won ? 'w' : 'l'} quiet`}>
+          <small>Last game</small>
+          <b>{last.won ? 'Won' : 'Lost'}</b>
+        </div>
+      ) : null}
     </section>
-  );
-}
-
-function Tickets({ core }: { core: PlayerCore }) {
-  const t = core.totals;
-  if (!t) return null;
-  const kda = kdaRatio(t.kills, t.deaths, t.assists);
-  const perGame = (n: number) => (n / Math.max(1, t.matches)).toFixed(1);
-  return (
-    <div className="rd-tickets pl-tickets">
-      <div className="ticket"><small>Matches</small><b>{n0(t.matches)}</b></div>
-      <div className="ticket"><small>KDA</small><b>{kda.toFixed(2)}</b><em>{perGame(t.kills)} / {perGame(t.deaths)} / {perGame(t.assists)} a game</em></div>
-      <div className="ticket"><small>Time played</small><b>{fmtHours(t.seconds)}</b></div>
-      {core.matches30d !== undefined && <div className="ticket"><small>Last 30 days</small><b>{n0(core.matches30d)}</b><em>matches</em></div>}
-    </div>
   );
 }
 
@@ -117,27 +117,85 @@ function Tickets({ core }: { core: PlayerCore }) {
 // Recent form
 // ---------------------------------------------------------------------------------------------------------
 
-function Form({ matches }: { matches: PlayerMatchLine[] }) {
-  const s = formSummary(matches, 20);
-  if (!s.n) return null;
-  const recent = matches.slice(0, 20);
+function RankCard({ core }: { core: PlayerCore }) {
+  const r = core.rank;
+  const t = core.totals;
+  const wr = t ? winPct(t.wins, t.matches) : null;
   return (
-    <div className="panel pad pl-form">
-      <div className="pl-form-head">
-        <h3>Last {s.n} games</h3>
-        <b className={s.wins * 2 >= s.n ? 'good' : 'bad'}>{s.wins}–{s.n - s.wins}</b>
+    <div className="panel pad pc-card ph-rankcard" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
+      <div className="pc-card-h"><h3>Rank</h3><h3>Record</h3></div>
+      <div className="ph-rc">
+        {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
+        <span className="ph-rc-n"><b>{r ? r.label : 'Unranked'}</b><small>{r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
+        {t && <span className="ph-rc-wl"><b><span className="w">{n0(t.wins)}</span>{' / '}<span className="l">{n0(t.matches - t.wins)}</span></b>{wr !== null && <small className={wr >= 50 ? 'good' : 'bad'}>{wr.toFixed(1)}%</small>}</span>}
       </div>
-      <ol className="pl-pips" aria-label={`Results, newest first: ${recent.map((m) => (m.won ? 'win' : 'loss')).join(', ')}`}>
-        {recent.map((m) => {
-          const h = getHero(m.heroSlug);
-          return <li key={m.id} className={m.won ? 'w' : 'l'} title={`${m.won ? 'Won' : 'Lost'} as ${h?.name ?? 'a hero'} · ${m.kills}/${m.deaths}/${m.assists}`}>{m.won ? 'W' : 'L'}</li>;
+    </div>
+  );
+}
+
+/** The rank going into each of the last twelve ranked games, oldest to newest, with the result under it. */
+function Trajectory({ matches }: { matches: PlayerMatchLine[] }) {
+  const ranked = matches.filter((m) => m.kind === 'ranked' && m.badge).slice(0, 12).reverse();
+  if (ranked.length < 2) return null;
+  const first = ranked[0].badge as number;
+  const lastB = ranked[ranked.length - 1].badge as number;
+  return (
+    <div className="panel pad pc-card">
+      <div className="pc-card-h"><h3>Trajectory</h3><small>Last {ranked.length} ranked</small></div>
+      <ol className="ph-traj">
+        {ranked.map((m, i) => {
+          const b = badgeParts(m.badge as number);
+          return (
+            <li key={m.id} className={`${m.won ? 'w' : 'l'}${i === ranked.length - 1 ? ' now' : ''}`} title={`${badgeLabel(m.badge as number)} going in · ${m.won ? 'won' : 'lost'}`}>
+              <RankBadge rank={b.rank} sub={b.sub} size="xs" />
+              <i aria-hidden="true" />
+            </li>
+          );
         })}
       </ol>
-      <dl className="pl-avg">
-        <div><dt>Avg K / D / A</dt><dd>{(s.kills / s.n).toFixed(1)} / {(s.deaths / s.n).toFixed(1)} / {(s.assists / s.n).toFixed(1)}</dd></div>
-        <div><dt>KDA</dt><dd>{kdaRatio(s.kills, s.deaths, s.assists).toFixed(2)}</dd></div>
-        <div><dt>Avg length</dt><dd>{fmtDuration(s.avgSeconds)}</dd></div>
+      <p className="ph-traj-sum">{lastB > first ? <b className="good">Climbing</b> : lastB < first ? <b className="bad">Slipping</b> : <b>Holding</b>}{' '}<span className="muted">{badgeLabel(first)} {'→'} {badgeLabel(lastB)}</span></p>
+    </div>
+  );
+}
+
+/** A hand-drawn ring, as if someone circled the number in pen. */
+const Ring = () => (
+  <svg className="ph-ring" viewBox="0 0 120 60" aria-hidden="true" preserveAspectRatio="none">
+    <path d="M14 34c-4-14 22-25 50-25 30 0 52 9 50 22-2 15-33 23-60 21C27 50 8 42 12 30 15 20 38 12 66 12" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+  </svg>
+);
+
+function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatchLine[] | null }) {
+  const t = core.totals;
+  if (!t) return null;
+  const g = Math.max(1, t.matches);
+  const wr = winPct(t.wins, t.matches);
+  const s = matches ? formSummary(matches, 20) : null;
+  const recent = matches ? matches.slice(0, 20) : [];
+  const avgSouls = recent.length ? recent.reduce((n, m) => n + m.netWorth, 0) / recent.length : null;
+  const avgCs = recent.length ? recent.reduce((n, m) => n + m.lastHits, 0) / recent.length : null;
+  return (
+    <div className="panel pad pc-card">
+      <div className="pc-card-h"><h3>Performance</h3><small>{n0(t.matches)} games {'·'} {fmtHours(t.seconds)}</small></div>
+      <dl className="ph-perf">
+        <div><dt>Avg kills</dt><dd className="k">{(t.kills / g).toFixed(1)}</dd></div>
+        <div><dt>Avg deaths</dt><dd className="d">{(t.deaths / g).toFixed(1)}</dd></div>
+        <div><dt>Avg assists</dt><dd className="a">{(t.assists / g).toFixed(1)}</dd></div>
+        <div><dt>KDA</dt><dd>{kdaRatio(t.kills, t.deaths, t.assists).toFixed(2)}</dd></div>
+        {avgSouls !== null && <div><dt>Avg souls <i>last {recent.length}</i></dt><dd className="souls">{souls(avgSouls)}</dd></div>}
+        {wr !== null && <div className="ringed"><dt>Win rate</dt><dd className={wr >= 50 ? 'good' : 'bad'}>{Math.round(wr)}%<Ring /></dd></div>}
+        {avgCs !== null && <div><dt>Avg CS <i>last {recent.length}</i></dt><dd>{Math.round(avgCs)}</dd></div>}
+        {core.matches30d !== undefined && <div><dt>Last 30 days</dt><dd>{n0(core.matches30d)}</dd></div>}
       </dl>
+      {s && s.n > 0 && (
+        <>
+          <div className="pc-card-h sub"><h3>Last {s.n}</h3><b className={s.wins * 2 >= s.n ? 'good' : 'bad'}>{s.wins}–{s.n - s.wins}</b></div>
+          <ol className="pl-pips" aria-label={`Results, newest first: ${matches!.slice(0, 20).map((m) => (m.won ? 'win' : 'loss')).join(', ')}`}>
+            {matches!.slice(0, 20).map((m) => <li key={m.id} className={m.won ? 'w' : 'l'} title={`${m.won ? 'Won' : 'Lost'} as ${getHero(m.heroSlug)?.name ?? 'a hero'} · ${m.kills}/${m.deaths}/${m.assists}`}>{m.won ? 'W' : 'L'}</li>)}
+          </ol>
+          <p className="muted ph-len">Average game {fmtDuration(s.avgSeconds)}</p>
+        </>
+      )}
     </div>
   );
 }
@@ -147,7 +205,7 @@ function Recent30({ matches, now }: { matches: PlayerMatchLine[]; now: number })
   const list = heroesIn(month).slice(0, 4);
   if (!list.length) return null;
   return (
-    <div className="panel pad pl-side">
+    <div className="panel pad pl-side pc-card">
       <h3>Playing lately</h3>
       <small>Last 30 days · {n0(month.length)} games</small>
       <ul>
@@ -166,7 +224,7 @@ function Recent30({ matches, now }: { matches: PlayerMatchLine[]; now: number })
 function Mates({ mates }: { mates: PlayerMate[] }) {
   if (!mates.length) return null;
   return (
-    <div className="panel pad pl-side">
+    <div className="panel pad pl-side pc-card">
       <h3>Plays with</h3>
       <small>Teammates over the most games</small>
       <ul>
@@ -225,49 +283,48 @@ function Heroes({ heroes }: { heroes: PlayerHeroLine[] }) {
 // ---------------------------------------------------------------------------------------------------------
 
 const KINDS: (QueueKind | 'all')[] = ['all', 'ranked', 'unranked', 'brawl'];
-
-function MatchRow({ m, accountId }: { m: PlayerMatchLine; accountId: number }) {
-  const h = getHero(m.heroSlug);
-  const badge = m.badge;
-  const parts = badge ? badge : 0;
-  return (
-    <li className={`pm ${m.won ? 'win' : 'loss'}`}>
-      <Link className="pm-hit" to={`/match/${m.id}?player=${accountId}`} aria-label={`Open the full match: ${m.won ? 'won' : 'lost'} as ${h?.name ?? 'a retired hero'}, ${m.kills} kills ${m.deaths} deaths ${m.assists} assists`} />
-      <span className="pm-res"><b>{m.abandoned && !m.won ? 'Left' : m.won ? 'Won' : 'Lost'}</b><small>{fmtDuration(m.durationS)}</small></span>
-      <span className="pm-hero">{h ? <><HeroFace hero={h} /><span><Link to={`/hero/${h.slug}`}>{h.name}</Link><small>Level {m.level}</small></span></> : <span className="muted">Retired hero</span>}</span>
-      <span className="pm-kind"><b>{QUEUE_LABEL[m.kind]}</b><small>{timeAgo(m.start)}</small></span>
-      <span className="pm-kda"><b>{m.kills} / {m.deaths} / {m.assists}</b><small>{kdaRatio(m.kills, m.deaths, m.assists).toFixed(2)} KDA</small></span>
-      <span className="pm-nw"><b>{souls(m.netWorth)}</b><small>souls</small></span>
-      <span className="pm-delta" title={badge ? `Rank going in: ${badgeLabel(badge)}. Change is in the game's rank progress points.` : undefined}>
-        {m.rankDelta !== undefined && parts ? <><b className={m.rankDelta >= 0 ? 'good' : 'bad'}>{m.rankDelta >= 0 ? '+' : '−'}{Math.abs(m.rankDelta)}</b><small>{badgeLabel(badge as number)}</small></> : null}
-      </span>
-      <span className="pm-go" aria-hidden="true">{'›'}</span>
-    </li>
-  );
-}
+const SECTIONS = [
+  { id: 'games', label: 'Matches' },
+  { id: 'heroes', label: 'Heroes' },
+  { id: 'rank', label: 'Rank' },
+  { id: 'mates', label: 'Teammates' },
+];
 
 function Matches({ data, accountId }: { data: PlayerMatches; accountId: number }) {
   const [kind, setKind] = useState<QueueKind | 'all'>('all');
-  const [shown, setShown] = useState(20);
+  const [hero, setHero] = useState('');
+  const [shown, setShown] = useState(12);
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: data.matches.length, ranked: 0, unranked: 0, brawl: 0, other: 0 };
     for (const m of data.matches) c[m.kind]++;
     return c;
   }, [data]);
-  const list = useMemo(() => (kind === 'all' ? data.matches : data.matches.filter((m) => m.kind === kind)), [data, kind]);
+  const heroes = useMemo(() => heroesIn(data.matches).map((h) => getHero(h.slug)).filter((h): h is NonNullable<typeof h> => !!h).sort((a, b) => a.name.localeCompare(b.name)), [data]);
+  const list = useMemo(() => data.matches.filter((m) => (kind === 'all' || m.kind === kind) && (!hero || m.heroSlug === hero)), [data, kind, hero]);
   if (!data.matches.length) return <div className="panel empty"><h3>No matches on record</h3><p>The Deadlock API has no games for this account yet.</p></div>;
   return (
     <div className="pl-matches">
-      <div className="pills" role="group" aria-label="Queue">
-        {KINDS.filter((k) => k === 'all' || counts[k] > 0).map((k) => (
-          <button key={k} type="button" className="pill" aria-pressed={kind === k} onClick={() => { setKind(k); setShown(20); }}>{k === 'all' ? 'All games' : QUEUE_LABEL[k]}<small>{n0(counts[k])}</small></button>
-        ))}
+      <div className="pc-filters">
+        <div className="pills" role="group" aria-label="Queue">
+          {KINDS.filter((k) => k === 'all' || counts[k] > 0).map((k) => (
+            <button key={k} type="button" className="pill" aria-pressed={kind === k} onClick={() => { setKind(k); setShown(12); }}>{k === 'all' ? 'All' : k === 'unranked' ? 'Standard' : QUEUE_LABEL[k]}<small>{n0(counts[k])}</small></button>
+          ))}
+        </div>
+        <label className="pc-hero-pick">
+          <span className="sr-only">Hero</span>
+          <select value={hero} onChange={(e) => { setHero(e.target.value); setShown(12); }}>
+            <option value="">Every hero</option>
+            {heroes.map((h) => <option key={h.slug} value={h.slug}>{h.name}</option>)}
+          </select>
+        </label>
       </div>
-      <ol className="panel pm-list">
-        {list.slice(0, shown).map((m) => <MatchRow key={m.id} m={m} accountId={accountId} />)}
-      </ol>
+      {list.length === 0 ? <div className="panel empty"><h3>No games match</h3><p>Try another queue or hero.</p></div> : (
+        <ol className="pc-list">
+          {list.slice(0, shown).map((m, i) => <PlayerMatchCard key={m.id} m={m} accountId={accountId} prefetch={i < 8} />)}
+        </ol>
+      )}
       {list.length > shown && (
-        <p className="mx-more"><button type="button" className="chip" onClick={() => setShown((n) => n + 20)}>Show {Math.min(20, list.length - shown)} more</button><span className="muted">{shown} of {n0(list.length)}</span></p>
+        <p className="mx-more"><button type="button" className="chip" onClick={() => setShown((n) => n + 12)}>Show {Math.min(12, list.length - shown)} more</button><span className="muted">{shown} of {n0(list.length)}</span></p>
       )}
     </div>
   );
@@ -300,6 +357,7 @@ export default function PlayerPage() {
   const [sp] = useSearchParams();
   const id = param ? toAccountId(param) : null;
   const [tries, setTries] = useState(0);
+  const [sec, setSec] = useState('games');
   const core = useAsync((signal) => (id ? dataSource.player(id, signal) : Promise.resolve(null)), [id, tries]);
   const history = useAsync((signal) => (id ? dataSource.playerMatches(id, signal) : Promise.resolve(null)), [id, tries]);
   const mates = useAsync((signal) => (id ? dataSource.playerMates(id, signal) : Promise.resolve([])), [id, tries]);
@@ -344,32 +402,37 @@ export default function PlayerPage() {
       <>
         {c.illustrative && <div className="notice"><b>Illustrative player.</b> Name, rank and games are invented from the account number for design review. Switch to live data in the header to see the real record.</div>}
         {alt.length > 0 && <AltAccounts ids={alt} self={c.accountId} />}
-        <Dossier core={c} lastSeen={matches?.matches[0]?.start} />
-        <Tickets core={c} />
+        <ProfileHead core={c} matches={matches?.matches ?? null} onRefresh={() => setTries((n) => n + 1)} />
+        <nav className="tabs ph-tabs" aria-label="Page sections">
+          {SECTIONS.map((t) => (
+            <a key={t.id} href={`#${t.id}`} className={sec === t.id ? 'active' : ''} aria-current={sec === t.id ? 'true' : undefined} onClick={(e) => { e.preventDefault(); setSec(t.id); document.getElementById(t.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>{t.label}</a>
+          ))}
+        </nav>
 
-        <div className="pl-grid">
-          <div className="pl-main">
-            <SectionHeading title="Rank over time" />
-            {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
-            {history.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load the match history</h3><p>{history.message}.</p></div>}
-            {matches && <RankHistory points={matches.history} illustrative={c.illustrative} />}
-
-            <SectionHeading title="Heroes" />
-            <Heroes heroes={c.heroes} />
-
-            <SectionHeading title="Recent matches" />
-            {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
-            {matches && <Matches data={matches} accountId={c.accountId} />}
-          </div>
-          <aside className="pl-aside" aria-label="Form and teammates">
-            {matches && <Form matches={matches.matches} />}
+        <div className="pl-grid ph-grid">
+          <aside className="pl-aside" aria-label="Rank, form and teammates">
+            <RankCard core={c} />
+            {matches && <Trajectory matches={matches.matches} />}
+            <Performance core={c} matches={matches?.matches ?? null} />
             {matches && <Recent30 matches={matches.matches} now={now} />}
-            {mates.status === 'ready' && <Mates mates={mates.value} />}
+            {mates.status === 'ready' && <div id="mates"><Mates mates={mates.value} /></div>}
             <p className="muted pl-fine">
               Records are all-time and cover every queue. Win rate counts a game as won when the player’s team won. Data from the Deadlock API
               {c.illustrative ? '.' : `; ${fmtInt(c.totals?.matches ?? 0)} games on record.`}
             </p>
           </aside>
+          <div className="pl-main">
+            <SectionHeading id="games" title="Match history" />
+            {history.status === 'loading' && <p className="muted" role="status">Reading the match history…</p>}
+            {history.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load the match history</h3><p>{history.message}.</p></div>}
+            {matches && <Matches data={matches} accountId={c.accountId} />}
+
+            <SectionHeading id="heroes" title="Heroes" />
+            <Heroes heroes={c.heroes} />
+
+            <SectionHeading id="rank" title="Rank over time" />
+            {matches && <RankHistory points={matches.history} illustrative={c.illustrative} />}
+          </div>
         </div>
       </>
     )}

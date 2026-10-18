@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hash01, tagScale, tiltSeed } from './tilt';
+import { hash01, headTilt, tagScale, tiltSeed } from './tilt';
 import { HEROES } from '../data/roster';
 
 describe('tilt helpers', () => {
@@ -17,6 +17,11 @@ describe('tilt helpers', () => {
       expect(t).toBeGreaterThanOrEqual(0.7);
       expect(t).toBeLessThanOrEqual(1.2);
     }
+  });
+  it('tilts section titles both ways, never flat', () => {
+    const t = ['Win rate over time', 'Top builds', 'Know your matchups', 'Base stats', 'Abilities', 'Pick rate & damage', 'Questions', 'The six newcomers'].map(headTilt);
+    expect(t.every((x) => Math.abs(x) >= 0.6 && Math.abs(x) <= 1.8)).toBe(true);
+    expect(new Set(t.map(Math.sign)).size).toBe(2);
   });
   it('spreads heroes across seeds and across both directions', () => {
     const seeds = new Set(HEROES.map((h) => tiltSeed(h.slug)));
