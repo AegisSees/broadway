@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { getAbilities } from '../data/abilities';
 import { getHeroStats } from '../data/heroStats';
+import { getLore, LORE_SOURCE } from '../data/heroLore';
 import { getTags } from './HeroTags';
 import { getNewcomer, isOut, nextUnlock, releaseWeekday } from '../data/newHeroes';
 import { getHero } from '../data/roster';
@@ -9,16 +10,17 @@ import { fmtInt, fmtPct } from '../lib/stats';
 import Kicker from './Kicker';
 import SectionHeading from './SectionHeading';
 
-/** Short biography on a torn paper card, for the newcomers whose in-game story is published. */
+/** The hero's dossier on a torn paper card: who they are, in a few sentences, with the game's one-line role. */
 export function Lore({ slug, name }: { slug: string; name: string }) {
-  const lore = getNewcomer(slug)?.lore;
-  if (!lore || lore.length === 0) return null;
+  const lore = getLore(slug);
+  if (!lore) return null;
   return (
-    <aside className="paper-note lore" aria-labelledby="lore-h">
-      <Kicker>Lore</Kicker>
+    <aside className="paper-note lore" id="dossier" aria-labelledby="lore-h">
+      <Kicker>Dossier</Kicker>
       <h2 id="lore-h">Who is {name}?</h2>
-      {lore.map((p) => <p key={p}>{p}</p>)}
-      <p className="lore-src"><small>Paraphrased from the hero's in-game introduction.</small></p>
+      {lore.role && <p className="lore-role">{lore.role}.</p>}
+      {lore.bio.map((p) => <p key={p}>{p}</p>)}
+      <p className="lore-src"><small>{LORE_SOURCE[lore.from]}</small></p>
     </aside>
   );
 }

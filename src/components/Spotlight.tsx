@@ -1,4 +1,5 @@
 import Kicker from './Kicker';
+import { getLore } from '../data/heroLore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HEROES, type Hero } from '../data/roster';
@@ -55,7 +56,7 @@ export default function Spotlight() {
         {!h.art && <img className="artbg" src={h.render as string} alt="" aria-hidden="true" />}
         <img className={`art${FILL[h.slug] ? ' fill' : ''}`} src={(h.art ?? h.render) as string} alt="" style={FILL[h.slug] ? { objectPosition: FILL[h.slug] } : undefined} />
         <div className="cap">
-          <Kicker>In the spotlight</Kicker>
+          <Kicker>{getLore(h.slug)?.title ?? 'In the spotlight'}</Kicker>
           {wm ? <img className="wm" src={wm} alt="" /> : <h2>{h.name}</h2>}
           <HeroTags slug={h.slug} />
         </div>

@@ -5,39 +5,16 @@
  */
 export interface Newcomer {
   slug: string;
-  /** Unlock instant, ISO 8601 UTC. */
+  /** Unlock instant, ISO 8601 UTC. Biographies are in heroLore.ts with everyone else's. */
   at: string;
-  /** A short paraphrase of the in-game biography, where one is published. */
-  lore?: string[];
 }
 
 export const NEWCOMERS: Newcomer[] = [
   { slug: 'rat-king', at: '2026-10-02T21:00:00Z' },
   { slug: 'baba', at: '2026-10-06T21:00:00Z' },
-  {
-    slug: 'solomon', at: '2026-10-09T21:00:00Z',
-    lore: [
-      'Solomon is a calm, attentive listener who likes to give advice.',
-      'His chess opponents run from tourists and criminals to business leaders.',
-      'To him the board is a way to meet anyone on equal terms, and the game matters more than who wins it.',
-    ],
-  },
-  {
-    slug: 'deadman-danny', at: '2026-10-13T21:00:00Z',
-    lore: [
-      'Danny works for Fairfax Industries and is giving a presentation at a military technology expo.',
-      'He jokes that Fairfax knows nothing about safety, and that he has been hurt, and killed, in more ways than he can list.',
-      'He puts himself in danger so the company can learn how things fail; today the demonstration is flight, in the Chimera Mk1.',
-    ],
-  },
-  {
-    slug: 'violet', at: '2026-10-16T21:00:00Z',
-    lore: [
-      'Violet moved to The Cursed Apple at twelve and fell for the energy of New York.',
-      'She won a full scholarship to art school and, in her junior year, a place in a MoMA student-artist showcase.',
-      'She is afraid of failing, and sees The Ritual as her chance to finally be seen.',
-    ],
-  },
+  { slug: 'solomon', at: '2026-10-09T21:00:00Z' },
+  { slug: 'deadman-danny', at: '2026-10-13T21:00:00Z' },
+  { slug: 'violet', at: '2026-10-16T21:00:00Z' },
   { slug: 'nurse-harrow', at: '2026-10-20T21:00:00Z' },
 ];
 

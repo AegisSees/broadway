@@ -2,20 +2,21 @@ import { useSyncExternalStore } from 'react';
 
 /**
  * Three palettes, all dark:
- *  - hidden-king: amber and ember on near-black (default)
+ *  - city:        City Never Sleeps (default): near-black with the official update page's teal tint, orange labels and cream type
+ *  - hidden-king: amber and ember on near-black
  *  - archmother:  sapphire blue and pale white on deep night-blue
- *  - night-shift: near-black with the official update page's teal tint, orange labels and cream type
  * Only borders, text, lighting and accents change.
  */
-export type ThemeId = 'hidden-king' | 'archmother' | 'night-shift';
+export type ThemeId = 'city' | 'hidden-king' | 'archmother';
 
 export const THEMES: { id: ThemeId; name: string }[] = [
+  { id: 'city', name: 'City Never Sleeps' },
   { id: 'hidden-king', name: 'Hidden King' },
   { id: 'archmother', name: 'Archmother' },
-  { id: 'night-shift', name: 'Night Shift' },
 ];
 
-const KEY = 'broadway-theme-v2';
+// v3: City Never Sleeps became the default, so everyone starts on it once
+const KEY = 'broadway-theme-v3';
 const isTheme = (v: unknown): v is ThemeId => THEMES.some((t) => t.id === v);
 
 let current: ThemeId = (() => {
@@ -23,7 +24,7 @@ let current: ThemeId = (() => {
     const stored = localStorage.getItem(KEY);
     if (isTheme(stored)) return stored;
   } catch { /* storage can be blocked (private windows, file://); fall back to the default */ }
-  return 'hidden-king';
+  return 'city';
 })();
 
 const listeners = new Set<() => void>();
@@ -72,6 +73,6 @@ export function useTheme(): ThemeId {
   return useSyncExternalStore(
     (cb) => { listeners.add(cb); return () => { listeners.delete(cb); }; },
     () => current,
-    () => 'hidden-king' as ThemeId,
+    () => 'city' as ThemeId,
   );
 }

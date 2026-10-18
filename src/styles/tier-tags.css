@@ -7,13 +7,13 @@
    ========================================================================================================== */
 
 .tier-tag {
-  --tg: #fbbf24; --k: #0d0905; --ph: 0s;
+  --tg: #fbbf24; --k: #0d0905;
   position: relative; isolation: isolate; display: inline-grid; place-items: center; flex: none; line-height: 1; color: var(--k);
 }
 /* the plate is its own layer so it can move without the lettering */
 .tier-tag::before {
   content: ''; position: absolute; inset: 0; z-index: -1; background: var(--tg); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
-  transform-origin: 50% 50%; animation: tier-jitter 1s steps(1, end) var(--ph) infinite;
+  transform-origin: 50% 50%; animation: pin-rock var(--d, 1s) steps(1, end) var(--ph, 0s) infinite;
 }
 .tier-tag b {
   font: 700 1em/1 'Valve Oracle', var(--ui); letter-spacing: 0; display: inline-flex; align-items: baseline; padding-top: 0.04em;
@@ -26,17 +26,8 @@
 .tier-tag.t-sp { --tg: #fbbf24; } .tier-tag.t-s { --tg: #f48a4a; } .tier-tag.t-a { --tg: #8fcb45; }
 .tier-tag.t-b { --tg: #4eb4d0; } .tier-tag.t-c { --tg: #8e9aab; } .tier-tag.t-d { --tg: #d9604f; }
 
-/* three frames a second: the cycle is one second long and each keyframe is held, never tweened. Rotation about the
-   centre only, so the plate never wanders off from under its letter */
-@keyframes tier-jitter {
-  0%      { transform: rotate(-1.4deg); }
-  33.34%  { transform: rotate(1.1deg); }
-  66.67%  { transform: rotate(-0.3deg); }
-}
-/* so the labels on a page do not all change on the same beat */
-.tier-tag.t-s { --ph: -0.11s; } .tier-tag.t-a { --ph: -0.22s; } .tier-tag.t-b { --ph: -0.05s; } .tier-tag.t-c { --ph: -0.27s; } .tier-tag.t-d { --ph: -0.16s; }
-tr:nth-child(3n + 2) .tier-tag { --ph: -0.14s; } tr:nth-child(3n) .tier-tag { --ph: -0.25s; }
-@media (prefers-reduced-motion: reduce) { .tier-tag::before { animation: none; transform: rotate(-0.5deg); } }
+/* the keyframes and each label's own angle, direction and beat are in tilt.css */
+@media (prefers-reduced-motion: reduce) { .tier-tag::before { animation: none; transform: rotate(var(--r, -0.5deg)); } }
 
 /* the row captions take the same colours */
 .tl-row.t-sp { --tier: #fbbf24; } .tl-row.t-s { --tier: #f48a4a; } .tl-row.t-a { --tier: #8fcb45; }

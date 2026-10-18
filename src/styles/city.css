@@ -35,13 +35,10 @@
 /* every "pick one" control shares one plate: a flat shape behind the lettering, a flat orange/blue label when selected */
 .seg { border: 0; background: none; overflow: visible; gap: 6px; align-items: stretch; }
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) {
-  --ph: -0.11s;
   position: relative; isolation: isolate; border: 0; border-radius: 0; background: none; color: var(--ink-2);
   font: 700 12.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase;
   transition: color 0.15s, transform 0.18s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.15s;
 }
-:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(even) { --ph: -0.24s; }
-:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(3n) { --ph: -0.05s; }
 /* the shape is a pseudo-element so the lettering stays put while the plate moves, and so the selected state can carry a hard shadow */
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle)::before {
   content: ''; position: absolute; inset: 0; z-index: -1; clip-path: var(--skew); transform-origin: 50% 50%;
@@ -63,13 +60,9 @@ button.chip.fav-toggle:hover { background: none; }
   color: var(--on-accent); filter: drop-shadow(var(--hard)); transform: none;
 }
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on)::before {
-  background: var(--label); clip-path: var(--plate); animation: pin-rock 1s steps(1, end) var(--ph) infinite;
+  background: var(--label); clip-path: var(--plate); animation: pin-rock var(--d, 1s) steps(1, end) var(--ph, 0s) infinite;
 }
-@keyframes pin-rock {
-  0% { transform: rotate(-1deg); }
-  33.34% { transform: rotate(0.8deg); }
-  66.67% { transform: rotate(-0.2deg); }
-}
+/* the keyframes (pin-rock) and the per-element angles live in tilt.css */
 :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):focus-visible { outline: 2px solid var(--brass-2); outline-offset: 3px; }
 .btabs { gap: 8px; }
 .pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -119,7 +112,7 @@ button.chip.fav-toggle:hover { background: none; }
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) { transition: none; }
-  :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on)::before { animation: none; transform: rotate(-0.5deg); }
+  :is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):is([aria-pressed='true'], [aria-selected='true'], .active, .on)::before { animation: none; transform: rotate(var(--r, -0.5deg)); }
   .paper-note { transform: none; }
 }
 @media (max-width: 720px) {

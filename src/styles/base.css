@@ -38,8 +38,8 @@
   --tag-bg: #b9c9f4; --tag-ink: #141a33; --tape: #0a0d14;
   --label: #62a9f0; --city-tone: sepia(1) saturate(2.4) hue-rotate(176deg) brightness(0.95); --city-o: 0.3;
 }
-:root, :root[data-theme='hidden-king'] {
-  /* Hidden King: amber and ember on near-black (default) */
+:root[data-theme='hidden-king'] {
+  /* Hidden King: amber and ember on near-black */
   --bg: #11100d;
   --s0: #080706; --s1: #0c0a08; --s2: #11100d; --s3: #161310; --s4: #1e1812; --s5: #2e2316;
   --panel: #1b1713; --panel-2: #231d16;
@@ -56,8 +56,8 @@
   --tag-bg: #c9b4f0; --tag-ink: #1d1230; --tape: #0c0907;
   --label: #e2702f; --city-tone: sepia(1) saturate(1.7) hue-rotate(-14deg) brightness(0.9); --city-o: 0.3;
 }
-/* Night Shift: the near-black, teal-tinted look of the official City Never Sleeps page. Orange labels, cream type, cyan highlights. */
-:root[data-theme='night-shift'] {
+/* City Never Sleeps (default): the near-black, teal-tinted look of the official update page. Orange labels, cream type, cyan highlights. */
+:root, :root[data-theme='city'] {
   --bg: #0a1215;
   --s0: #050a0c; --s1: #080e11; --s2: #0a1215; --s3: #0e191d; --s4: #132228; --s5: #1b3037;
   --panel: #102025; --panel-2: #15282e;

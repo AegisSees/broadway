@@ -1,0 +1,92 @@
+/* ==========================================================================================================
+   Round 21 · every plate has its own tilt
+   Before, all pinned labels shared one angle sequence and only their start time differed, so they all leaned the
+   same way. The official page hand-places each label: its own rest angle, its own direction, its own beat. Here
+   each plate takes a number --tn (from its place in its group, its tier, or its hero) and derives from it:
+     --r    resting angle (either direction, 1.3 to 3deg before --amp scales it)
+     --j1-3 the three held frames of the wobble, around --r
+     --d    the length of the cycle (so the wobble is not three frames a second on every plate)
+     --ph   where in the cycle it starts
+   Only the plate rocks. The lettering never moves. Reduced motion keeps the angle and drops the wobble.
+   ========================================================================================================== */
+
+@keyframes pin-rock {
+  0%      { transform: rotate(calc(var(--r, -0.4deg) * var(--m, 1) + var(--j1, -0.8deg))); }
+  33.34%  { transform: rotate(calc(var(--r, -0.4deg) * var(--m, 1) + var(--j2, 0.6deg))); }
+  66.67%  { transform: rotate(calc(var(--r, -0.4deg) * var(--m, 1) + var(--j3, 0deg))); }
+}
+
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle, .tier-tag, .vital .plate) {
+  /* direction is +1 or -1; size is never below 1.3deg, so no plate sits dead straight */
+  --dir: clamp(-1, sin(var(--tn, 1) * 2.399rad) * 50, 1);
+  --r: calc(var(--dir) * (1.3deg + (sin(var(--tn, 1) * 1.9rad + 1rad) + 1) * 0.8deg) * var(--amp, 1));
+  --j1: calc(sin(var(--tn, 1) * 4.7rad + 1rad) * 0.8deg);
+  --j2: calc(sin(var(--tn, 1) * 3.3rad + 2rad) * 0.8deg);
+  --j3: calc(sin(var(--tn, 1) * 5.9rad + 3rad) * 0.5deg);
+  --d: calc(1s + sin(var(--tn, 1) * 1.7rad) * 0.14s);
+  --ph: calc(var(--tn, 1) * -0.137s);
+}
+
+/* ---------- selected pills, tabs and segment buttons ----------
+   --tn comes from the button's place in its group and the group's place on the page, so "Standard" and "Ranked"
+   (both first in their own group) do not lean together. */
+:is(.seg, .btabs, .tabs, .pills, .dir-filters, .pager):nth-child(1) { --c: 0; }
+:is(.seg, .btabs, .tabs, .pills, .dir-filters, .pager):nth-child(2) { --c: 1; }
+:is(.seg, .btabs, .tabs, .pills, .dir-filters, .pager):nth-child(3) { --c: 2; }
+:is(.seg, .btabs, .tabs, .pills, .dir-filters, .pager):nth-child(4) { --c: 3; }
+:is(.seg, .btabs, .tabs, .pills, .dir-filters, .pager):nth-child(n+5) { --c: 4; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle) { --tn: calc(var(--bi, 1) + var(--c, 0) * 3); }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(1) { --bi: 1; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(2) { --bi: 2; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(3) { --bi: 3; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(4) { --bi: 4; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(5) { --bi: 5; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(6) { --bi: 6; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(7) { --bi: 7; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(8) { --bi: 8; }
+:is(.seg button, .btabs button, .tabs a, .pill, .dir-filters button, .pager button, .fav-toggle):nth-child(n+9) { --bi: 9; }
+
+/* ---------- tier labels ----------
+   Each tier has its own base angle (S+ and A lean one way, S, B and D the other), and in a long table the row
+   changes it again, so a column of S labels is not a column of identical tilts. */
+.tier-tag { --tn: calc(var(--tk, 1) + var(--ri, 0) * 5); --amp: 1.15; }
+.tier-tag.t-sp { --tk: 11; } .tier-tag.t-s { --tk: 2; } .tier-tag.t-a { --tk: 3; }
+.tier-tag.t-b { --tk: 5; } .tier-tag.t-c { --tk: 6; } .tier-tag.t-d { --tk: 7; }
+tr:nth-child(8n+2) .tier-tag { --ri: 1; } tr:nth-child(8n+3) .tier-tag { --ri: 2; } tr:nth-child(8n+4) .tier-tag { --ri: 3; }
+tr:nth-child(8n+5) .tier-tag { --ri: 4; } tr:nth-child(8n+6) .tier-tag { --ri: 5; } tr:nth-child(8n+7) .tier-tag { --ri: 6; }
+tr:nth-child(8n) .tier-tag { --ri: 7; }
+.tier-tag.sm { --amp: 1.4; }
+
+/* ---------- the headline plates under a hero banner ----------
+   Larger plates, larger angles. --hk (set from the hero's slug) shifts all of them, so Haze's plates do not lean the
+   way Abrams's do. */
+.vital .plate { --amp: 1.45; --tn: calc(var(--vk, 2) + var(--hk, 0)); }
+.vital:nth-child(1) .plate { --vk: 2; }
+.vital:nth-child(2) .plate { --vk: 3; }
+.vital:nth-child(3) .plate { --vk: 5; }
+.vital:nth-child(4) .plate { --vk: 7; }
+.vital .dia { transform: rotate(-1.6deg); }
+
+/* hero trait tags: direction and size vary by hero (--hs, set in HeroTags; the rule is in pages.css) */
+
+/* ---------- black and orange tape labels: not all at minus one degree ---------- */
+.tile .tape { transform: rotate(calc(var(--tilt, -1deg) * -2.1)); }
+.wt .tape { transform: rotate(1.3deg); }
+.t1-info .tape { transform: rotate(-2deg); }
+
+/* ---------- photo prints (the six newcomers): own rest angle, own label angle ---------- */
+.pols li:nth-child(1) { --r: -2.8deg; --u: -4.5deg; --ux: 47%; --uy: 55%; --mt: 2.5deg; }
+.pols li:nth-child(2) { --r: 2.1deg;  --u: 3deg;    --ux: 53%; --uy: 61%; --mt: -2.2deg; }
+.pols li:nth-child(3) { --r: -1deg;   --u: -1.6deg; --ux: 50%; --uy: 57%; --mt: 1.4deg; }
+.pols li:nth-child(4) { --r: 3deg;    --u: 5deg;    --ux: 46%; --uy: 60%; --mt: -3deg; }
+.pols li:nth-child(5) { --r: -2.2deg; --u: -3deg;   --ux: 52%; --uy: 54%; --mt: 2deg; }
+.pols li:nth-child(6) { --r: 1.3deg;  --u: 2.2deg;  --ux: 49%; --uy: 59%; --mt: -1.2deg; }
+.pol { transition: transform 0.3s steps(3, end); }
+.pol .utag { left: var(--ux, 50%); top: var(--uy, 58%); transform: translate(-50%, -50%) rotate(var(--u, -2.5deg)); transition: transform 0.3s steps(3, end); }
+.pol:hover .utag, .pol:focus-visible .utag { transform: translate(-50%, -50%) rotate(calc(var(--u, -2.5deg) * -0.6)); }
+.pol .meet { transform: translateY(5px) rotate(var(--mt, -1.5deg)); transition: opacity 0.15s, transform 0.3s steps(3, end); }
+.pol:hover .meet, .pol:focus-visible .meet, .pols li.cur .meet { opacity: 1; transform: translateY(0) rotate(var(--mt, -1.5deg)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pol, .pol .utag, .pol .meet { transition: none; }
+}

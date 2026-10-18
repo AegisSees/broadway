@@ -1,5 +1,6 @@
 import tags from '../data/heroTags.json';
 import { tagColors, useHeroColor } from '../data/heroColors';
+import { tagScale } from '../lib/tilt';
 
 const TAGS = tags as Record<string, string[] | null>;
 // Tags come from the game's own hero data (citadel_heroes localization).
@@ -15,7 +16,7 @@ export default function HeroTags({ slug, className = '' }: { slug: string; class
   if (list.length === 0) return null;
   const { bg, ink } = tagColors(color);
   return (
-    <ul className={`htags ${className}`} aria-label="Hero traits" style={{ ['--tag-bg' as string]: bg, ['--tag-ink' as string]: ink } as React.CSSProperties}>
+    <ul className={`htags ${className}`} aria-label="Hero traits" style={{ ['--tag-bg' as string]: bg, ['--tag-ink' as string]: ink, ['--hs' as string]: tagScale(slug) } as React.CSSProperties}>
       {list.map((t) => <li key={t}><span className="htag" tabIndex={0}>{t}</span></li>)}
     </ul>
   );

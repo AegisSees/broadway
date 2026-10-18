@@ -2,11 +2,11 @@ import { setTheme, THEMES, useTheme, type ThemeId } from '../lib/theme';
 import hkUrl from '../assets/ui/patron-hiddenking.png';
 import amUrl from '../assets/ui/patron-archmother.png';
 
-/** Per-theme emblem: the Hidden King's antlered mask, the Archmother's statue-of-liberty mask (both from the game's patron art), and a moon for Night Shift. */
+/** Per-theme emblem: the Hidden King's antlered mask, the Archmother's statue-of-liberty mask (both from the game's patron art), and a moon for the City Never Sleeps. */
 const ICON: Record<ThemeId, React.ReactNode> = {
   'hidden-king': <img src={hkUrl} alt="" draggable={false} />,
   archmother: <img src={amUrl} alt="" draggable={false} />,
-  'night-shift': (
+  city: (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8a.5.5 0 0 0-.7-.6A9.6 9.6 0 1 0 20.8 15.3a.5.5 0 0 0-.6-.7Z" />
       <path d="m17.6 3.2.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" />

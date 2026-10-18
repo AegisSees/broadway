@@ -46,9 +46,9 @@ html[data-art='central-park'] { --page-art: url('../assets/city/central-park.web
 }
 
 /* ---------- the skyline that closes the page, in the colour of the lane that goes with the theme ---------- */
-:root, :root[data-theme='hidden-king'] { --sky-art: url('../assets/city/skyline-yellow.webp'); --sky-o: 0.7; }
+:root[data-theme='hidden-king'] { --sky-art: url('../assets/city/skyline-yellow.webp'); --sky-o: 0.7; }
 :root[data-theme='archmother'] { --sky-art: url('../assets/city/skyline-blue.webp'); --sky-o: 0.85; }
-:root[data-theme='night-shift'] { --sky-art: url('../assets/city/skyline-green.webp'); --sky-o: 0.55; }
+:root, :root[data-theme='city'] { --sky-art: url('../assets/city/skyline-green.webp'); --sky-o: 0.55; }
 .site-foot { margin-top: clamp(150px, 19vw, 250px); }
 .site-foot::before {
   /* the top half of the pack's skyline art is the silhouette; the lower half is solid fill, which is cropped off */

@@ -35,6 +35,7 @@ import StatPlates from '../components/StatPlates';
 import Newcomers from '../components/Newcomers';
 import { HeroFaq, Lore } from '../components/NewHeroExtras';
 import { getNewcomer, isOut, releaseDay, releaseWeekday } from '../data/newHeroes';
+import { getLore } from '../data/heroLore';
 
 function CopyChip({ id }: { id: string }) {
   const [done, setDone] = useState(false);
@@ -86,6 +87,7 @@ export default function HeroPage() {
   const wordmark = getWordmark(hero.slug);
   const overview = state.status === 'ready' ? state.value : null;
   const isHaze = hero.slug === 'haze';
+  const lore = getLore(hero.slug);
   const newcomer = getNewcomer(hero.slug);
   const out = newcomer ? isOut(hero.slug) : true;
   const brawl = filters.mode === 'street_brawl';
@@ -114,10 +116,15 @@ export default function HeroPage() {
               {hero.portrait || hero.icon ? <img src={(hero.portrait || hero.icon) as string} alt={hero.name} className={hero.portrait ? undefined : 'icon-fill'} /> : <div className="fallback" aria-hidden="true">{initials(hero.name)}</div>}
             </div>
             <div className="hero-name">
-              <Kicker key={hero.slug}>{isHaze ? 'The unseen threat' : newcomer ? `New hero ${'·'} ${out ? 'Out' : 'Unlocks'} ${releaseDay(newcomer)}` : hero.unreleased ? 'New hero' : 'Hero dossier'}</Kicker>
+              <div className="kick-row">
+                <Kicker key={hero.slug}>{lore?.title ?? (hero.unreleased ? 'New hero' : 'Hero dossier')}</Kicker>
+                {newcomer && <span className="out-plate">New hero {'·'} {out ? 'Out' : 'Unlocks'} {releaseDay(newcomer)}</span>}
+              </div>
               {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
-              {newcomer && <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>}
+              {newcomer
+                ? <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>
+                : lore && <p className="intro">{lore.role ? `${lore.role}. ` : ''}<a href="#dossier" onClick={(e) => { e.preventDefault(); jump('dossier'); }}>Read the dossier {'↓'}</a></p>}
               {abilities ? (
                 <div className="abil">
                   {abilities.map((a, i) => (
@@ -233,14 +240,25 @@ export default function HeroPage() {
           </div>
         )}
         {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} />}
-        {newcomer && (
+        {newcomer ? (
           <>
-            <div className={`new-band${newcomer.lore ? ' has-lore' : ''}`}>
+            <div className={`new-band${lore ? ' has-lore' : ''}`}>
               <Lore slug={hero.slug} name={hero.name} />
               <div><HeroFaq slug={hero.slug} name={hero.name} overview={overview} /></div>
             </div>
             <Newcomers current={hero.slug} />
           </>
+        ) : lore && (
+          <div className="dossier-band">
+            <Lore slug={hero.slug} name={hero.name} />
+            {(hero.render || hero.portrait) && (
+              <figure className="case-print" aria-hidden="true">
+                <span className="mat"><img src={(hero.render || hero.portrait) as string} alt="" loading="lazy" /></span>
+                <span className="utag">Case file</span>
+                <figcaption>{hero.name}</figcaption>
+              </figure>
+            )}
+          </div>
         )}
         <SiteFooter />
       </div>
