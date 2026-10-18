@@ -406,3 +406,42 @@ main { overflow-x: clip; }
 .t-card .wr b.up { color: #1d7a3c; } .t-card .wr b.down { color: #b2321e; }
 .t-card .wr .bar { background: #14100a1f; border-color: #14100a33; } .t-card .wr .bar u { background: #140c05; }
 @media (prefers-reduced-motion: reduce) { .t-card { transition: none; } .t-card:hover { transform: none; } }
+
+/* ---------- Round 38 · build cards as prints ----------
+   Each build is a cream card. Its top is a band in the hero's colour with the hero's gloat bust rising out of it and
+   the name on a black tape; the items come straight after the title, and the one-line description moves into the
+   opened view so a page of cards doesn't repeat itself. */
+.bc-grid { gap: 52px 20px; margin-top: 54px; }
+.bc {
+  position: relative; overflow: visible; display: flex; flex-direction: column; color: #140c05; background: #efe3cf; border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
+}
+.bc:not(.open):hover { transform: translate(-3px, -5px); box-shadow: inset 0 0 0 1px #0003, 10px 11px 0 var(--pop-shadow); }
+.bc-art {
+  height: 92px; margin: 6px 6px 0; border: 0; border-radius: 2px; overflow: visible;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--hc, var(--brass)) 88%, #fff), color-mix(in srgb, var(--hc, var(--brass)) 70%, #000));
+  clip-path: inset(-70px 0 0 0);
+}
+.bc-art::after { content: none; }
+.bc-bust { position: absolute; right: 8px; bottom: 0; height: 150px; width: auto; max-width: 62%; object-fit: contain; object-position: right bottom; filter: drop-shadow(0 4px 0 #0005); transition: translate 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.12); pointer-events: none; }
+.bc:not(.open):hover .bc-bust { translate: 0 -6px; }
+.bc-hero { left: 10px; bottom: 10px; }
+.bc-hero b { display: inline-block; background: #0d0a07; color: #f3e7d2; font: 400 19px var(--display); padding: 6px 12px 4px; text-shadow: none; box-shadow: 3px 3px 0 #0d0a0766; }
+.bc-hero:hover b { color: color-mix(in srgb, var(--hc, var(--brass)) 50%, #fff); }
+.bc-origin, .bc-origin.community { background: #0d0a07; color: #f3e7d2; }
+.bc-et { left: auto; right: auto; left: calc(10px + 9em); }
+.bc-body { padding: 12px 14px 14px; gap: 11px; }
+.bc-body h3 { color: #140c05; font-size: 19px; }
+.bc-items .item { width: 34px; height: 34px; box-shadow: 2px 2px 0 #0d0a0740; }
+.bc-nums dt { color: #5a4630; }
+.bc-nums dd { color: #140c05; } .bc-nums dd.up { color: #1d7a3c; } .bc-nums dd.down { color: #b2321e; }
+.bc-nums .heart { color: #b2321e; }
+.bc-foot { border-top: 2px solid #14100a1f; }
+.bc-foot small { color: #5a4630; }
+.bc-actions .chip { color: #140c05; border-color: #14100a55; background: #14100a0d; }
+.bc-actions .chip:hover { background: #0d0a07; color: #f3e7d2; }
+.bc-detail { padding: 4px 14px 18px; }
+.bc-detail .bb-skillhead, .bc-detail .bb-skillhead :is(h4, b, small, span) { color: #140c05; }
+.bc-blurb { font-size: 13.5px; font-weight: 600; color: #4a3824; margin-bottom: 8px; }
+@media (prefers-reduced-motion: reduce) { .bc, .bc-bust { transition: none; } .bc:not(.open):hover, .bc:not(.open):hover .bc-bust { transform: none; translate: none; } }

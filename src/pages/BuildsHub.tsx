@@ -6,7 +6,8 @@ import HeroCombo from '../components/HeroCombo';
 import Kicker from '../components/Kicker';
 import { SiteFooter } from '../components/Shell';
 import { browseBuilds, FILTER_LABEL, itemCount, plannerLink, SORT_LABEL, type BuildFilter, type BuildSort, type HeroBuild } from '../data/builds';
-import { getHeroBg } from '../data/heroStats';
+import { getGloat } from '../data/heroGloat';
+import { getHeroColor } from '../data/heroColors';
 import { rankBadge } from '../data/ranks';
 import { getHero } from '../data/roster';
 import { dataSource } from '../data/source';
@@ -22,22 +23,20 @@ const age = (d?: number): string | null => (d === undefined ? null : d === 0 ? '
 
 function BuildCard({ b, open, onToggle }: { b: HeroBuild; open: boolean; onToggle: () => void }) {
   const hero = getHero(b.heroSlug);
-  const bg = getHeroBg(b.heroSlug);
+  const bust = getGloat(b.heroSlug) ?? hero?.portrait;
   const names = b.phases.flatMap((p) => p.items);
+  // a printed card: the hero's bust rises out of a band in the hero's colour, then the items come first and the
+  // description waits in the opened view, so a page of cards doesn't repeat the same sentence over and over
   return (
-    <article className={`bc panel paint${open ? ' open' : ''}`}>
-      <div className="bc-art" style={bg ? { backgroundImage: `url(${bg})` } : undefined}>
-        <Link to={`/hero/${b.heroSlug}`} className="bc-hero">
-          {hero?.icon && <img src={hero.icon} alt="" />}
-          <b>{hero?.name ?? b.heroSlug}</b>
-        </Link>
+    <article className={`bc${open ? ' open' : ''}`} style={{ ['--hc' as string]: getHeroColor(b.heroSlug) } as React.CSSProperties}>
+      <div className="bc-art">
+        {bust && <img className="bc-bust" src={bust} alt="" loading="lazy" />}
+        <Link to={`/hero/${b.heroSlug}`} className="bc-hero"><b>{hero?.name ?? b.heroSlug}</b></Link>
         <span className={`bc-origin ${b.origin}`}>{b.origin === 'ingame' ? 'In-game' : 'Community'}</span>
         {b.eternus && <span className="bc-et"><img src={rankBadge('Eternus')} alt="" />Eternus</span>}
       </div>
       <div className="bc-body">
         <h3>{b.title}</h3>
-        <p>{b.blurb}</p>
-        <div className="bb-tags">{b.tags.map((t) => <span key={t} className="tagchip">{t}</span>)}</div>
         <div className="bc-items" aria-label="Items in this build">
           {names.slice(0, 12).map((it) => <ItemTile key={it.name} item={{ name: it.name, category: it.category }} />)}
         </div>
@@ -47,6 +46,7 @@ function BuildCard({ b, open, onToggle }: { b: HeroBuild; open: boolean; onToggl
           <div><dt>Items</dt><dd>{itemCount(b)}</dd></div>
           {b.likes !== undefined && <div><dt>Likes</dt><dd><span className="heart" aria-hidden="true">{'♥'}</span> {fmtInt(b.likes)}</dd></div>}
         </dl>
+        <div className="bb-tags">{b.tags.map((t) => <span key={t} className="tagchip">{t}</span>)}</div>
         <div className="bc-foot">
           <small>{b.author ? `by ${b.author}` : 'Built from match data'}{age(b.ageDays) ? ` · ${age(b.ageDays)}` : ''}</small>
           <div className="bc-actions">
@@ -58,6 +58,7 @@ function BuildCard({ b, open, onToggle }: { b: HeroBuild; open: boolean; onToggl
       </div>
       {open && (
         <div className="bc-detail">
+          {b.blurb && <p className="bc-blurb">{b.blurb}</p>}
           <BuildPhases build={b} />
           <BuildSkill build={b} />
         </div>

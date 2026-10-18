@@ -352,3 +352,10 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 - **Number one** keeps its big hero card and gains a 6 px gold frame (drawn above the hero art, so the art never covers it) and a gold numeral.
 - **Two to five** are solid printed cards instead of dark panels with a hero backdrop: silver for second, bronze for third, cream for fourth and fifth, all with dark ink, a black number tape and the hard shadow. They sit level and lift a little under the pointer. Records and win rates use the darker green and red that read on light card stock.
 - Checked: tsc, 165 tests, 390 px on six pages, City and Hidden King themes.
+
+## Round 38: build cards as prints
+
+- Every card on the builds page is a cream print. Its top is a band in the hero's colour (a soft gradient of the hero colour), with the hero's gloat bust rising out of it past the top edge and the name on a black tape; the source and Eternus labels sit on black and orange tapes above the name. The bust rises a few pixels more under the pointer while the card lifts.
+- Items come straight after the title, then the numbers and tags. The one-line description was the same sentence on most cards, so it now opens with the item paths instead of sitting on every card.
+- Opened builds use the cream phase cards from Round 35; the skill order heading is dark ink so it reads on cream.
+- Checked: tsc, 165 tests, 390 px on six pages, reduced motion, no element left hidden by the scroll reveal on five pages.
