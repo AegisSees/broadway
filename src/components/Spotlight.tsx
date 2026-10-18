@@ -79,7 +79,21 @@ export default function Spotlight() {
 
   const cur = order[i];
   useHeroColor(cur.slug); // re-render when the live colours arrive
+  // the next two heroes wait as cards stacked behind the big one; the front card is dealt from that pile
+  const back = [1, 2].map((k) => order[(i + k) % order.length]);
   return (
+    <div className="spot-deck">
+    {back.slice().reverse().map((h, n) => {
+      const depth = 2 - n;
+      const wm = getWordmark(h.slug);
+      return (
+        <button type="button" key={`${h.slug}-${i}`} className={`spot-back d${depth}`} tabIndex={-1} aria-hidden="true"
+          onClick={() => { setMoved(true); go(i + depth); }} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+          <img src={(h.art ?? h.render) as string} alt="" />
+          {wm && <img className="wm" src={wm} alt="" />}
+        </button>
+      );
+    })}
     <div
       className="spot" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)} onBlur={() => setPaused(false)} aria-roledescription="carousel" aria-label="Heroes in the spotlight"
@@ -93,6 +107,7 @@ export default function Spotlight() {
         <button type="button" onClick={() => { setMoved(true); go(i + 1); }} aria-label="Next hero">{'›'}</button>
       </div>
       <div className="spot-bar" aria-hidden="true"><span key={`${i}-${paused}`} className={paused || reduce ? 'still' : 'run'} style={{ animationDuration: `${moved ? CYCLE_MS : FIRST_MS}ms` }} /></div>
+    </div>
     </div>
   );
 }

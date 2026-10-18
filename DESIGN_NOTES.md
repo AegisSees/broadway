@@ -299,3 +299,9 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 ## Round 29: placeholder bug
 
 - **Fixed:** the "All ranks" row in the rank menu showed a huge empty oval. Round 22's player header used the class `.ph`, which is also the site-wide class for an empty placeholder (rank menu, avatars without a picture, skill-tree numbers, leaderboard and match rows). Every placeholder took the header's 250 px height and padding. The header is now `.phead`; placeholders are back to their own sizes.
+
+## Round 30: All ranks star, the spotlight as a deck
+
+- **Rank menu:** "All ranks" shows a plain brass star, without the dashed ring the rank placeholders use (`.all-star`).
+- **Spotlight deck** (`Spotlight.tsx`, `pop.css`). Alp wanted one big card rather than Deadlock Labs' three-card fan, but with a feeling of cards rotating. The big card is now more square, and the next two heroes wait behind it as cream-framed prints with their name lettering, fanned up and to the right (about 4.5 and 9 degrees). When the spotlight moves on, the new front card is dealt off the pile (from the first back card's angle, in four held frames) and the pile shuffles forward. Clicking a back card jumps to that hero. Under reduced motion the deck is still. On phones the fan is smaller.
+- Checked: tsc, 165 tests, 390 px, standalone build opened with no errors.

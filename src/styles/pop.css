@@ -180,3 +180,39 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 .tool-card .art.duel img { border-color: #0d0a07; box-shadow: 3px 3px 0 #0006; } .tool-card .art.duel i { color: #0d0a07; }
 .tool-card .art.items img { box-shadow: 3px 3px 0 #0006; }
 @media (prefers-reduced-motion: reduce) { .tool-card { transition: none; } }
+
+/* ---------- Round 30 · rank menu: "All ranks" is a plain star, no dashed ring ---------- */
+.rank-menu .all-star { width: 22px; height: 22px; display: inline-grid; place-items: center; flex: none; font-size: 17px; line-height: 1; color: var(--brass-2); }
+
+/* ---------- Round 30 · the spotlight as a deck of cards ----------
+   One big card in front; the next two heroes wait behind it as printed cards, fanned up and to the right. When the
+   spotlight moves on, the new front card is dealt from the pile in four held frames and the pile shuffles forward. */
+.spot-deck { position: relative; padding: 30px 70px 0 0; }
+/* the fanned cards must not push the page sideways on narrow screens */
+.hero { overflow-x: clip; }
+.spot-deck > .spot { z-index: 3; }
+.spot-back {
+  position: absolute; z-index: 1; top: 30px; left: 0; right: 70px; bottom: 0; padding: 0; border: 7px solid #e6dccb; border-bottom-width: 30px;
+  background: var(--s3); overflow: hidden; border-radius: 2px; box-shadow: 4px 5px 0 #0007; transform-origin: 50% 100%;
+  animation: deck-shift 0.36s steps(4, end) backwards;
+}
+.spot-back img:first-child { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; filter: brightness(0.62) saturate(0.85); }
+.spot-back .wm { position: absolute; right: 12px; bottom: 12px; height: 34px; width: auto; max-width: 46%; object-fit: contain; filter: drop-shadow(0 2px 4px #000); opacity: 0.85; }
+.spot-back.d1 { z-index: 2; transform: translate(34px, -10px) rotate(4.5deg); }
+.spot-back.d2 { z-index: 1; transform: translate(66px, -16px) rotate(9deg); filter: brightness(0.8); }
+.spot-back:hover { filter: none; }
+.spot-back:hover img:first-child { filter: brightness(0.8); }
+@keyframes deck-shift { from { translate: 32px -6px; rotate: 4.5deg; opacity: 0.6; } }
+/* the new front card comes off the top of the pile */
+.spot-deck .spot-slide.in { animation: deal-in 0.4s steps(4, end) both; }
+@keyframes deal-in {
+  from { opacity: 0.4; transform: translate(34px, -10px) rotate(4.5deg) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 720px) {
+  .spot-deck { padding: 18px 34px 0 0; }
+  .spot-back { top: 18px; right: 34px; }
+  .spot-back.d1 { transform: translate(16px, -6px) rotate(3deg); }
+  .spot-back.d2 { transform: translate(32px, -10px) rotate(6deg); }
+}
+@media (prefers-reduced-motion: reduce) { .spot-back, .spot-deck .spot-slide.in { animation: none; } }

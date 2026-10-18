@@ -41,7 +41,7 @@ function RankSelect({ value, onChange }: { value: RankKey; onChange: (r: RankKey
           {(['all', ...RANKS] as RankKey[]).map((r) => (
             <li key={r} role="presentation">
               <button type="button" role="option" aria-selected={r === value} onClick={() => pick(r)}>
-                {r === 'all' ? <span className="ph" aria-hidden="true">{'✦'}</span> : badge(r) ? <img src={badge(r)} alt="" /> : <span className="ph" aria-hidden="true">{r[0]}</span>}
+                {r === 'all' ? <span className="all-star" aria-hidden="true">{'✦'}</span> : badge(r) ? <img src={badge(r)} alt="" /> : <span className="ph" aria-hidden="true">{r[0]}</span>}
                 {r === 'all' ? 'All ranks' : r}
               </button>
             </li>
