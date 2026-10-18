@@ -80,6 +80,8 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
 
 /* ---------- home: the spotlight hangs off the page with a shadow and a glow in the hero's colour ---------- */
 .spot-hold { min-width: 0; }
+/* the flicked card never rises over the search or the top bar: nothing in the deck draws above its own top edge */
+.spot-hold { clip-path: inset(-26px -100vw -100vw -100vw); }
 .lane-card { box-shadow: 6px 6px 0 var(--pop-shadow); }
 
 /* ---------- inputs: a lit edge when in use ---------- */
@@ -236,21 +238,21 @@ body::before { mix-blend-mode: normal; background: url('../assets/ui/film-dust-a
 
 /* ---------- Round 32 · the deck moves as whole cards ----------
    The picture is part of its card: the front card fills its frame with the art (no inner box), and moving on deals
-   the whole card. The card that leaves is thrown off to the left; the next card comes forward from the pile, and the
+   the whole card. The card that leaves is flicked up and off to the right (Round 33); the next card comes forward from the pile, and the
    pile slides up one place. Smooth easing throughout, after Alp's own site. */
 .spot-deck .spot-slide .art { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; -webkit-mask-image: none; mask-image: none; }
-.spot-deck .spot-slide::after { height: 58%; background: linear-gradient(0deg, #000000c4, transparent); }
+/* no caption over the art any more: only a thin shade behind the link bar */
+.spot-deck .spot-slide::after { height: 22%; background: linear-gradient(0deg, #000000b0, transparent); }
 .spot-gone {
   position: absolute; z-index: 4; top: 30px; left: 0; right: 70px; bottom: 0; border: 8px solid #efe6d6; border-radius: 3px; overflow: hidden;
   background: var(--s3); box-shadow: 5px 6px 0 #0008; pointer-events: none;
-  animation: deck-throw 0.6s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+  animation: deck-throw 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
 }
 .spot-gone .spot-slide { opacity: 1; }
 .spot-gone .spot-slide .art { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; -webkit-mask-image: none; mask-image: none; }
-.spot-gone .cap { position: absolute; left: 26px; bottom: 58px; z-index: 4; max-width: 62%; }
-.spot-gone .cap .wm { display: block; height: 70px; width: auto; max-width: 100%; margin: 14px 0 0; object-fit: contain; object-position: left center; }
 .spot-gone.back { animation-name: deck-tuck; z-index: 0; }
-@keyframes deck-throw { to { opacity: 0; translate: -70% 18%; rotate: -16deg; } }
+/* a flick up and to the right, off the side of the page and away from the headline and buttons */
+@keyframes deck-throw { 0% { opacity: 1; } 35% { opacity: 1; } to { opacity: 0; translate: 62% -34%; rotate: 15deg; scale: 0.95; } }
 @keyframes deck-tuck { to { opacity: 0; translate: 66px -16px; rotate: 9deg; scale: 0.96; } }
 @media (max-width: 720px) { .spot-gone { top: 18px; right: 34px; } }
 @media (prefers-reduced-motion: reduce) { .spot-gone { display: none; } .spot-deck .spot.dealt { animation: none; } .spot-back { transition: none; } }

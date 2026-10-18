@@ -1,10 +1,7 @@
-import Kicker from './Kicker';
-import { getLore } from '../data/heroLore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HEROES, type Hero } from '../data/roster';
 import { getWordmark } from '../data/names';
-import HeroTags from './HeroTags';
 import { getHeroColor, useHeroColor } from '../data/heroColors';
 import { NEWCOMERS, isOut } from '../data/newHeroes';
 
@@ -62,19 +59,12 @@ export default function Spotlight() {
     return () => window.clearTimeout(t);
   }, [i, paused, reduce, go, moved]);
 
-  const slide = (h: Hero, state: 'in' | 'out') => {
-    const wm = getWordmark(h.slug);
-    return (
-      <div className={`spot-slide ${state}`} key={h.slug} aria-hidden={state === 'out'} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
-        <img className="art" src={(h.art ?? h.render) as string} alt="" />
-        <div className="cap">
-          <Kicker>{getLore(h.slug)?.title ?? 'In the spotlight'}</Kicker>
-          {wm ? <img className="wm" src={wm} alt="" /> : <h2>{h.name}</h2>}
-          <HeroTags slug={h.slug} />
-        </div>
-      </div>
-    );
-  };
+  // the art is the whole card: no caption over it, the name sits in the link along the bottom
+  const slide = (h: Hero, state: 'in' | 'out') => (
+    <div className={`spot-slide ${state}`} key={h.slug} aria-hidden={state === 'out'} style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+      <img className="art" src={(h.art ?? h.render) as string} alt="" />
+    </div>
+  );
 
   const cur = order[i];
   useHeroColor(cur.slug); // re-render when the live colours arrive
@@ -103,7 +93,7 @@ export default function Spotlight() {
       onFocus={() => setPaused(true)} onBlur={() => setPaused(false)} aria-roledescription="carousel" aria-label="Heroes in the spotlight"
     >
       {slide(cur, 'in')}
-      <Link to={`/hero/${cur.slug}`} className="spot-link" aria-label={`Open ${cur.name}`}><span className="go">Open hero page {'✦'}</span></Link>
+      <Link to={`/hero/${cur.slug}`} className="spot-link" aria-label={`Open ${cur.name}`}><span className="go">{cur.name}<span className="go-more"> {'·'} open hero page</span> {'✦'}</span></Link>
       <div className="spot-ctl">
         <button type="button" onClick={() => { setMoved(true); go(i - 1); }} aria-label="Previous hero">{'‹'}</button>
         <span className="count" aria-live="off">{String(i + 1).padStart(2, '0')}<i> / {order.length}</i></span>

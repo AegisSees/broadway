@@ -355,12 +355,6 @@ table.data th:first-child, table.data td:first-child { text-align: left; }
 .spot-slide .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 62% 100%; z-index: 0;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%), linear-gradient(180deg, transparent 0, #000 9%, #000 100%); -webkit-mask-composite: source-in;
   mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%), linear-gradient(180deg, transparent 0, #000 9%, #000 100%); mask-composite: intersect; }
-.spot .cap { position: absolute; left: 26px; bottom: 58px; z-index: 4; max-width: 62%; }
-.spot .cap .wm, .spot .cap .htag { filter: drop-shadow(0 2px 6px #000b); }
-.spot .cap .wm { display: block; height: 70px; width: auto; max-width: 100%; margin: 14px 0 0; filter: sepia(0.2) drop-shadow(0 4px 10px #000); object-fit: contain; object-position: left center; }
-.spot .cap h2 { font-size: 52px; line-height: 1; margin: 12px 0 0; }
-.spot .cap .htags { margin: 12px 0 0; }
-.spot .cap .htag { font-size: 12px; padding: 4px 11px 3px; }
 .spot-link { position: absolute; inset: 0; z-index: 5; display: flex; align-items: flex-end; justify-content: flex-start; padding: 0 0 20px 26px; }
 .spot-link .go { font: 600 12px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass-2); }
 .spot-link:hover .go { text-decoration: underline; text-underline-offset: 4px; }
@@ -375,7 +369,9 @@ table.data th:first-child, table.data td:first-child { text-align: left; }
 .spot-bar span.run { animation: spot-run linear forwards; }
 .spot-bar span.still { transform: scaleX(0); }
 @keyframes spot-run { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@media (max-width: 720px) { .spot .cap { max-width: 78%; left: 16px; } .spot .cap .wm { height: 54px; } .spot-link { padding-left: 16px; } }
+@media (max-width: 720px) { .spot-link { padding-left: 16px; } }
+/* the bar along the bottom shares its row with the counter: on a narrow card it shows only the name */
+@container (max-width: 500px) { .spot-link .go-more { display: none; } }
 @media (prefers-reduced-motion: reduce) { .spot-slide.in { animation: none; } }
 
 /* ------------ kicker plate (orange label, as on the official update page) ------------ */
@@ -445,10 +441,6 @@ table.data th { letter-spacing: 0.12em; }
 
 /* ------------ round 3 fixes ------------ */
 .spot { container-type: inline-size; }
-.spot .cap { max-width: calc(100% - 44px); }
-.spot .cap .htags { flex-wrap: nowrap; gap: 0 clamp(5px, 1.6cqw, 9px); }
-.spot .cap .htags li { min-width: 0; }
-.spot .cap .htag { white-space: nowrap; font-size: clamp(9px, 2.4cqw, 12px); padding: 4px clamp(7px, 2.1cqw, 11px) 3px; letter-spacing: 0.08em; }
 .htag { white-space: nowrap; }
 
 /* stats: the tier badge and rank badge are sized so the first row is no taller than the second */
