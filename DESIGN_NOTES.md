@@ -266,3 +266,12 @@ Feedback: the site should "pop more" before it goes public. Kept inside the City
 - **Pop-in.** Cards, panels and tier rows arrive in three held frames (scale and rise, slight overshoot) when a page opens, staggered by position. It uses the individual `scale`/`translate` properties and `animation-fill-mode: backwards`, so it never fights the hover transforms. Off under reduced motion.
 - **Deploy.** `vercel.json` added (SPA rewrites, long cache on hashed assets) and a Deploying section in the README. Live data was already the default unless `VITE_DATA_SOURCE=fixture`.
 - Checked: tsc, 159 tests, all three themes, 390 px (no sideways scroll on six pages), reduced motion, standalone build (28.7 MB) opened and four routes rendered with no errors.
+
+## Round 26: steadier stat plates, and the meta right now
+
+Feedback: the headline stat plates moved too much, and the corners of the number hung outside the plate. Look at Deadlock Labs for a few design cues.
+
+- **Stat plates** (`tilt.css`). The steep `--plate` cut sliced off the corners behind the figure, and the turn plus wobble made it worse. They now use a gentle cut of their own (a few percent of slope), rest within about half a degree, wobble by about a fifth of a degree, sit 2-4 px larger than the text box and have a little more padding. The cut still mirrors along the row, so they do not all lean the same way. This settles the old to-do about whether the stat plates should go level: nearly level.
+- **The meta right now** (`components/MetaNow.tsx`, home, under the header). Taken structurally from Deadlock Labs' "meta right now" highlight cards, drawn in Broadway's style: four cards lit in the hero's colour with the hero's art, a tape label and one big number. Patch leader (best win rate among heroes with at least 35% of the median sample), Most picked, Sleeper pick (best win rate in the less-picked half), and Climbing (biggest weekly win-rate gain) or Most banned when there is no weekly change. No hero appears twice. Every number comes from the tier list, labelled sample or live. Tests in `MetaNow.test.ts`.
+- **Title pattern**: "The meta *right now*", cream with the second half in the accent colour, as on the reference site's section titles.
+- Checked: tsc, 163 tests, 390 px (no sideways scroll on six pages), reduced motion, standalone build opened with no errors.

@@ -88,6 +88,16 @@ tr:nth-child(8n) .tier-tag { --ri: 7; }
 .vital:nth-child(1) .plate, .vital:nth-child(4) .plate { --sx: var(--hf, 1); }
 .vital:nth-child(2) .plate { --sx: calc(var(--hf, 1) * -1); }
 .vital .dia { transform: rotate(-1.6deg); }
+/* Round 26: the slanted cut left the corners of a number hanging outside the plate, and the wobble made it worse.
+   The headline plates now use a gentle cut (a few percent of slope), rest within about half a degree and wobble by a
+   hair, so the figure always sits inside. The cut still mirrors along the row, so they never all lean one way. */
+.vital .plate {
+  --amp: 0.35; padding: 13px 30px 11px;
+  --j1: calc(sin(var(--tn, 1) * 4.7rad + 1rad) * 0.22deg);
+  --j2: calc(sin(var(--tn, 1) * 3.3rad + 2rad) * 0.22deg);
+  --j3: 0deg;
+}
+.vital .plate::before { clip-path: polygon(0 9%, 100% 0, 99.4% 100%, 0.6% 93%); inset: -2px -4px; }
 
 /* hero trait tags: direction and size vary by hero (--hs, set in HeroTags; the rule is in pages.css) */
 

@@ -11,6 +11,7 @@ import { getItem } from '../data/items';
 import { getHeroBg } from '../data/heroStats';
 import { rankBadge } from '../data/ranks';
 import Spotlight from '../components/Spotlight';
+import MetaNow from '../components/MetaNow';
 import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
 import { dataSource } from '../data/source';
 import { DEFAULT_FILTERS } from '../data/types';
@@ -150,6 +151,7 @@ export default function Home() {
         </div>
       </section>
       <div className="wrap">
+        <MetaNow list={tierList} />
         <Tiles />
         <div className="home-grid">
           <section className="panel">

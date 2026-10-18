@@ -100,3 +100,30 @@ table.data tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--label
   main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(6) { animation-delay: 0.2s; }
   main :is(.dir-card, .tl-row, .panel, .lane-card):nth-child(n + 7) { animation-delay: 0.24s; }
 }
+
+/* ---------- Round 26 · the meta right now (home): four headline picks, each lit in its hero's colour ---------- */
+.meta-now { margin: 34px 0 6px; }
+.meta-now-title { margin: 10px 0 18px; font-size: clamp(30px, 4vw, 44px); text-transform: uppercase; color: var(--ink); text-shadow: 3px 3px 0 var(--pop-shadow); }
+.meta-now-title em { color: var(--glow-2); }
+.mn-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.mn-card {
+  position: relative; display: flex; align-items: flex-end; min-height: 250px; overflow: hidden; isolation: isolate; color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--hc) 55%, var(--line)); border-top: 4px solid var(--hc); border-radius: 3px;
+  background: radial-gradient(110% 80% at 70% 20%, color-mix(in srgb, var(--hc) 46%, var(--s3)), var(--s2) 75%);
+  box-shadow: 6px 6px 0 var(--pop-shadow);
+  transition: transform 0.24s steps(3, end), box-shadow 0.2s;
+}
+.mn-card:hover, .mn-card:focus-visible { color: var(--ink); transform: translate(-3px, -4px); box-shadow: 0 0 0 2px var(--hc), 9px 10px 0 var(--pop-shadow), 0 20px 40px -12px color-mix(in srgb, var(--hc) 70%, transparent); }
+.mn-art { position: absolute; z-index: -1; right: -12%; top: -4%; width: 92%; height: 108%; object-fit: cover; object-position: 50% 15%;
+  -webkit-mask-image: linear-gradient(200deg, #000 40%, transparent 85%); mask-image: linear-gradient(200deg, #000 40%, transparent 85%); transition: transform 0.3s steps(3, end); }
+.mn-card:hover .mn-art { transform: scale(1.05); }
+.mn-card::after { content: ''; position: absolute; inset: 40% 0 0; z-index: -1; background: linear-gradient(0deg, color-mix(in srgb, var(--s0) 88%, transparent), transparent); }
+.mn-card .tape { position: absolute; left: -2px; top: 16px; font-size: 12.5px; padding: 7px 16px 6px; transform: rotate(calc((var(--mi) - 1.5) * 1.1deg)); }
+.mn-card:nth-child(odd) .tape { --shape: var(--plate-b); }
+.mn-txt { display: grid; gap: 2px; padding: 16px 18px 16px; }
+.mn-name { font: 700 22px/1.05 var(--display); text-shadow: 2px 2px 0 var(--pop-shadow); }
+.mn-stat { font: 700 38px/1 var(--ui); color: color-mix(in srgb, var(--hc) 45%, #fff); text-shadow: 2px 2px 0 var(--pop-shadow); font-variant-numeric: lining-nums tabular-nums; }
+.mn-txt small { color: var(--ink-2); font: 600 10.5px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; }
+@media (max-width: 1000px) { .mn-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .meta-now-title { font-size: 25px; } .mn-row { gap: 12px; } .mn-card { min-height: 200px; } .mn-stat { font-size: 30px; } .mn-name { font-size: 18px; } }
+@media (prefers-reduced-motion: reduce) { .mn-card, .mn-art { transition: none; } .mn-card:hover .mn-art { transform: none; } }
