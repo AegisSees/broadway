@@ -11,3 +11,5 @@ Thumbs.db
 coverage
 *.tsbuildinfo
 *.zip
+dist-anon
+dist-standalone-anon

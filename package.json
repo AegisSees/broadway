@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:standalone": "tsc --noEmit && vite build --mode standalone",
+    "build:anon": "tsc --noEmit && vite build --mode anon",
+    "build:standalone:anon": "tsc --noEmit && vite build --mode standalone-anon",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

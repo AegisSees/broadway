@@ -116,14 +116,14 @@ export default function HeroPage() {
             </div>
             <div className="hero-name">
               <div className="kick-row">
-                <Kicker key={hero.slug}>{lore?.title ?? (hero.unreleased ? 'New hero' : 'Hero dossier')}</Kicker>
+                <Kicker key={hero.slug}>{lore?.title ?? (hero.unreleased ? 'New hero' : 'Hero lore')}</Kicker>
                 {newcomer && <span className="out-plate">New hero {'·'} {out ? 'Out' : 'Unlocks'} {releaseDay(newcomer)}</span>}
               </div>
               {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
               {newcomer
                 ? <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>
-                : lore && <p className="intro">{lore.role ? `${lore.role}. ` : ''}<a href="#dossier" onClick={(e) => { e.preventDefault(); jump('dossier'); }}>Read the dossier {'↓'}</a></p>}
+                : lore && <p className="intro">{lore.role ? `${lore.role}. ` : ''}<a href="#lore" onClick={(e) => { e.preventDefault(); jump('lore'); }}>Read the lore {'↓'}</a></p>}
               {abilities ? (
                 <div className="abil">
                   {abilities.map((a, i) => (
@@ -252,7 +252,6 @@ export default function HeroPage() {
             {(hero.render || hero.portrait) && (
               <figure className="case-print" aria-hidden="true">
                 <span className="mat"><img src={(hero.render || hero.portrait) as string} alt="" loading="lazy" /></span>
-                <span className="utag">Case file</span>
                 <figcaption>{hero.name}</figcaption>
               </figure>
             )}

@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import { dataMode, switchDataMode, useDataHealth } from '../data/dataMode';
 import { pageArtFor } from '../lib/pageArt';
 import { useReveal } from '../lib/reveal';
+import { AUTHOR } from '../lib/credit';
 
 // The side rail is drawn as a subway line, Broadway being one: each page is a stop with its own coloured bullet.
 // The main pages are round local stops; the tools (compare, planner, ranks) are diamonds, like express service.
@@ -123,7 +124,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 export function SiteFooter() {
   return (
     <footer className="site-foot">
-      <span>{'✦'} Broadway is an independent fan project by Alp Kiziltas, not made or endorsed by Valve. Deadlock is a trademark of Valve Corporation.</span>
+      <span>{'✦'} Broadway is an independent fan project{AUTHOR ? ` by ${AUTHOR}` : ''}, not made or endorsed by Valve. Deadlock is a trademark of Valve Corporation.</span>
       <span>
         <Link to="/about">About &amp; methodology</Link> · {dataMode === 'live' ? 'Live data from' : 'Sample mode. Live data comes from'} the <a href="https://github.com/deadlock-api/deadlock-api" rel="noreferrer">Deadlock API</a> (MIT).
       </span>
