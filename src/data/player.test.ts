@@ -43,7 +43,7 @@ describe('hero moods', () => {
     expect(moodFor(true, 3)).toBe('proud');
   });
   it('has a critical card address for the long-standing heroes and a tinted fallback otherwise', () => {
-    expect(moodImage('abrams', 'critical').src).toMatch(/bull_card_critical\.webp$/);
+    expect(moodImage('abrams', 'critical').src).toMatch(/critical\/abrams\.webp$/);
     expect(moodImage('abrams', 'critical').tintOnFallback).toBe(true);
     expect(moodImage('violet', 'critical').tintOnFallback).toBe(true);
     expect(moodImage('haze', 'normal').tintOnFallback).toBe(false);

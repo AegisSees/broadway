@@ -419,3 +419,13 @@ V asked for two things on the default theme: drop the Hidden King background, an
 - **Backdrop:** the home hero's backdrop in City Never Sleeps is now uptown's theatre row (`HALL_CITY`). The Hidden King hall shows only in the Hidden King theme, and the Archmother hall only in hers.
 - **Accent:** the city theme's `--glow`, `--label`, `--brass` and the warm halo are forest grey. The printed-card orange in pop.css is now `--pop-orange`: forest grey in City Never Sleeps, still #ec7a2e in Hidden King and Archmother. That covers the stat cards, the tapes, the kicker plates, the median flag, the "Right now" heading word and the brand's offset shadow.
 - Left as they were on purpose: faction colours (the Hidden King's amber, the Archmother's blue), souls and gold-tier colours, and the coloured subway stops on the side rail.
+
+## Round 48 · art from the game's own files (2026-10-19)
+
+V gave access to their Deadlock install, so the missing art now comes straight from the game (tools/game-files/ has the scripts).
+
+- **New heroes:** Violet, Deadman Danny and Solomon have their real ability icons, matched to each ability through the game's ability data rather than by eye, plus short descriptions written from the game's own ability text. Their round icons and portraits are now the game's cut-out art, the same style as every other hero, and they have gloat busts for the portrait hover. Nurse Harrow's kit isn't in the files yet.
+- **Cooldowns:** the three new kits have no cooldown numbers yet, so their cards say "Cooldown soon" instead of wrongly saying "Passive".
+- **Low-health cards:** every hero's critical card now ships with the site (assets/critical, about 630 KB), so a loss on a match card shows the hurt portrait without waiting on the Deadlock API. The API addresses stay as a fallback for heroes added later.
+- **Fix:** the empty-state moth sat on top of the "Nothing on this block" heading, because `.panel::before` is an absolute frame; on `.panel.empty` it's back in the flow above the heading.
+- **Design library:** 2,721 UI images and icons from the game (logo, hero vote cards, name plates, paper and grain textures, chalk doodles, post-game stat icons, rank badges, map overviews and more) are in the project files under broadway/game-assets, outside the build.

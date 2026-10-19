@@ -819,3 +819,6 @@ main { overflow-x: clip; }
 .city.hall.lane-city { opacity: 0; }
 :root:not([data-theme='hidden-king']):not([data-theme='archmother']) .city.hall.lane-hk { opacity: 0; }
 :root:not([data-theme='hidden-king']):not([data-theme='archmother']) .city.hall.lane-city { opacity: var(--lane-o, 0.5); }
+
+/* ---------- Round 48: the empty-state moth sits above the heading, not on it (.panel::before is an absolute inset frame) ---------- */
+.panel.empty::before { position: relative; inset: auto; border: 0; border-radius: 0; }

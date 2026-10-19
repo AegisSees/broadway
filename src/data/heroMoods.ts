@@ -7,13 +7,15 @@ import { getHero } from './roster';
  * "gloat" card (proud). A player's match shows the critical card for a loss, the normal card for a win, and the
  * gloat card for a win where they finished in the game's top three.
  *
- * Gloat cards ship with the site (assets/gloat). Critical cards are not in the game-file snapshot, so they load from
- * the Deadlock API's asset bucket: addresses saved from its hero list (heroMoods.json), refreshed from the live list
- * whenever the site reads it (newer heroes appear that way). If one cannot be loaded, the normal card is shown with
- * a red, washed-out treatment instead (`tinted`).
+ * Gloat and critical cards ship with the site (assets/gloat, assets/critical), taken from the game's own files. A hero
+ * without a local critical card falls back to the Deadlock API's asset bucket: addresses saved from its hero list
+ * (heroMoods.json), refreshed from the live list whenever the site reads it (newer heroes appear that way). If none
+ * can be loaded, the normal card is shown with a red, washed-out treatment instead (`tinted`).
  */
 export type Mood = 'normal' | 'critical' | 'proud';
 
+const localCritical = import.meta.glob('../assets/critical/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const local = (slug: string): string | undefined => localCritical[`../assets/critical/${slug}.webp`];
 const SAVED = saved as Record<string, { critical?: string; gloat?: string }>;
 const live = new Map<string, string>();
 
@@ -43,11 +45,11 @@ export function moodImage(slug: string | undefined, mood: Mood): MoodImage {
   if (!slug || !h) return { src: undefined, fallback: undefined, tintOnFallback: false };
   if (mood === 'proud') return { src: getGloat(slug) ?? normal, fallback: normal, tintOnFallback: false };
   if (mood === 'critical') {
-    const url = live.get(slug) ?? SAVED[slug]?.critical;
+    const url = local(slug) ?? live.get(slug) ?? SAVED[slug]?.critical;
     return url ? { src: url, fallback: normal, tintOnFallback: true } : { src: normal, fallback: normal, tintOnFallback: true };
   }
   return { src: normal, fallback: normal, tintOnFallback: false };
 }
 
 /** True when a hero has no critical card to load, so the normal one must be tinted from the start. */
-export const criticalIsLocalOnly = (slug: string | undefined): boolean => !!slug && !live.has(slug) && !SAVED[slug]?.critical;
+export const criticalIsLocalOnly = (slug: string | undefined): boolean => !!slug && !local(slug) && !live.has(slug) && !SAVED[slug]?.critical;

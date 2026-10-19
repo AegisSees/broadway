@@ -1175,25 +1175,25 @@
   "abilities": [
    {
     "name": "Strix Salvo",
-    "desc": null,
+    "desc": "Fires a line of spirit missiles that lodge in the ground and burst on a timer or when an enemy comes close, marking whoever they hit. Charged shots on marked enemies deal bonus damage and slow.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Chimera Mk1",
-    "desc": null,
+    "desc": "Hold jump to fly on the jetpack while it heats up; at max heat Danny dives, and the landing explodes and launches nearby enemies. Missing every hero stuns Danny instead.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Jettison Fuel",
-    "desc": null,
+    "desc": "Sprays fuel that burns enemies and shreds bullet resist, building to a big backblast that deals spirit damage and pushes Danny backwards.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Close The Deal",
-    "desc": null,
+    "desc": "Grabs an enemy, rockets high into the air and slams back down; both take damage on the way, more against enemies on low health.",
     "cooldown": null,
     "stats": null
    }
@@ -1235,25 +1235,25 @@
   "abilities": [
    {
     "name": "Setup Bishop",
-    "desc": null,
+    "desc": "Places a bishop that stays on the board. Moving it slows and damages enemies along its path, then lights diagonal squares that hurt anyone stepping on them.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Kingside Knight",
-    "desc": null,
+    "desc": "Promotes an ally to a knight with bonus stamina and a barrier, or crowns Solomon as king for a double barrier. Moving the piece makes it invulnerable until it lands.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Rook Battery",
-    "desc": null,
+    "desc": "Sends a pair of rooks forward that damage and immobilise enemies and bounce back off walls. Recast to split them sideways.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Develop Queen",
-    "desc": null,
+    "desc": "Drops a queen that crashes down for area damage, then fires squares in straight lines that hit again and stun. Moving her leaps to a new spot and repeats the effects.",
     "cooldown": null,
     "stats": null
    }
@@ -1265,25 +1265,25 @@
   "abilities": [
    {
     "name": "Living Ink",
-    "desc": null,
+    "desc": "Empowers the next three bullets so they can be steered in flight for extra damage and splash; hero hits cut all ability cooldowns. Aiming instead paints a solid ink wall that blocks shots and movement.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Flow State",
-    "desc": null,
+    "desc": "Drags a brush forward that leaves a trail: allies slide further on it, enemies crossing it are slowed and damaged. Recast to flick the brush for a wider burst.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Still Life",
-    "desc": null,
+    "desc": "Picks an enemy hero as a subject and damages them while Violet keeps looking; a finished sketch stuns them and drops a sketch she can collect for permanent stats.",
     "cooldown": null,
     "stats": null
    },
    {
     "name": "Abstract Landscape",
-    "desc": null,
+    "desc": "Paints a ring of ink that blocks vision and gives allies spirit power; enemies inside are revealed, and leaving it damages, silences and slows them.",
     "cooldown": null,
     "stats": null
    }
