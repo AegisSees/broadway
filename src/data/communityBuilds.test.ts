@@ -3,7 +3,7 @@ import buildsSample from '../../api-samples/builds.json';
 import assetsSample from '../../api-samples/assets-heroes.json';
 import { DeadlockApi } from '../api/client';
 import type { AssetHero, BuildRaw, HeroBuildStatsRow } from '../api/types';
-import { heroBuildTabs, normalizeBuild, skillFromOrder } from './communityBuilds';
+import { heroBuildTabs, normalizeBuild, sectionName, skillFromOrder } from './communityBuilds';
 import { buildItemNames, itemCount } from './builds';
 import { getItem } from './items';
 import { createLiveSource } from './source';
@@ -59,6 +59,13 @@ describe('published builds (shape from api-samples/builds.json)', () => {
     expect(e.tags).toContain('Eternus');
   });
 
+  it('turns the game’s default section tokens into words', () => {
+    expect(sectionName('#Citadel_HeroBuilds_EarlyGame')).toBe('Early game');
+    expect(sectionName('#Citadel_HeroBuilds_Lane')).toBe('Lane');
+    expect(sectionName('#Citadel_HeroBuilds_SomethingNew')).toBe('Something New');
+    expect(sectionName('  Core  ')).toBe('Core');
+  });
+
   it('skips builds for heroes it does not know', () => {
     expect(normalizeBuild(RAWS[0], { slugById: () => undefined })).toBeNull();
   });
@@ -79,7 +86,7 @@ describe('live source builds', () => {
   const fakeFetch = (async (url: string) => {
     const u = new URL(url);
     const body = u.pathname === '/v1/assets/heroes' ? assetsSample
-      : u.pathname === '/v1/builds' ? (u.searchParams.get('hero_id') === '15' ? RAWS : [])
+      : u.pathname === '/v1/builds' ? (['15', null].includes(u.searchParams.get('hero_id')) ? RAWS : [])
         : u.pathname.startsWith('/v1/analytics/hero-build-stats/') ? [{ hero_id: 15, hero_build_id: 1242, wins: 70, losses: 30, matches: 100, players: 90 }]
           : [];
     return new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
@@ -98,9 +105,11 @@ describe('live source builds', () => {
     expect(await src.heroBuilds('haze', DEFAULT_FILTERS)).toBeNull();
   });
 
-  it('collects builds for the hub', async () => {
+  it('collects builds for the hub once each, across heroes or for one hero', async () => {
     const all = await src.allBuilds();
     expect(all?.length).toBe(3);
     expect(all?.every((b) => b.heroSlug === 'bebop')).toBe(true);
+    expect((await src.allBuilds(undefined, 'bebop'))?.find((b) => b.code === '1242')?.matches).toBe(100);
+    expect(await src.allBuilds(undefined, 'haze')).toBeNull();
   });
 });

@@ -38,6 +38,14 @@ const clean = (s: string | null | undefined, max: number): string => {
 };
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
+/** The game's own default section names arrive as localisation tokens (#Citadel_HeroBuilds_EarlyGame). */
+const TOKENS: Record<string, string> = { EarlyGame: 'Early game', MidGame: 'Mid game', LateGame: 'Late game', Lane: 'Lane' };
+export const sectionName = (raw: string | null | undefined): string => {
+  const m = /^#?Citadel_HeroBuilds_(\w+)$/i.exec((raw ?? '').trim());
+  if (!m) return clean(raw, 28);
+  return TOKENS[m[1]] ?? m[1].replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (c) => c.toUpperCase());
+};
+
 /** The 16-step skill order a build recommends for its hero, or null when it carries none. */
 export function skillFromOrder(raw: BuildRaw, heroSlug: string): SkillPath | null {
   const changes = raw.hero_build.details.ability_order?.currency_changes ?? [];
@@ -82,9 +90,9 @@ export function normalizeBuild(raw: BuildRaw, ctx: BuildContext): HeroBuild | nu
       const info = name ? getItem(name) : undefined;
       if (!name || !info || seen.has(name)) continue;
       seen.add(name);
-      items.push({ name, category: info.category, order: ++order, note: clean(m.annotation, 90) || undefined });
+      items.push({ name, category: info.category, order: ++order, note: clean(m.annotation, 240) || undefined });
     }
-    if (items.length) phases.push({ id: `s${i}`, label: clean(cat.name, 28) || `Section ${i + 1}`, range: clean(cat.description, 60), items });
+    if (items.length) phases.push({ id: `s${i}`, label: sectionName(cat.name) || `Section ${i + 1}`, range: /^#/.test(cat.description ?? '') ? '' : clean(cat.description, 60), items });
   }
   if (!phases.length) return null;
 

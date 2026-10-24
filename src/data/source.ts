@@ -1,4 +1,4 @@
-import { ApiError, DeadlockApi, mapLimit } from '../api/client';
+import { ApiError, DeadlockApi } from '../api/client';
 import { toApiFilters } from '../api/filters';
 import { buildPickColumns, buildSynergyColumn } from '../api/matchups';
 import type { BuildRaw, PlayerRankRaw, SteamProfile } from '../api/types';
@@ -6,7 +6,7 @@ import { dataMode, reportDegraded, reportHealthy } from './dataMode';
 import { buildHeroIdMap, type HeroIdMap } from './heroIds';
 import { liveOverview } from './liveHero';
 import { normalizePatches, type PatchNote } from './patches';
-import { getHero, HEROES } from './roster';
+import { getHero } from './roster';
 import { HAZE_BRAWL, HAZE_OVERVIEW } from './fixtures';
 import type { Filters, HeroOverview, MatchupGroup } from './types';
 import {
@@ -48,8 +48,8 @@ export interface DataSource {
   heroTrend(slug: string, filters: Filters, signal?: AbortSignal): Promise<HeroTrend | null>;
   /** The top builds for a hero (meta, win rate, popular, Eternus). Null when the source has none. */
   heroBuilds(slug: string, filters: Filters, signal?: AbortSignal): Promise<HeroBuild[] | null>;
-  /** Every build for the builds hub. Null when the source has none. */
-  allBuilds(signal?: AbortSignal): Promise<HeroBuild[] | null>;
+  /** Builds for the builds hub: every hero's most favorited, or one hero's when `heroSlug` is given. Null when the source has none. */
+  allBuilds(signal?: AbortSignal, heroSlug?: string | null): Promise<HeroBuild[] | null>;
   /** Matches in progress right now. Null when the source has no live feed. */
   liveMatches(signal?: AbortSignal): Promise<LiveMatch[] | null>;
   /** Streams of the game that are live right now. Null when the source has no streams feed. */
@@ -299,14 +299,15 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       return normalizeTrend(rows, id, patchDates(patches ?? []));
     },
 
-    // Published in-game builds (/v1/builds) with their games and wins (/v1/analytics/hero-build-stats).
+    // Published in-game builds (/v1/builds) with their games and wins (/v1/analytics/hero-build-stats). Two rounds of
+    // requests after the hero list: the builds and stats together, then the authors and any missing top builds together.
     async heroBuilds(slug, f, signal) {
       const ids = await heroIds(signal);
       const id = ids.idBySlug(slug);
       if (id === undefined) return null;
       const [top, weekly, stats] = await Promise.all([
-        api.builds({ hero_id: id, limit: 30 }, signal),
-        soft(api.builds({ hero_id: id, sort_by: 'weekly_favorites', limit: 10 }, signal), signal),
+        api.builds({ hero_id: id, limit: 12 }, signal),
+        soft(api.builds({ hero_id: id, sort_by: 'weekly_favorites', limit: 6 }, signal), signal),
         soft(api.heroBuildStats(id, { ...toApiFilters(f), min_matches: 10 }, signal), signal),
       ]);
       const byId = new Map((stats ?? []).map((r) => [r.hero_build_id, r]));
@@ -315,26 +316,31 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       const played = [...byId.values()].sort((a, b) => b.matches - a.matches);
       const best = played.filter((r) => r.matches >= 50).sort((a, b) => b.wins / b.matches - a.wins / a.matches);
       const extraIds = [...new Set([played[0], best[0]].filter((r) => r && !have.has(r.hero_build_id)).map((r) => r!.hero_build_id))];
-      const extra = (await Promise.all(extraIds.map((bid) => soft(api.builds({ build_id: bid, limit: 1 }, signal), signal)))).flatMap((x) => x ?? []);
-      const raws = [...top, ...extra];
-      const authors = await buildAuthors([...raws, ...(weekly ?? [])].map((b) => b.hero_build.author_account_id), signal);
+      const [extra, authors] = await Promise.all([
+        Promise.all(extraIds.map((bid) => soft(api.builds({ build_id: bid, limit: 1 }, signal), signal))).then((x) => x.flatMap((l) => l ?? [])),
+        buildAuthors([...top, ...(weekly ?? [])].map((b) => b.hero_build.author_account_id), signal),
+      ]);
       const ctx = { slugById: ids.slugById, stats: byId, authors };
       const norm = (list: BuildRaw[]) => list.map((b) => normalizeBuild(b, ctx)).filter((b): b is HeroBuild => !!b && b.heroSlug === slug);
-      const tabs = heroBuildTabs(norm(raws), norm(weekly ?? []));
+      const tabs = heroBuildTabs(norm([...top, ...extra]), norm(weekly ?? []));
       return tabs.length ? tabs : null;
     },
-    async allBuilds(signal) {
+    // The hub asks for one list: the most favorited builds across every hero, or one hero's builds with their games.
+    async allBuilds(signal, heroSlug) {
       const ids = await heroIds(signal);
-      const heroIdList = HEROES.map((h) => ids.idBySlug(h.slug)).filter((x): x is number => x !== undefined);
-      const perHero = await mapLimit(heroIdList, 4, async (id) => {
-        const [list, stats] = await Promise.all([soft(api.builds({ hero_id: id, limit: 8 }, signal), signal), soft(api.heroBuildStats(id, { min_matches: 10 }, signal), signal)]);
-        return { list: list ?? [], stats: stats ?? [] };
-      });
-      const raws = perHero.flatMap((h) => h.list);
-      if (!raws.length) throw new Error('No builds came back from the Deadlock API');
-      const stats = new Map(perHero.flatMap((h) => h.stats).map((r) => [r.hero_build_id, r]));
+      const id = heroSlug ? ids.idBySlug(heroSlug) : undefined;
+      if (heroSlug && id === undefined) return null;
+      const [list, weekly, stats] = await Promise.all([
+        api.builds(id !== undefined ? { hero_id: id, limit: 40 } : { limit: 120 }, signal),
+        soft(api.builds(id !== undefined ? { hero_id: id, sort_by: 'weekly_favorites', limit: 10 } : { sort_by: 'weekly_favorites', limit: 40 }, signal), signal),
+        id !== undefined ? soft(api.heroBuildStats(id, { min_matches: 10 }, signal), signal) : Promise.resolve(null),
+      ]);
+      const seen = new Set<number>();
+      const raws = [...list, ...(weekly ?? [])].filter((b) => !seen.has(b.hero_build.hero_build_id) && !!seen.add(b.hero_build.hero_build_id));
+      if (!raws.length) return null;
       const authors = await buildAuthors(raws.map((b) => b.hero_build.author_account_id), signal);
-      return raws.map((b) => normalizeBuild(b, { slugById: ids.slugById, stats, authors })).filter((b): b is HeroBuild => !!b);
+      const statMap = new Map((stats ?? []).map((r) => [r.hero_build_id, r]));
+      return raws.map((b) => normalizeBuild(b, { slugById: ids.slugById, stats: statMap, authors })).filter((b): b is HeroBuild => !!b);
     },
 
     async liveMatches(signal) {
@@ -478,7 +484,7 @@ export function createHybridSource(live: DataSource, sample: DataSource): DataSo
     liveMatches: (signal) => guard(() => live.liveMatches(signal), () => sample.liveMatches(signal), signal),
     patchNotes: (signal) => guard(() => live.patchNotes(signal), () => sample.patchNotes(signal), signal),
     heroBuilds: (slug, f, signal) => guard(() => live.heroBuilds(slug, f, signal), () => sample.heroBuilds(slug, f, signal), signal),
-    allBuilds: (signal) => guard(() => live.allBuilds(signal), () => sample.allBuilds(signal), signal),
+    allBuilds: (signal, hero) => guard(() => live.allBuilds(signal, hero), () => sample.allBuilds(signal, hero), signal),
     liveStreams: async (signal) => (await live.liveStreams(signal).catch((e) => { if (isAbort(e, signal)) throw e; return null; })) ?? sample.liveStreams(signal),
   };
 }

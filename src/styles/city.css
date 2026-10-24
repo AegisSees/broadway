@@ -206,29 +206,12 @@ button.chip.fav-toggle:hover { background: none; }
 .bb-code small { color: var(--muted); font-size: 12px; flex-basis: 100%; }
 @media (min-width: 900px) { .bb-code small { flex-basis: auto; margin-left: auto; } }
 
-.bb-phases { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.bb-phase { min-width: 0; padding: 12px 12px 6px; background: color-mix(in srgb, var(--s1) 70%, transparent); border: 1px solid var(--line-2); border-radius: 4px; }
-.bb-phase header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--line-2); }
-.bb-phase h4 { font: 400 20px var(--display); color: var(--brass-2); }
-.bb-phase header small { font: 600 10.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.bb-phase ol { list-style: none; margin: 0; padding: 0; }
-.bb-item { display: grid; grid-template-columns: 20px 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line-2); }
-.bb-item:first-child { border-top: 0; }
-.bb-item .no { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--s5); color: var(--ink); font: 700 11px var(--ui); }
-.bb-item .mid { min-width: 0; display: grid; gap: 3px; }
-.bb-item .mid b { font: 600 13.5px/1.2 var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bb-item .mid small { color: var(--muted); font-size: 11.5px; line-height: 1.25; }
-.bb-item .bar { display: block; height: 4px; border-radius: 2px; background: var(--s5); overflow: hidden; }
-.bb-item .bar i { display: block; height: 100%; background: linear-gradient(90deg, color-mix(in srgb, var(--brass) 55%, transparent), var(--brass)); }
-.bb-wr { font: 700 13px var(--ui); font-variant-numeric: tabular-nums; }
-.bb-wr.up { color: var(--good); } .bb-wr.down { color: var(--bad); }
 .bb-skill { position: relative; z-index: 1; margin-top: 18px; }
 .bb-skillhead { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
 .bb-skillhead h4 { font: 400 20px var(--display); color: var(--brass-2); }
 .bb-skillhead small { color: var(--muted); }
 .bb-skill .skill-compact { box-shadow: none; }
 .bb-skill .skill-title { display: none; }
-@media (max-width: 960px) { .bb-phases { grid-template-columns: 1fr; } }
 @media (max-width: 720px) { .bb { padding: 16px 12px; } .bb-nums { gap: 16px; } .bb-nums div { text-align: left; } .bb-who h3 { font-size: 24px; } }
 .bb-more { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .bb-more .chip { margin-top: 0; }

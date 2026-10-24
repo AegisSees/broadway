@@ -77,7 +77,7 @@ export default function BuildsHub() {
   const q = sp.get('q') ?? '';
   const [shown, setShown] = useState(STEP);
   const [openId, setOpenId] = useState<string | null>(null);
-  const state = useAsync((signal) => dataSource.allBuilds(signal), []);
+  const state = useAsync((signal) => dataSource.allBuilds(signal, hero || null), [hero]);
 
   const all = state.status === 'ready' ? state.value : null;
   const list = useMemo(() => (all ? browseBuilds(all, { filter, sort, hero: hero || null, q }) : []), [all, filter, sort, hero, q]);

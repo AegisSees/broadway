@@ -75,6 +75,7 @@ Not used: `/v1/players/{id}/card` and `account-stats` answer 403 without a Patre
 Mapped in round 51 (`src/data/communityBuilds.ts`, tests on `api-samples/builds.json`). Not verified against the running service
 from the build sandbox, which cannot reach the API, so check these on the live site:
 
+- The hub makes one call without `hero_id` (120 most favorited plus 40 weekly), or one hero's 40 with their stats when a hero is picked.
 - `/v1/builds` is called with `only_latest=true&sort_by=favorites|weekly_favorites&sort_direction=desc&limit=N&hero_id=` and,
   for the most played and best builds that are not among the favorites, `build_id=`.
 - `hero_build.details.mod_categories[].mods[].ability_id` is an item id (itemIds.json). `ability_order.currency_changes` lists

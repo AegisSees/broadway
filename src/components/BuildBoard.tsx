@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ItemTile } from './BuildPanel';
 import SkillTree from './SkillTree';
 import { getAbilities } from '../data/abilities';
-import { fmtBuy, itemCount, KIND_LABEL, plannerLink, type BuildItemStat, type HeroBuild } from '../data/builds';
+import { itemCount, KIND_LABEL, plannerLink, type BuildItemStat, type HeroBuild } from '../data/builds';
 import { copyText } from '../lib/clipboard';
 import { fmtInt, fmtPct } from '../lib/stats';
 
@@ -21,34 +21,52 @@ export function CopyCode({ code, label = 'Copy code' }: { code: string; label?: 
   );
 }
 
-function ItemRow({ it }: { it: BuildItemStat }) {
-  // published builds have no per-item numbers: the row shows the author's note, if any, instead of the bar
-  const stats = it.picks !== undefined && it.of ? { share: Math.round((it.picks / it.of) * 100), picks: it.picks, of: it.of } : null;
+function ShelfItem({ it }: { it: BuildItemStat }) {
+  const share = it.picks !== undefined && it.of ? Math.round((it.picks / it.of) * 100) : null;
   return (
-    <li className={`bb-item${stats ? '' : ' plain'}`}>
+    <li className="bs-it">
       <span className="no" aria-hidden="true">{it.order}</span>
-      <ItemTile item={{ name: it.name, category: it.category }} />
-      <div className="mid">
-        <b>{it.name}</b>
-        {stats && <span className="bar" aria-hidden="true"><i style={{ width: `${stats.share}%` }} /></span>}
-        {stats && <small>in {fmtInt(stats.picks)}/{fmtInt(stats.of)} builds{it.avgBuy !== undefined ? ` · avg buy ${fmtBuy(it.avgBuy)}` : ''}</small>}
-        {!stats && it.note && <small>{it.note}</small>}
-      </div>
-      {it.winRate !== undefined && <span className={`bb-wr ${it.winRate >= 50 ? 'up' : 'down'}`} title="Win rate when this item is bought">{fmtPct(it.winRate)}</span>}
+      <ItemTile item={{ name: it.name, category: it.category }} note={it.note} />
+      <span className="nm">{it.name}</span>
+      {share !== null && it.winRate !== undefined && (
+        <small className={`st ${it.winRate >= 50 ? 'up' : 'down'}`} title={`In ${share}% of builds · win rate ${fmtPct(it.winRate)} when bought`}>{fmtPct(it.winRate)}</small>
+      )}
+      {it.note && <i className="dot" aria-hidden="true" title="The author left a note: hover the item" />}
     </li>
   );
 }
 
-/** Laning / mid game / late game columns: numbered items with how many builds include them, average buy time and win rate. */
+/**
+ * The build as a shelf: one dark row per section (the author's own, or laning / mid / late for samples), items as
+ * icons with their names in buy order. The author's notes sit behind each item's tooltip and, all at once, behind
+ * the toggle underneath, so the build reads at a glance instead of as columns of small print.
+ */
 export function BuildPhases({ build }: { build: HeroBuild }) {
+  const [notesOpen, setNotesOpen] = useState(false);
+  const noteCount = build.phases.reduce((n, p) => n + p.items.filter((i) => i.note).length, 0);
+  const sampled = build.phases.some((p) => p.items.some((i) => i.picks !== undefined));
   return (
-    <div className="bb-phases">
-      {build.phases.map((p) => (
-        <section key={p.id} className="bb-phase" aria-label={p.range ? `${p.label}, ${p.range}` : p.label}>
-          <header><h4>{p.label}</h4>{p.range && <small>{p.range}</small>}</header>
-          <ol>{p.items.map((it) => <ItemRow key={it.name} it={it} />)}</ol>
-        </section>
-      ))}
+    <div className="bs">
+      {build.phases.map((p) => {
+        const notes = p.items.filter((i) => i.note);
+        return (
+          <section key={p.id} className="bs-row" aria-label={p.range ? `${p.label}, ${p.range}` : p.label}>
+            <header><h4>{p.label}</h4>{p.range && <small>{p.range}</small>}</header>
+            <ol className="bs-items">{p.items.map((it) => <ShelfItem key={it.name} it={it} />)}</ol>
+            {notesOpen && notes.length > 0 && (
+              <ul className="bs-notes">{notes.map((i) => <li key={i.name}><b>{i.name}</b> {i.note}</li>)}</ul>
+            )}
+          </section>
+        );
+      })}
+      <div className="bs-foot">
+        {sampled && <small className="muted">Under each item: the win rate when it is bought. Hover for how many builds include it.</small>}
+        {noteCount > 0 && (
+          <button type="button" className="chip" aria-expanded={notesOpen} onClick={() => setNotesOpen((o) => !o)}>
+            {notesOpen ? 'Hide the author’s notes' : `Show the author’s notes (${noteCount})`}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

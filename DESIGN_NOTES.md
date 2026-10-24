@@ -453,3 +453,15 @@ V gave access to their Deadlock install, so the missing art now comes straight f
 - **Live builds:** in Live mode, hero pages and the builds hub show builds players have published in the game's build browser (`/v1/builds`), not samples. A hero page's tabs are the most favorited build, the one played most in sampled games, the one with the best results (50+ games) and the most favorited this week, each shown once. Items keep the author's own sections and order, with the author's notes under an item; the skill order is the author's saved ability order. Win rate and games come from `/v1/analytics/hero-build-stats` and stay blank when a build hasn't been played in the sampled games, never invented. The build code is the real in-game build id. Authors are named from Steam, and builds by Eternus authors carry an Eternus tag and show under Pro. Sample mode, and Live when the API can't be reached, still shows the labelled samples.
 - **Ids:** item ids in builds are the same hashes as in match data (itemIds.json). Ability ids are MurmurHash2 of the ability's name in the game files (seed 0x31415926); `src/data/heroAbilityIds.json` maps all 176 to a hero and slot and is regenerated from heroes.vdata_c when heroes are added.
 - Published builds can have four or more sections; their header tapes cycle orange, blue, gold.
+
+## Round 52 · The build area, reworked (2026-10-24)
+
+V found the live builds hard to take in: tall cream columns of small print with long author notes, raw `#Citadel_HeroBuilds_EarlyGame` section names, cream glaring against the dark page, and slow to load.
+
+- **Shelves, not columns:** a build is one dark row per section, its name on the left in the section's colour (grey/orange, blue, gold, repeating) and its items as icons with their names under them in buy order. A whole 30-item build fits in one screen.
+- **Notes:** the author's notes no longer fill the rows. A dot on an item says it has one; hovering the item shows the note above the item card, and "Show the author's notes" lists them all under their rows.
+- **Section names:** the game's default section tokens read Lane, Early game, Mid game, Late game (from citadel_main_english.txt), and token descriptions are dropped.
+- **Samples:** under each sample item is its win rate; how many builds include it is in the hover.
+- **Hub cards** are dark with the hero-colour band and bust kept.
+- **Faster:** the hub asks for one list (the 120 most favorited builds plus the week's favorites) instead of two requests for each of 44 heroes, and asks for one hero's builds with their games when a hero is picked. A hero page fetches 12 builds instead of 30, and looks up authors at the same time as any missing top builds, so it is two rounds of requests after the hero list rather than three.
+- The old `.bb-phase` / `.bb-item` styles are gone.
