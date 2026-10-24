@@ -30,8 +30,9 @@ remembered in the browser. To make sample data the default for a build, set `VIT
 | Patch notes on Home | `GET /v2/patches` | `forum` posts are the real patch notes, `steam` posts are news. |
 | **Match report** | `GET /v1/matches/metadata?match_ids=` | One game: players, items, souls curve. Unknown id answers 404 `{"error":"No matches found"}`. See "Match metadata" below. |
 | **Player pages** | `players/steam`, `players/rank`, `players/{id}/match-history`, `players/hero-stats`, `players/{id}/mate-stats`, `players/steam-search` | Everything on `/player/:id`. Never replaced by invented data. |
+| **Builds** (hero page tabs, builds hub) | `GET /v1/builds`, `/v1/analytics/hero-build-stats/{hero_id}`, `players/steam`, `players/rank` | Published in-game builds, most favorited first. See "Builds" below. |
 
-Still **samples, labelled as such**: builds, skill order, community guides, damage breakdown, Street Brawl high rolls,
+Still **samples, labelled as such**: the overview's skill order, community guides, damage breakdown, Street Brawl high rolls,
 and the livestream list (the streams proxy needs Twitch credentials, see `.env.example`).
 
 Not used: `/v1/players/{id}/card` and `account-stats` answer 403 without a Patreon key.
@@ -69,6 +70,17 @@ Not used: `/v1/players/{id}/card` and `account-stats` answer 403 without a Patre
 
 ## Mapping the rest
 
-Builds are the next big piece. Candidates (responses are saved in `api-samples/`, none are mapped yet): `hero-build-stats/{hero_id}`,
-`build-item-stats`, `GET /v1/builds`, `ability-order-stats`. `npm run probe:api` saves fresh samples into `api-samples/`; send them
+## Builds
+
+Mapped in round 51 (`src/data/communityBuilds.ts`, tests on `api-samples/builds.json`). Not verified against the running service
+from the build sandbox, which cannot reach the API, so check these on the live site:
+
+- `/v1/builds` is called with `only_latest=true&sort_by=favorites|weekly_favorites&sort_direction=desc&limit=N&hero_id=` and,
+  for the most played and best builds that are not among the favorites, `build_id=`.
+- `hero_build.details.mod_categories[].mods[].ability_id` is an item id (itemIds.json). `ability_order.currency_changes` lists
+  unlocks (`currency_type` 2) and ability-point spends (`currency_type` 1, `delta` -1/-2/-5); ability ids are in heroAbilityIds.json.
+- `hero-build-stats/{hero_id}` rows are joined on `hero_build_id`. `num_weekly_favorites` came back null in the saved sample
+  (sorted by favorites); it may only be filled when sorting by weekly favorites.
+
+Still unmapped: `build-item-stats` and `ability-order-stats` (the overview's skill order). `npm run probe:api` saves fresh samples into `api-samples/`; send them
 back and the mapping can be written against the real shapes, the same way this round's was.

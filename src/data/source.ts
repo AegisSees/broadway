@@ -1,12 +1,12 @@
-import { ApiError, DeadlockApi } from '../api/client';
+import { ApiError, DeadlockApi, mapLimit } from '../api/client';
 import { toApiFilters } from '../api/filters';
 import { buildPickColumns, buildSynergyColumn } from '../api/matchups';
-import type { PlayerRankRaw, SteamProfile } from '../api/types';
+import type { BuildRaw, PlayerRankRaw, SteamProfile } from '../api/types';
 import { dataMode, reportDegraded, reportHealthy } from './dataMode';
 import { buildHeroIdMap, type HeroIdMap } from './heroIds';
 import { liveOverview } from './liveHero';
 import { normalizePatches, type PatchNote } from './patches';
-import { getHero } from './roster';
+import { getHero, HEROES } from './roster';
 import { HAZE_BRAWL, HAZE_OVERVIEW } from './fixtures';
 import type { Filters, HeroOverview, MatchupGroup } from './types';
 import {
@@ -14,6 +14,7 @@ import {
 } from './leaderboard';
 import { normalizePlayerDistribution, sampleDistribution, type RankDistribution } from './rankDistribution';
 import { allSampleBuilds, sampleHeroBuilds, type HeroBuild } from './builds';
+import { heroBuildTabs, normalizeBuild } from './communityBuilds';
 import { normalizeTrend, patchMarks, sampleTrend, todayUtc, DAY, type HeroTrend } from './trend';
 import { normalizeMatches, sampleMatches, type LiveMatch } from './matches';
 import { normalizeStreams, sampleStreams, type LiveStream } from './streams';
@@ -162,10 +163,20 @@ const patchDates = (entries: Awaited<ReturnType<DeadlockApi['patches']>>) =>
  * The live source, reading the Deadlock API (api.deadlock-api.com). Every mapping here was checked against the running
  * service on 8 Oct 2026; the unit tests run the same mappings on saved responses (api-samples/).
  *
- * Not connected yet: build paths, skill order, guides, damage and high rolls (their endpoints are different and larger).
+ * Not connected yet: the hero overview's skill order, guides, damage and high rolls (their endpoints are different and larger).
  */
 export function createLiveSource(api = new DeadlockApi()): DataSource {
   const heroIds = async (signal?: AbortSignal): Promise<HeroIdMap> => buildHeroIdMap(await api.heroes(signal));
+
+  /** Steam names and ranks of build authors, for the byline and the Eternus filter. Missing lookups just leave them blank. */
+  async function buildAuthors(accountIds: number[], signal?: AbortSignal): Promise<Map<number, { name?: string; badge?: number }>> {
+    const uniq = [...new Set(accountIds)];
+    const [profiles, ranks] = await Promise.all([soft(api.steamProfiles(uniq, signal), signal), soft(api.playerRanks(uniq, signal), signal)]);
+    const out = new Map<number, { name?: string; badge?: number }>();
+    for (const p of profiles ?? []) out.set(p.account_id, { name: p.personaname?.trim() || undefined });
+    for (const r of ranks ?? []) if (r.account_id !== undefined) out.set(r.account_id, { ...out.get(r.account_id), badge: r.badge });
+    return out;
+  }
 
   /** Every hero with its numbers for these filters. The API's calls are cached, so the hero, tier and trend pages share them. */
   async function liveTier(f: Filters, signal?: AbortSignal) {
@@ -288,9 +299,43 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       return normalizeTrend(rows, id, patchDates(patches ?? []));
     },
 
-    // Build endpoints are not mapped yet; the hybrid source below shows labelled samples for these.
-    async heroBuilds() { return null; },
-    async allBuilds() { return null; },
+    // Published in-game builds (/v1/builds) with their games and wins (/v1/analytics/hero-build-stats).
+    async heroBuilds(slug, f, signal) {
+      const ids = await heroIds(signal);
+      const id = ids.idBySlug(slug);
+      if (id === undefined) return null;
+      const [top, weekly, stats] = await Promise.all([
+        api.builds({ hero_id: id, limit: 30 }, signal),
+        soft(api.builds({ hero_id: id, sort_by: 'weekly_favorites', limit: 10 }, signal), signal),
+        soft(api.heroBuildStats(id, { ...toApiFilters(f), min_matches: 10 }, signal), signal),
+      ]);
+      const byId = new Map((stats ?? []).map((r) => [r.hero_build_id, r]));
+      // the most played and best performing builds may not be among the most favorited: fetch those few by id
+      const have = new Set([...top, ...(weekly ?? [])].map((b) => b.hero_build.hero_build_id));
+      const played = [...byId.values()].sort((a, b) => b.matches - a.matches);
+      const best = played.filter((r) => r.matches >= 50).sort((a, b) => b.wins / b.matches - a.wins / a.matches);
+      const extraIds = [...new Set([played[0], best[0]].filter((r) => r && !have.has(r.hero_build_id)).map((r) => r!.hero_build_id))];
+      const extra = (await Promise.all(extraIds.map((bid) => soft(api.builds({ build_id: bid, limit: 1 }, signal), signal)))).flatMap((x) => x ?? []);
+      const raws = [...top, ...extra];
+      const authors = await buildAuthors([...raws, ...(weekly ?? [])].map((b) => b.hero_build.author_account_id), signal);
+      const ctx = { slugById: ids.slugById, stats: byId, authors };
+      const norm = (list: BuildRaw[]) => list.map((b) => normalizeBuild(b, ctx)).filter((b): b is HeroBuild => !!b && b.heroSlug === slug);
+      const tabs = heroBuildTabs(norm(raws), norm(weekly ?? []));
+      return tabs.length ? tabs : null;
+    },
+    async allBuilds(signal) {
+      const ids = await heroIds(signal);
+      const heroIdList = HEROES.map((h) => ids.idBySlug(h.slug)).filter((x): x is number => x !== undefined);
+      const perHero = await mapLimit(heroIdList, 4, async (id) => {
+        const [list, stats] = await Promise.all([soft(api.builds({ hero_id: id, limit: 8 }, signal), signal), soft(api.heroBuildStats(id, { min_matches: 10 }, signal), signal)]);
+        return { list: list ?? [], stats: stats ?? [] };
+      });
+      const raws = perHero.flatMap((h) => h.list);
+      if (!raws.length) throw new Error('No builds came back from the Deadlock API');
+      const stats = new Map(perHero.flatMap((h) => h.stats).map((r) => [r.hero_build_id, r]));
+      const authors = await buildAuthors(raws.map((b) => b.hero_build.author_account_id), signal);
+      return raws.map((b) => normalizeBuild(b, { slugById: ids.slugById, stats, authors })).filter((b): b is HeroBuild => !!b);
+    },
 
     async liveMatches(signal) {
       const ids = await heroIds(signal);
@@ -432,8 +477,8 @@ export function createHybridSource(live: DataSource, sample: DataSource): DataSo
     heroTrend: (slug, f, signal) => guard(() => live.heroTrend(slug, f, signal), () => sample.heroTrend(slug, f, signal), signal, true),
     liveMatches: (signal) => guard(() => live.liveMatches(signal), () => sample.liveMatches(signal), signal),
     patchNotes: (signal) => guard(() => live.patchNotes(signal), () => sample.patchNotes(signal), signal),
-    heroBuilds: (slug, f, signal) => sample.heroBuilds(slug, f, signal),
-    allBuilds: (signal) => sample.allBuilds(signal),
+    heroBuilds: (slug, f, signal) => guard(() => live.heroBuilds(slug, f, signal), () => sample.heroBuilds(slug, f, signal), signal),
+    allBuilds: (signal) => guard(() => live.allBuilds(signal), () => sample.allBuilds(signal), signal),
     liveStreams: async (signal) => (await live.liveStreams(signal).catch((e) => { if (isAbort(e, signal)) throw e; return null; })) ?? sample.liveStreams(signal),
   };
 }

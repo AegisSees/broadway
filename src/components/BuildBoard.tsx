@@ -22,17 +22,19 @@ export function CopyCode({ code, label = 'Copy code' }: { code: string; label?: 
 }
 
 function ItemRow({ it }: { it: BuildItemStat }) {
-  const share = Math.round((it.picks / it.of) * 100);
+  // published builds have no per-item numbers: the row shows the author's note, if any, instead of the bar
+  const stats = it.picks !== undefined && it.of ? { share: Math.round((it.picks / it.of) * 100), picks: it.picks, of: it.of } : null;
   return (
-    <li className="bb-item">
+    <li className={`bb-item${stats ? '' : ' plain'}`}>
       <span className="no" aria-hidden="true">{it.order}</span>
       <ItemTile item={{ name: it.name, category: it.category }} />
       <div className="mid">
         <b>{it.name}</b>
-        <span className="bar" aria-hidden="true"><i style={{ width: `${share}%` }} /></span>
-        <small>in {fmtInt(it.picks)}/{fmtInt(it.of)} builds · avg buy {fmtBuy(it.avgBuy)}</small>
+        {stats && <span className="bar" aria-hidden="true"><i style={{ width: `${stats.share}%` }} /></span>}
+        {stats && <small>in {fmtInt(stats.picks)}/{fmtInt(stats.of)} builds{it.avgBuy !== undefined ? ` · avg buy ${fmtBuy(it.avgBuy)}` : ''}</small>}
+        {!stats && it.note && <small>{it.note}</small>}
       </div>
-      <span className={`bb-wr ${it.winRate >= 50 ? 'up' : 'down'}`} title="Win rate when this item is bought">{fmtPct(it.winRate)}</span>
+      {it.winRate !== undefined && <span className={`bb-wr ${it.winRate >= 50 ? 'up' : 'down'}`} title="Win rate when this item is bought">{fmtPct(it.winRate)}</span>}
     </li>
   );
 }
@@ -42,8 +44,8 @@ export function BuildPhases({ build }: { build: HeroBuild }) {
   return (
     <div className="bb-phases">
       {build.phases.map((p) => (
-        <section key={p.id} className="bb-phase" aria-label={`${p.label}, ${p.range}`}>
-          <header><h4>{p.label}</h4><small>{p.range}</small></header>
+        <section key={p.id} className="bb-phase" aria-label={p.range ? `${p.label}, ${p.range}` : p.label}>
+          <header><h4>{p.label}</h4>{p.range && <small>{p.range}</small>}</header>
           <ol>{p.items.map((it) => <ItemRow key={it.name} it={it} />)}</ol>
         </section>
       ))}
@@ -52,6 +54,7 @@ export function BuildPhases({ build }: { build: HeroBuild }) {
 }
 
 export function BuildSkill({ build }: { build: HeroBuild }) {
+  if (!build.skill) return null;
   return (
     <div className="bb-skill">
       <div className="bb-skillhead">
@@ -76,7 +79,7 @@ export default function BuildBoard({ builds, heroName }: { builds: HeroBuild[]; 
     <div className="bb panel paint">
       <div className="btabs" role="tablist" aria-label={`${heroName} builds`}>
         {builds.map((x) => (
-          <button key={x.id} type="button" role="tab" aria-selected={x.id === b.id} onClick={() => setId(x.id)}>{KIND_LABEL[x.kind]}</button>
+          <button key={x.id} type="button" role="tab" aria-selected={x.id === b.id} onClick={() => setId(x.id)}>{x.tab ?? KIND_LABEL[x.kind]}</button>
         ))}
       </div>
 
@@ -90,9 +93,10 @@ export default function BuildBoard({ builds, heroName }: { builds: HeroBuild[]; 
           </div>
         </div>
         <dl className="bb-nums">
-          <div><dt>Win rate</dt><dd className={b.winRate >= 50 ? 'up' : 'down'}>{fmtPct(b.winRate)}</dd></div>
-          <div><dt>Pick rate</dt><dd>{fmtPct(b.pickRate)}</dd></div>
-          <div><dt>Matches</dt><dd>{fmtInt(b.matches)}</dd></div>
+          {b.winRate !== null && <div><dt>Win rate</dt><dd className={b.winRate >= 50 ? 'up' : 'down'}>{fmtPct(b.winRate)}</dd></div>}
+          {b.pickRate !== null && <div><dt>Pick rate</dt><dd>{fmtPct(b.pickRate)}</dd></div>}
+          {b.matches !== null && <div><dt>Matches</dt><dd>{fmtInt(b.matches)}</dd></div>}
+          {b.likes !== undefined && b.pickRate === null && <div><dt>Favorites</dt><dd>{fmtInt(b.likes)}</dd></div>}
           <div><dt>Items</dt><dd>{itemCount(b)}</dd></div>
         </dl>
       </div>
