@@ -58,17 +58,33 @@ describe("Violet's release numbers and ranks", () => {
     expect(Math.round(baseDps(s)!)).toBe(46);
     expect(hasScaling(s)).toBe(false);
   });
-  it('ranks among the 43 released heroes the way the reference page does', () => {
-    expect(rankAmong('violet', (x) => x.health)).toEqual({ rank: 39, of: 43 });
-    expect(rankAmong('violet', (x) => x.regen)).toEqual({ rank: 6, of: 43 });
-    expect(rankAmong('violet', (x) => x.move)).toEqual({ rank: 18, of: 43 });
-    expect(rankAmong('violet', (x) => x.sprint)).toEqual({ rank: 5, of: 43 });
-    expect(rankAmong('violet', (x) => x.stamina)).toEqual({ rank: 5, of: 43 });
-    expect(rankAmong('violet', (x) => x.light)).toEqual({ rank: 9, of: 43 });
-    expect(rankAmong('violet', (x) => x.heavy)).toEqual({ rank: 5, of: 43 });
+  it('ranks among the 44 released heroes (43 on her release page, before Nurse Harrow unlocked)', () => {
+    expect(rankAmong('violet', (x) => x.health)).toEqual({ rank: 40, of: 44 });
+    expect(rankAmong('violet', (x) => x.regen)).toEqual({ rank: 6, of: 44 });
+    expect(rankAmong('violet', (x) => x.move)).toEqual({ rank: 18, of: 44 });
+    expect(rankAmong('violet', (x) => x.sprint)).toEqual({ rank: 5, of: 44 });
+    expect(rankAmong('violet', (x) => x.stamina)).toEqual({ rank: 5, of: 44 });
+    expect(rankAmong('violet', (x) => x.light)).toEqual({ rank: 9, of: 44 });
+    expect(rankAmong('violet', (x) => x.heavy)).toEqual({ rank: 5, of: 44 });
   });
-  it('leaves unreleased Nurse Harrow out of the ranking and a missing hero without a rank', () => {
+  it('leaves a missing hero without a rank', () => {
     expect(rankAmong('nobody', (x) => x.health)).toBeUndefined();
-    expect(rankAmong('violet', (x) => x.health)?.of).toBe(43);
+  });
+});
+
+describe("Nurse Harrow's kit and numbers from the game files", () => {
+  it('has her four abilities in slot order with icons and cooldowns', () => {
+    const kit = getAbilities('nurse-harrow');
+    expect(kit?.map((a) => a.name)).toEqual(['Leech Therapy', 'Wretched Vapors', 'Healing Needles', 'Lurking Terrors']);
+    expect(kit?.map((a) => a.cooldown)).toEqual([30, 40, null, 200]);
+    expect(kit?.every((a) => !!a.card && a.card.upgrades.length === 3)).toBe(true);
+  });
+  it('has her released base stats and Code Blue', () => {
+    const s = getHeroStats('nurse-harrow')!;
+    expect(s.dev).toBe('EHeroDevState_Release');
+    expect(s.health).toBe(730);
+    expect(s.weapon.name).toBe('Code Blue');
+    expect(s.weapon.clip).toBe(11);
+    expect(rankAmong('nurse-harrow', (x) => x.health)).toEqual({ rank: 29, of: 44 });
   });
 });

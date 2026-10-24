@@ -7,9 +7,8 @@
  *    role line in the files have none here.
  *  - `bio` is our paraphrase of the in-game biography (`hero_*_lore` in the same file). Titles are drawn from it.
  *  - Lash's in-game biography is a single joke line, so his dossier also uses his voice lines (via the Deadlock wiki).
- *  - The City Never Sleeps heroes are not in the uploaded game files yet: Solomon, Deadman Danny and Violet are
- *    paraphrased from their in-game introductions (as quoted by Deadlock Labs); Nurse Harrow has no published
- *    biography, so hers says only what her poster and intro lines say.
+ *  - Solomon, Deadman Danny and Violet are paraphrased from their in-game introductions (as quoted by Deadlock Labs);
+ *    Nurse Harrow's is paraphrased from `hero_nurse_lore` in the game files read after her release.
  */
 export interface HeroLore {
   /** Shown on the orange label above the hero's name. */
@@ -238,12 +237,13 @@ export const HERO_LORE: Record<string, HeroLore> = {
     from: 'game',
   },
   'nurse-harrow': {
-    title: 'Be not afraid',
+    title: 'Saint of the possession ward',
     bio: [
-      'Valve has not published Nurse Harrow’s biography yet.',
-      'What she has said so far: you will address her as Nurse Harrow, and she tolerates no disobedience. Her ballot poster promises "Be Not Afraid."',
+      'A pillar of the Marble Hill Possession Ward, Nurse Harrow has given her life to fighting supernatural possession.',
+      'Caring, severe and coldly practical, she is a saint to some of her patients and a cruel governess to others, and probably both.',
+      'Anyone sane would wonder why she keeps her patients’ pain locked in her medical bag, yet no one can argue with how well her harsh treatment works.',
     ],
-    from: 'pending',
+    from: 'game',
   },
   paige: {
     title: 'The bibliomancer',

@@ -11,7 +11,7 @@ import Tip from '../components/Tip';
 import AbilityTip from '../components/AbilityTip';
 import MatchupColumn from '../components/MatchupColumn';
 import { SiteFooter } from '../components/Shell';
-import { getAbilities } from '../data/abilities';
+import { abilitySource, getAbilities } from '../data/abilities';
 import { getGloat } from '../data/heroGloat';
 import { getWordmark } from '../data/names';
 import { getHero, initials } from '../data/roster';
@@ -238,7 +238,7 @@ export default function HeroPage() {
             <HeroStatsPanel slug={hero.slug} name={hero.name} />
           </div>
         )}
-        {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} />}
+        {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} source={abilitySource(hero.slug)} />}
         {newcomer ? (
           <>
             <div className={`new-band${lore ? ' has-lore' : ''}`}>

@@ -19,7 +19,7 @@ describe('hero dossiers', () => {
   it('keeps Haze as she was', () => {
     expect(getLore('haze')?.title).toBe('The unseen threat');
   });
-  it('marks a hero with no published biography as pending', () => {
-    expect(getLore('nurse-harrow')?.from).toBe('pending');
+  it('gives Nurse Harrow her biography from the game files', () => {
+    expect(getLore('nurse-harrow')?.from).toBe('game');
   });
 });

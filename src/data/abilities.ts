@@ -30,4 +30,8 @@ export function getAbilities(heroSlug: string): [Ability, Ability, Ability, Abil
   return list as [Ability, Ability, Ability, Ability];
 }
 
+/** Kits read straight from the game's own ability data (scripts/abilities.vdata_c) rather than the wiki. */
+const FROM_GAME_FILES = new Set(['nurse-harrow']);
+export const abilitySource = (slug: string): 'game' | 'wiki' => (FROM_GAME_FILES.has(slug) ? 'game' : 'wiki');
+
 export const heroRole = (slug: string): string | undefined => INFO[slug]?.role ?? undefined;
