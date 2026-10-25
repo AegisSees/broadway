@@ -14,7 +14,7 @@ import { between, hash, pick, rng, weightedSample } from '../lib/prng';
  *
  * EVERYTHING GENERATED IN THIS FILE IS ILLUSTRATIVE. It is built from the real item list and each hero's role so it
  * reads sensibly, but no number is a game statistic and every code starts with "sample-" so it can never be mistaken
- * for a real in-game build id. Live builds come from the data source once the builds endpoints are connected.
+ * for a real in-game build id. Live builds (published in-game builds from the Deadlock API) are in communityBuilds.ts.
  */
 
 export type BuildKind = 'meta' | 'winrate' | 'popular' | 'pro' | 'community';
@@ -26,15 +26,18 @@ export interface BuildItemStat {
   category: ItemCategory;
   /** 1-based purchase order across the whole build. */
   order: number;
-  /** Builds in the sample that contain this item, out of `of`. */
-  picks: number;
-  of: number;
+  /** Builds in the sample that contain this item, out of `of`. Published builds have no per-item numbers. */
+  picks?: number;
+  of?: number;
   /** Average minute the item is bought. */
-  avgBuy: number;
-  winRate: number;
+  avgBuy?: number;
+  winRate?: number;
+  /** The author's note on the item, for published builds. */
+  note?: string;
 }
 
-export interface BuildPhase { id: PhaseId; label: string; range: string; items: BuildItemStat[] }
+/** A stage of the build. Samples use laning / mid / late; published builds keep their author's own sections. */
+export interface BuildPhase { id: string; label: string; range: string; items: BuildItemStat[] }
 
 export interface HeroBuild {
   id: string;
@@ -48,16 +51,20 @@ export interface HeroBuild {
   title: string;
   author?: string;
   blurb: string;
-  winRate: number;
-  pickRate: number;
-  matches: number;
+  /** Null when nobody has played the build in the sampled games yet. */
+  winRate: number | null;
+  pickRate: number | null;
+  matches: number | null;
   /** Change in pick rate over the last week, in percentage points. Used for "Trending". */
   trend: number;
   likes?: number;
   ageDays?: number;
   tags: string[];
   phases: BuildPhase[];
-  skill: SkillPath;
+  /** Null when the build carries no ability order. */
+  skill: SkillPath | null;
+  /** Tab label on a hero page, in place of the kind's label. */
+  tab?: string;
   /** Where the numbers come from, shown on the card. */
   sample: string;
   illustrative: boolean;
@@ -301,10 +308,10 @@ export function browseBuilds(all: HeroBuild[], opts: { filter: BuildFilter; sort
     return true;
   });
   const by: Record<BuildSort, (a: HeroBuild, b: HeroBuild) => number> = {
-    popular: (a, b) => (b.likes ?? b.pickRate * 6) - (a.likes ?? a.pickRate * 6),
+    popular: (a, b) => (b.likes ?? (b.pickRate ?? 0) * 6) - (a.likes ?? (a.pickRate ?? 0) * 6),
     trending: (a, b) => b.trend - a.trend,
     newest: (a, b) => (a.ageDays ?? 999) - (b.ageDays ?? 999),
-    winrate: (a, b) => b.winRate - a.winRate,
+    winrate: (a, b) => (b.winRate ?? -1) - (a.winRate ?? -1),
   };
   // Pro builds are ranked on win rate unless the person asks for another order.
   return [...list].sort(opts.filter === 'pro' && opts.sort === 'popular' ? by.winrate : by[opts.sort]);

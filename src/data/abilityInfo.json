@@ -1201,31 +1201,31 @@
  },
  "nurse-harrow": {
   "role": "Strict, terrifying savior with a medical theme and an automatic weapon",
-  "released": false,
+  "released": true,
   "abilities": [
    {
-    "name": null,
-    "desc": null,
-    "cooldown": null,
-    "stats": null
+    "name": "Leech Therapy",
+    "desc": "Throws a jar of leeches that latch onto enemies, dealing spirit damage and eating away at their buffs. Fed leeches can be picked up to heal and to gain permanent regen and fire rate.",
+    "cooldown": 30,
+    "stats": "23 spirit DPS; 4 leeches; 6.5m radius"
    },
    {
-    "name": null,
-    "desc": null,
-    "cooldown": null,
-    "stats": null
+    "name": "Wretched Vapors",
+    "desc": "Doses Harrow or an ally with vapors: a rush that speeds up every action and holds incoming damage back as specters, then a crash where leftover specters hit harder.",
+    "cooldown": 40,
+    "stats": "4s duration; +25% rush speed; 13m cast range"
    },
    {
-    "name": null,
-    "desc": null,
+    "name": "Healing Needles",
+    "desc": "Loads a clip of syringes that heal allies. Dealing damage refills the charge, and collected leeches slowly restore it.",
     "cooldown": null,
-    "stats": null
+    "stats": "25 heal per shot; 1 charge"
    },
    {
-    "name": null,
-    "desc": null,
-    "cooldown": null,
-    "stats": null
+    "name": "Lurking Terrors",
+    "desc": "Opens her bag to reveal the horrors inside. Enemies looking at her build terror, lose stamina and movement abilities, and flee in fear at full terror.",
+    "cooldown": 200,
+    "stats": "60 spirit DPS; 7s channel; 35m range"
    }
   ]
  },

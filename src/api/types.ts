@@ -302,3 +302,42 @@ export interface MatchMetadataRaw {
   banned_hero_ids?: number[];
   players: MatchPlayerRaw[];
 }
+
+/** One mod in a build category. `ability_id` is the item's id (see itemIds.json). */
+export interface BuildModRaw {
+  ability_id: number;
+  annotation?: string | null;
+}
+/** /v1/builds: a build published from the in-game build browser. Shape checked against api-samples/builds.json. */
+export interface BuildRaw {
+  hero_build: {
+    hero_id: number;
+    hero_build_id: number;
+    author_account_id: number;
+    last_updated_timestamp: number;
+    publish_timestamp?: number | null;
+    name: string;
+    description?: string | null;
+    language: number;
+    version: number;
+    tags?: number[] | null;
+    details: {
+      mod_categories?: { name?: string | null; description?: string | null; mods?: BuildModRaw[] | null; optional?: boolean | null }[] | null;
+      /** Ability unlocks (currency_type 2) and ability-point spends (currency_type 1, delta -1 / -2 / -5) in order. */
+      ability_order?: { currency_changes?: { ability_id: number; currency_type: number; delta: number }[] | null } | null;
+    };
+  };
+  num_favorites?: number | null;
+  num_weekly_favorites?: number | null;
+  num_ignores?: number | null;
+  num_reports?: number | null;
+}
+/** /v1/analytics/hero-build-stats/{hero_id}: games played with a published build. */
+export interface HeroBuildStatsRow {
+  hero_id: number;
+  hero_build_id: number;
+  wins: number;
+  losses: number;
+  matches: number;
+  players: number;
+}

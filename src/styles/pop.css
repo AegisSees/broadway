@@ -302,29 +302,6 @@ main { overflow-x: clip; }
 @media (max-width: 600px) { .panel.stats.hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .hero-stats b, .hero-stats b.hi { font-size: 26px; } .hero-stats > div:last-child:nth-child(odd) { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) { .hero-stats > div { transition: none; } .hero-stats > div:hover { transform: none; } }
 
-/* ---------- Round 35 · build phases on cream cards ----------
-   Laning, mid game and late game were dark boxes inside the dark build panel. They are now cream printed cards with dark
-   ink and a hard shadow, each phase named on a coloured tape (orange, blue, gold) so the three read apart at a glance.
-   Win rates use darker green and red that hold up on cream. */
-.bb-phases { gap: 20px; }
-.bb-phase:nth-child(1) { --tape: var(--pop-orange); }
-.bb-phase:nth-child(2) { --tape: #4f86d6; }
-.bb-phase:nth-child(3) { --tape: #dfa125; }
-.bb-phase {
-  padding: 12px 14px 8px; color: #140c05; background: #efe3cf; border: 0; border-radius: 4px;
-  box-shadow: inset 0 0 0 1px #0003, 6px 6px 0 var(--pop-shadow);
-}
-.bb-phase header { border-bottom: 2px solid #14100a26; align-items: center; }
-.bb-phase h4 { display: inline-block; background: var(--tape); color: #140c05; font: 400 18px var(--display); padding: 5px 11px 3px; box-shadow: 3px 3px 0 #0d0a07; }
-.bb-phase header small { color: #4a3824; }
-.bb-phase .bb-item { border-top-color: #14100a1f; }
-.bb-phase .bb-item .no { background: #0d0a07; color: #f3e7d2; }
-.bb-phase .bb-item .mid b { color: #140c05; }
-.bb-phase .bb-item .mid small { color: #5a4630; }
-.bb-phase .bb-item .bar { background: #14100a1f; }
-.bb-phase .bb-item .bar i { background: var(--tape); }
-.bb-phase .bb-wr.up { color: #1d7a3c; } .bb-phase .bb-wr.down { color: #b2321e; }
-
 /* ---------- Round 35 · tier list, tier-maker style ----------
    Each tier's label column is a solid block of the tier colour with the tier letter on a black plate in that colour,
    and the heroes are cream-framed prints with a black name tape. Under the pointer the hero's gloat bust rises out of
@@ -924,3 +901,53 @@ main { overflow-x: clip; }
 
 /* ---------- Round 48: the empty-state moth sits above the heading, not on it (.panel::before is an absolute inset frame) ---------- */
 .panel.empty::before { position: relative; inset: auto; border: 0; border-radius: 0; }
+
+/* ---------- Round 52 · builds as dark shelves ----------
+   V found the cream columns glaring against the dark page and hard to read with long author notes. A build is now one
+   dark row per section: the section name on the left in its tape colour, the items as icons with their names in buy
+   order. Notes wait in each item's tooltip (a dot marks the items that have one) and behind one toggle. Hub cards go
+   dark too; the hero-colour band and bust stay. */
+.bs { position: relative; z-index: 1; display: grid; gap: 10px; }
+.bs-row { --tape: var(--pop-orange); display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 10px 16px; align-items: start; padding: 14px 16px 12px; background: color-mix(in srgb, var(--s3) 78%, transparent); border: 1px solid var(--line-2); border-left: 4px solid var(--tape); border-radius: 4px; }
+.bs-row:nth-child(3n + 2) { --tape: #5b8fd3; }
+.bs-row:nth-child(3n + 3) { --tape: #cf9d3a; }
+.bs-row header { display: grid; gap: 4px; align-content: start; padding-top: 4px; }
+.bs-row h4 { font: 400 18px/1.1 var(--display); color: color-mix(in srgb, var(--tape) 70%, var(--ink)); }
+.bs-row header small { font: 600 10.5px/1.35 var(--ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.bs-items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 8px; }
+.bs-it { position: relative; width: 78px; display: grid; justify-items: center; align-content: start; gap: 5px; text-align: center; }
+.bs-it .item { width: 52px; height: 52px; border-radius: 5px; box-shadow: 0 0 0 1px #0008, 2px 3px 0 #0006; }
+.bs-it .nm { font: 600 11.5px/1.15 var(--ui); color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bs-it .st { font: 600 10.5px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.bs-it .st.up { color: var(--good); } .bs-it .st.down { color: var(--bad); }
+.bs-it .no { position: absolute; top: -6px; left: 6px; z-index: 2; min-width: 17px; height: 17px; padding: 0 3px; display: grid; place-items: center; border-radius: 9px; background: var(--s0); color: var(--ink-2); font: 700 9.5px var(--ui); box-shadow: 0 0 0 1px var(--line-2); pointer-events: none; }
+.bs-it .dot { position: absolute; top: -3px; right: 10px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--tape); box-shadow: 0 0 0 2px var(--s2); pointer-events: none; }
+.bs-notes { grid-column: 2; list-style: none; margin: 4px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--line-2); columns: 2 280px; column-gap: 28px; }
+.bs-notes li { break-inside: avoid; margin-bottom: 7px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+.bs-notes b { color: var(--ink); font-weight: 700; margin-right: 4px; }
+.bs-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; }
+.bs-foot .chip { margin: 0 0 0 auto; }
+.tip-note { max-width: 280px; margin: 0 0 8px; padding: 8px 10px; font: 600 12.5px/1.4 var(--ui); color: var(--ink); background: var(--s3); border-left: 3px solid var(--pop-orange); border-radius: 3px; white-space: normal; }
+@media (max-width: 720px) {
+  .bs-row { grid-template-columns: 1fr; padding: 12px; }
+  .bs-row header { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; padding-top: 0; }
+  .bs-items { gap: 10px 4px; }
+  .bs-it { width: 68px; }
+  .bs-it .item { width: 46px; height: 46px; }
+  .bs-notes { grid-column: 1; }
+}
+
+.bc { color: var(--ink); background: var(--s2); box-shadow: inset 0 0 0 1px var(--line-2), 6px 6px 0 var(--pop-shadow); }
+.bc:not(.open):hover { box-shadow: inset 0 0 0 1px var(--line), 10px 11px 0 var(--pop-shadow); }
+.bc-body h3 { color: var(--ink); }
+.bc-items .item { box-shadow: 0 0 0 1px #0008; }
+.bc-nums dt { color: var(--muted); }
+.bc-nums dd { color: var(--ink); } .bc-nums dd.up { color: var(--good); } .bc-nums dd.down { color: var(--bad); }
+.bc-nums .heart { color: #d0563f; }
+.bc-foot { border-top: 1px solid var(--line-2); }
+.bc-foot small { color: var(--muted); }
+.bc-actions .chip { color: var(--ink-2); border-color: var(--line); background: transparent; }
+.bc-actions .chip:hover { background: var(--s4); color: var(--ink); }
+.bc-detail .bb-skillhead, .bc-detail .bb-skillhead :is(h4, b, small, span) { color: inherit; }
+.bc-detail .bb-skillhead small { color: var(--muted); }
+.bc-blurb { color: var(--ink-2); font-weight: 500; }

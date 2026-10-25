@@ -41,14 +41,14 @@ function BuildCard({ b, open, onToggle }: { b: HeroBuild; open: boolean; onToggl
           {names.slice(0, 12).map((it) => <ItemTile key={it.name} item={{ name: it.name, category: it.category }} />)}
         </div>
         <dl className="bc-nums">
-          <div><dt>Win rate</dt><dd className={b.winRate >= 50 ? 'up' : 'down'}>{fmtPct(b.winRate)}</dd></div>
-          <div><dt>Matches</dt><dd>{fmtInt(b.matches)}</dd></div>
+          {b.winRate !== null && <div><dt>Win rate</dt><dd className={b.winRate >= 50 ? 'up' : 'down'}>{fmtPct(b.winRate)}</dd></div>}
+          {b.matches !== null && <div><dt>Matches</dt><dd>{fmtInt(b.matches)}</dd></div>}
           <div><dt>Items</dt><dd>{itemCount(b)}</dd></div>
-          {b.likes !== undefined && <div><dt>Likes</dt><dd><span className="heart" aria-hidden="true">{'♥'}</span> {fmtInt(b.likes)}</dd></div>}
+          {b.likes !== undefined && <div><dt>{b.illustrative ? 'Likes' : 'Favorites'}</dt><dd><span className="heart" aria-hidden="true">{'♥'}</span> {fmtInt(b.likes)}</dd></div>}
         </dl>
         <div className="bb-tags">{b.tags.map((t) => <span key={t} className="tagchip">{t}</span>)}</div>
         <div className="bc-foot">
-          <small>{b.author ? `by ${b.author}` : 'Built from match data'}{age(b.ageDays) ? ` · ${age(b.ageDays)}` : ''}</small>
+          <small>{b.author ? `by ${b.author}` : b.origin === 'ingame' ? 'Built from match data' : 'Community build'}{age(b.ageDays) ? ` · ${age(b.ageDays)}` : ''}</small>
           <div className="bc-actions">
             <CopyCode code={b.code} />
             <button type="button" className="chip" aria-expanded={open} onClick={onToggle}>{open ? 'Hide items' : 'Item paths'}</button>
@@ -77,7 +77,7 @@ export default function BuildsHub() {
   const q = sp.get('q') ?? '';
   const [shown, setShown] = useState(STEP);
   const [openId, setOpenId] = useState<string | null>(null);
-  const state = useAsync((signal) => dataSource.allBuilds(signal), []);
+  const state = useAsync((signal) => dataSource.allBuilds(signal, hero || null), [hero]);
 
   const all = state.status === 'ready' ? state.value : null;
   const list = useMemo(() => (all ? browseBuilds(all, { filter, sort, hero: hero || null, q }) : []), [all, filter, sort, hero, q]);
@@ -97,11 +97,11 @@ export default function BuildsHub() {
       <div className="dir-head">
         <div><Kicker>The workshop</Kicker><h1>Builds <em>for every hero</em></h1></div>
       </div>
-      <p className="muted hub-lead">What players buy, in the order they buy it. Switch to Pro to see the highest win rate builds among Eternus players, or browse what the community has shared. Every build carries a code you can copy.</p>
+      <p className="muted hub-lead">Builds players have published in the game’s build browser, with their items in order and the author’s ability order. Pro shows builds by Eternus players. Every build carries its in-game id: copy it and search it in the game.</p>
 
       <div className="hub-controls">
         <div className="seg" role="group" aria-label="Where builds come from">
-          {FILTERS.map((f) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => set({ filter: f === 'all' ? '' : f })}>{FILTER_LABEL[f]}</button>)}
+          {FILTERS.filter((f) => f === 'all' || f === filter || !all || browseBuilds(all, { filter: f, sort }).length > 0).map((f) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => set({ filter: f === 'all' ? '' : f })}>{FILTER_LABEL[f]}</button>)}
         </div>
         <HeroCombo value={hero} anyLabel="All heroes" onChange={(slug) => set({ hero: slug })} />
         <label className="hub-find">
@@ -118,7 +118,7 @@ export default function BuildsHub() {
       {all && all.some((b) => b.illustrative) && <div className="notice"><b>Illustrative builds.</b> Titles, authors, items and codes are invented samples. Codes start with “sample-” so they can’t be mistaken for real in-game builds.</div>}
       {state.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load builds</h3><p>{state.message}.</p></div>}
-      {state.status === 'ready' && !all && <div className="panel empty"><h3>Builds aren’t connected yet</h3><p>This page fills in once the builds endpoints are connected. The planner still works: <Link className="chip" to="/planner">Open the planner {'→'}</Link></p></div>}
+      {state.status === 'ready' && !all && <div className="panel empty"><h3>No builds to show</h3><p>No published builds came back just now. The planner still works: <Link className="chip" to="/planner">Open the planner {'→'}</Link></p></div>}
       {all && list.length === 0 && <div className="panel empty"><h3>No builds match</h3><p>Try another source, another hero or a shorter search. <button type="button" className="chip" onClick={() => { setSp(new URLSearchParams(), { replace: true }); }}>Clear filters</button></p></div>}
 
       {list.length > 0 && (

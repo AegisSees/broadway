@@ -6,12 +6,12 @@ import { getItem } from '../data/items';
 import Tip from './Tip';
 import ItemCard from './ItemCard';
 
-/** Item icon in a tier frame coloured by shop category; falls back to initials if an icon is missing. */
-export function ItemTile({ item }: { item: ItemRef }) {
+/** Item icon in a tier frame coloured by shop category; falls back to initials if an icon is missing. A build author's note, if any, leads the tooltip. */
+export function ItemTile({ item, note }: { item: ItemRef; note?: string }) {
   const info = getItem(item.name);
   const cat = info?.category ?? item.category;
   return (
-    <Tip content={<ItemCard item={item} />} className="item-tip">
+    <Tip content={note ? <><p className="tip-note">{note}</p><ItemCard item={item} /></> : <ItemCard item={item} />} className="item-tip">
       <span className={`item ${cat}`}>{info?.icon ? <img src={info.icon} alt="" /> : initials(item.name)}<span className="sr-only">{item.name}</span></span>
     </Tip>
   );

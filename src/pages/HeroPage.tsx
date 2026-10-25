@@ -11,7 +11,7 @@ import Tip from '../components/Tip';
 import AbilityTip from '../components/AbilityTip';
 import MatchupColumn from '../components/MatchupColumn';
 import { SiteFooter } from '../components/Shell';
-import { getAbilities } from '../data/abilities';
+import { abilitySource, getAbilities } from '../data/abilities';
 import { getGloat } from '../data/heroGloat';
 import { getWordmark } from '../data/names';
 import { getHero, initials } from '../data/roster';
@@ -191,11 +191,11 @@ export default function HeroPage() {
             {builds.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
             {builds.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load builds</h3><p>{builds.message}.</p></div>}
             {builds.status === 'ready' && builds.value?.some((b) => b.illustrative) && overview?.provenance === 'live' && (
-              <div className="notice"><b>Sample builds.</b> The numbers above come from real games, but build paths are not connected to the API yet, so the builds below are illustrative.</div>
+              <div className="notice"><b>Sample builds.</b> The numbers above come from real games, but the published builds couldn’t be loaded just now, so the builds below are illustrative.</div>
             )}
             {builds.status === 'ready' && (builds.value
               ? <BuildBoard key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}`} builds={builds.value} heroName={hero.name} />
-              : <div className="panel empty"><h3>Builds aren't connected yet</h3><p>Top builds for {hero.name} appear here once the builds endpoints are connected.</p></div>)}
+              : <div className="panel empty"><h3>No published builds yet</h3><p>Nobody has published a {hero.name} build in the game’s build browser yet. Check back soon, or plan your own.</p></div>)}
             <p className="bb-more"><Link className="chip" to={`/builds?hero=${hero.slug}`}>Browse every {hero.name} build {'→'}</Link><Link className="chip" to={`/planner?hero=${hero.slug}`}>Plan your own {'→'}</Link></p>
 
             {overview && overview.guides.length > 0 && (
@@ -238,7 +238,7 @@ export default function HeroPage() {
             <HeroStatsPanel slug={hero.slug} name={hero.name} />
           </div>
         )}
-        {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} />}
+        {abilities && <AbilityBreakdown abilities={abilities} heroName={hero.name} source={abilitySource(hero.slug)} />}
         {newcomer ? (
           <>
             <div className={`new-band${lore ? ' has-lore' : ''}`}>

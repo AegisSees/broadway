@@ -1,5 +1,5 @@
 import type {
-  AbilityOrderRow, ActiveMatchRaw, AnalyticsFilters, AssetHero, AssetRank, BadgeDistributionRow, EnemyRow, HeroBanRow, HeroCounterRow,
+  AbilityOrderRow, ActiveMatchRaw, AnalyticsFilters, AssetHero, AssetRank, BadgeDistributionRow, BuildRaw, EnemyRow, HeroBanRow, HeroBuildStatsRow, HeroCounterRow,
   HeroStatsRow, HeroSynergyRow, ItemStatsRow, LeaderboardRaw, MateRow, MatchHistoryRow, MatchMetadataRaw, PatchEntry, PlayerHeroStatsRow, PlayerRankRaw,
   RankDistributionRow, SteamProfile,
 } from './types';
@@ -128,6 +128,18 @@ export class DeadlockApi {
       this.inflight.set(url, run);
     }
     return waitFor(run, signal);
+  }
+
+  // ---- Builds -------------------------------------------------------------------------------------------------
+
+  /** Published in-game builds, latest version of each, most favourited first unless `sort_by` says otherwise. */
+  builds(q: { hero_id?: number; sort_by?: 'favorites' | 'weekly_favorites' | 'updated_at'; limit?: number; build_id?: number } = {}, signal?: AbortSignal) {
+    return this.request<BuildRaw[]>('/v1/builds', { only_latest: true, sort_by: q.sort_by ?? 'favorites', sort_direction: 'desc', limit: q.limit ?? 20, hero_id: q.hero_id, build_id: q.build_id }, SIX_HOURS, signal);
+  }
+
+  /** Wins and games for each published build of a hero, from matches where the build was in use. */
+  heroBuildStats(heroId: number, f: AnalyticsFilters = {}, signal?: AbortSignal) {
+    return this.request<HeroBuildStatsRow[]>(`/v1/analytics/hero-build-stats/${heroId}`, { ...f }, SIX_HOURS, signal);
   }
 
   // ---- Analytics --------------------------------------------------------------------------------------------

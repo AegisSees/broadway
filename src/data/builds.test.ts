@@ -19,7 +19,7 @@ describe('sample hero builds', () => {
       expect(b.phases.map((p) => p.id)).toEqual(['laning', 'mid', 'late']);
       expect(b.phases.flatMap((p) => p.items.map((i) => i.order))).toEqual(names.map((_, i) => i + 1));
       expect(itemCount(b)).toBe(names.length);
-      for (const p of b.phases) for (const i of p.items) { expect(i.picks).toBeLessThanOrEqual(i.of); expect(i.picks).toBeGreaterThan(0); }
+      for (const p of b.phases) for (const i of p.items) { expect(i.picks).toBeLessThanOrEqual(i.of!); expect(i.picks).toBeGreaterThan(0); }
     }
   });
 
@@ -28,7 +28,7 @@ describe('sample hero builds', () => {
     expect(list.every((b) => b.code.startsWith('sample-') && b.illustrative)).toBe(true);
     const pro = list.find((b) => b.kind === 'pro')!;
     expect(pro.eternus).toBe(true);
-    expect(pro.winRate).toBeGreaterThan(list.find((b) => b.kind === 'meta')!.winRate);
+    expect(pro.winRate).toBeGreaterThan(list.find((b) => b.kind === 'meta')!.winRate!);
   });
 
   it('builds a legal skill order: 16 distinct steps, each ability unlocked before it is upgraded, ult not before step 6', () => {
@@ -61,7 +61,7 @@ describe('browseBuilds', () => {
     expect(pro.length).toBeGreaterThan(10);
     expect(pro.every((b) => b.eternus)).toBe(true);
     // Pro is ranked by win rate unless another sort is chosen.
-    expect(pro.map((b) => b.winRate)).toEqual([...pro.map((b) => b.winRate)].sort((a, b) => b - a));
+    expect(pro.map((b) => b.winRate)).toEqual([...pro.map((b) => b.winRate)].sort((a, b) => b! - a!));
   });
   it('filters by hero and searches titles, authors and tags', () => {
     const h = browseBuilds(all, { filter: 'all', sort: 'newest', hero: 'haze' });
@@ -72,7 +72,7 @@ describe('browseBuilds', () => {
   });
   it('sorts by win rate and newest', () => {
     const w = browseBuilds(all, { filter: 'all', sort: 'winrate' });
-    expect(w[0].winRate).toBeGreaterThanOrEqual(w[w.length - 1].winRate);
+    expect(w[0].winRate).toBeGreaterThanOrEqual(w[w.length - 1].winRate!);
     const n = browseBuilds(all, { filter: 'community', sort: 'newest' });
     expect(n[0].ageDays ?? 999).toBeLessThanOrEqual(n[n.length - 1].ageDays ?? 999);
   });

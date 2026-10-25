@@ -30,15 +30,14 @@ const fromManifest: Hero[] = (manifest as { name: string; slug: string }[])
   .map((m) => ({ slug: m.slug, name: m.name, portrait: portraitUrls[`../assets/heroes/${m.slug}.png`], art: SPLASH[m.slug] }));
 
 
-// Heroes without a card from the manifest. Baba and Rat King are playable; the other four are announced new heroes
-// whose abilities the wiki has not published yet (no ability names or icons exist for them).
+// Heroes without a card from the manifest. All of them are playable now; their art and kits come from the game files.
 const EXTRA: Hero[] = [
   { slug: 'celeste', name: 'Celeste', art: SPLASH.celeste },
   { slug: 'baba', name: 'Baba' },
   { slug: 'venator', name: 'Venator' },
   { slug: 'rat-king', name: 'Rat King' },
   { slug: 'deadman-danny', name: 'Deadman Danny' },
-  { slug: 'nurse-harrow', name: 'Nurse Harrow', unreleased: true },
+  { slug: 'nurse-harrow', name: 'Nurse Harrow' },
   { slug: 'solomon', name: 'Solomon' },
   { slug: 'violet', name: 'Violet' },
 ];
