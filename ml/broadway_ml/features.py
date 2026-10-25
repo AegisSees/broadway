@@ -171,6 +171,14 @@ def index_to_badge(idx) -> np.ndarray:
     return (i // 6) * 10 + (i % 6) + 1
 
 
+def _wins(h: pd.DataFrame) -> pd.Series:
+    """Stored match history sends player_match_outcome = 0 for most games (checked 2026-10-25), so a win is
+    match_result == player_team when both are there."""
+    if "match_result" in h and "player_team" in h:
+        return h["match_result"] == h["player_team"]
+    return h["player_match_outcome"] == 1
+
+
 def _profile(h: pd.DataFrame) -> dict:
     mins = h["match_duration_s"].clip(lower=60).sum() / 60.0
     heroes = h["hero_id"].value_counts(normalize=True)
@@ -183,7 +191,7 @@ def _profile(h: pd.DataFrame) -> dict:
         "last_hits_pm": h["last_hits"].sum() / mins,
         "denies_pm": h["denies"].sum() / mins,
         "kda": (h["player_kills"].sum() + h["player_assists"].sum()) / max(1, h["player_deaths"].sum()),
-        "win_rate": (h["player_match_outcome"] == 1).mean(),  # API_GUIDE: win is player_match_outcome == 1
+        "win_rate": _wins(h).mean(),
         "hero_entropy": float(-(heroes * np.log(heroes)).sum()),
         "top_hero_share": float(heroes.iloc[0]) if len(heroes) else 0.0,
     }

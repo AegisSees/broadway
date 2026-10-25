@@ -1,0 +1,728 @@
+{
+ "draft": {
+  "name": "draft",
+  "export": "models/draft_win.json",
+  "variant": "heroes+pairs x0.4",
+  "C": 0.003,
+  "variants_val_log_loss": {
+   "heroes": 0.6720418006307648,
+   "heroes+pairs x0.1": 0.671981370751161,
+   "heroes+pairs x0.2": 0.6718339409382507,
+   "heroes+pairs x0.4": 0.6714807657236923
+  },
+  "pair_scale": 0.4,
+  "calibration": {
+   "platt_a": 0.9478606061295539,
+   "platt_b": 0.011278231406737435,
+   "val_log_loss_before": 0.6714807657236923,
+   "val_log_loss_after": 0.6713986661144894,
+   "applied": false
+  },
+  "side_advantage_logit": -0.013201221851726752,
+  "comparison": {
+   "n": {
+    "base rate": 7681,
+    "hero win rates": 7681,
+    "logistic (heroes+pairs x0.4)": 7681
+   },
+   "auc": {
+    "base rate": 0.5,
+    "hero win rates": 0.6343821947,
+    "logistic (heroes+pairs x0.4)": 0.6366880363
+   },
+   "log_loss": {
+    "base rate": 0.6931472277,
+    "hero win rates": 0.6645622863,
+    "logistic (heroes+pairs x0.4)": 0.6642723058
+   },
+   "brier": {
+    "base rate": 0.2500000215,
+    "hero win rates": 0.2360672479,
+    "logistic (heroes+pairs x0.4)": 0.2359074503
+   },
+   "accuracy": {
+    "base rate": 0.5037104544,
+    "hero win rates": 0.5977086317,
+    "logistic (heroes+pairs x0.4)": 0.5948444213
+   },
+   "ece": {
+    "base rate": 0.0037133539,
+    "hero win rates": 0.0070542085,
+    "logistic (heroes+pairs x0.4)": 0.0099910083
+   }
+  },
+  "reliability": {
+   "lo": {
+    "0": 0.1,
+    "1": 0.2,
+    "2": 0.3,
+    "3": 0.4,
+    "4": 0.5,
+    "5": 0.6,
+    "6": 0.7,
+    "7": 0.8
+   },
+   "hi": {
+    "0": 0.2,
+    "1": 0.3,
+    "2": 0.4,
+    "3": 0.5,
+    "4": 0.6,
+    "5": 0.7,
+    "6": 0.8,
+    "7": 0.9
+   },
+   "n": {
+    "0": 7,
+    "1": 233,
+    "2": 1282,
+    "3": 2477,
+    "4": 2441,
+    "5": 1067,
+    "6": 172,
+    "7": 2
+   },
+   "predicted": {
+    "0": 0.1882002699,
+    "1": 0.2697458462,
+    "2": 0.3594702854,
+    "3": 0.4531404341,
+    "4": 0.5461337882,
+    "5": 0.6394496702,
+    "6": 0.7263233447,
+    "7": 0.8179900849
+   },
+   "observed": {
+    "0": 0.0,
+    "1": 0.2660944206,
+    "2": 0.3408736349,
+    "3": 0.4529672992,
+    "4": 0.5489553462,
+    "5": 0.6738519213,
+    "6": 0.761627907,
+    "7": 0.5
+   }
+  },
+  "by_badge_bracket": {
+   "n": {
+    "unranked (no badge) / hero win rates": 6244,
+    "below Ritualist / hero win rates": 630,
+    "Ritualist to Archon / hero win rates": 404,
+    "Oracle / hero win rates": 156,
+    "Phantom+ / hero win rates": 247,
+    "unranked (no badge) / logistic (heroes+pairs x0.4)": 6244,
+    "below Ritualist / logistic (heroes+pairs x0.4)": 630,
+    "Ritualist to Archon / logistic (heroes+pairs x0.4)": 404,
+    "Oracle / logistic (heroes+pairs x0.4)": 156,
+    "Phantom+ / logistic (heroes+pairs x0.4)": 247,
+    "unranked (no badge) / badge-weighted fit": 6244,
+    "below Ritualist / badge-weighted fit": 630,
+    "Ritualist to Archon / badge-weighted fit": 404,
+    "Oracle / badge-weighted fit": 156,
+    "Phantom+ / badge-weighted fit": 247
+   },
+   "auc": {
+    "unranked (no badge) / hero win rates": 0.64266514,
+    "below Ritualist / hero win rates": 0.6223529412,
+    "Ritualist to Archon / hero win rates": 0.5449911348,
+    "Oracle / hero win rates": 0.7009828419,
+    "Phantom+ / hero win rates": 0.5627952756,
+    "unranked (no badge) / logistic (heroes+pairs x0.4)": 0.6440297818,
+    "below Ritualist / logistic (heroes+pairs x0.4)": 0.6271298174,
+    "Ritualist to Archon / logistic (heroes+pairs x0.4)": 0.5594217888,
+    "Oracle / logistic (heroes+pairs x0.4)": 0.6963185074,
+    "Phantom+ / logistic (heroes+pairs x0.4)": 0.5688976378,
+    "unranked (no badge) / badge-weighted fit": 0.6422111486,
+    "below Ritualist / badge-weighted fit": 0.6230223124,
+    "Ritualist to Archon / badge-weighted fit": 0.5593232861,
+    "Oracle / badge-weighted fit": 0.6949858404,
+    "Phantom+ / badge-weighted fit": 0.5708005249
+   },
+   "log_loss": {
+    "unranked (no badge) / hero win rates": 0.6613222396,
+    "below Ritualist / hero win rates": 0.6695451994,
+    "Ritualist to Archon / hero win rates": 0.7000335741,
+    "Oracle / hero win rates": 0.6402517998,
+    "Phantom+ / hero win rates": 0.6910952887,
+    "unranked (no badge) / logistic (heroes+pairs x0.4)": 0.6616379669,
+    "below Ritualist / logistic (heroes+pairs x0.4)": 0.6672240675,
+    "Ritualist to Archon / logistic (heroes+pairs x0.4)": 0.6922168813,
+    "Oracle / logistic (heroes+pairs x0.4)": 0.6474620894,
+    "Phantom+ / logistic (heroes+pairs x0.4)": 0.6882479635,
+    "unranked (no badge) / badge-weighted fit": 0.6623004005,
+    "below Ritualist / badge-weighted fit": 0.6686382308,
+    "Ritualist to Archon / badge-weighted fit": 0.6920522066,
+    "Oracle / badge-weighted fit": 0.6480094782,
+    "Phantom+ / badge-weighted fit": 0.6878219804
+   },
+   "ece": {
+    "unranked (no badge) / hero win rates": 0.0093451035,
+    "below Ritualist / hero win rates": 0.0430877041,
+    "Ritualist to Archon / hero win rates": 0.0561125246,
+    "Oracle / hero win rates": 0.0847616892,
+    "Phantom+ / hero win rates": 0.0710400418,
+    "unranked (no badge) / logistic (heroes+pairs x0.4)": 0.0170613051,
+    "below Ritualist / logistic (heroes+pairs x0.4)": 0.0424033726,
+    "Ritualist to Archon / logistic (heroes+pairs x0.4)": 0.049905048,
+    "Oracle / logistic (heroes+pairs x0.4)": 0.1027383078,
+    "Phantom+ / logistic (heroes+pairs x0.4)": 0.0458388019,
+    "unranked (no badge) / badge-weighted fit": 0.0175440646,
+    "below Ritualist / badge-weighted fit": 0.0444495631,
+    "Ritualist to Archon / badge-weighted fit": 0.0525526383,
+    "Oracle / badge-weighted fit": 0.0798257053,
+    "Phantom+ / badge-weighted fit": 0.0474652364
+   }
+  },
+  "strongest_heroes": {
+   "h_76": 0.2177228808167,
+   "h_66": 0.21294017985274907,
+   "h_84": 0.20297817388960235,
+   "h_67": 0.15168687055954805,
+   "h_2": 0.1308788239640822
+  },
+  "weakest_heroes": {
+   "h_63": -0.1596291856716166,
+   "h_14": -0.1478819293349046,
+   "h_50": -0.13925305110193287,
+   "h_60": -0.12590010922484512,
+   "h_10": -0.12434193518749838
+  },
+  "n_train": 30712,
+  "n_test": 7681,
+  "beats_baselines": true,
+  "seconds": 24.9
+ },
+ "live": {
+  "name": "live",
+  "export": "models/live_win.json",
+  "C": 0.1,
+  "calibration": {
+   "platt_a": 0.9707196370924938,
+   "platt_b": -0.013532998046214575,
+   "val_log_loss_before": 0.5962954219853916,
+   "val_log_loss_after": 0.5962177258917591,
+   "applied": false
+  },
+  "comparison": {
+   "n": {
+    "base rate": 59751,
+    "net worth share": 59751,
+    "logistic": 59751
+   },
+   "auc": {
+    "base rate": 0.5,
+    "net worth share": 0.7303432041,
+    "logistic": 0.7369264176
+   },
+   "log_loss": {
+    "base rate": 0.6931393566,
+    "net worth share": 0.6054667914,
+    "logistic": 0.5950394766
+   },
+   "brier": {
+    "base rate": 0.2499960878,
+    "net worth share": 0.2095786802,
+    "logistic": 0.2062694174
+   },
+   "accuracy": {
+    "base rate": 0.5028367726,
+    "net worth share": 0.6664658332,
+    "logistic": 0.6665997222
+   },
+   "ece": {
+    "base rate": 0.0020334864,
+    "net worth share": 0.0076393309,
+    "logistic": 0.0081323046
+   }
+  },
+  "auc_by_minute": {
+   "net worth share": {
+    "3.0": 0.6135663432,
+    "6.0": 0.661578484,
+    "9.0": 0.7176212733,
+    "12.0": 0.7414227587,
+    "15.0": 0.7690857184,
+    "30.0": 0.8802805391,
+    "45.0": 0.7587315619,
+    "60.0": 0.5714285714
+   },
+   "logistic": {
+    "3.0": 0.6135399977,
+    "6.0": 0.6616291316,
+    "9.0": 0.7169855646,
+    "12.0": 0.7420556356,
+    "15.0": 0.7702271872,
+    "30.0": 0.8809283588,
+    "45.0": 0.7617329807,
+    "60.0": 0.579004329
+   }
+  },
+  "reliability": {
+   "lo": {
+    "0": 0.0,
+    "1": 0.1,
+    "2": 0.2,
+    "3": 0.3,
+    "4": 0.4,
+    "5": 0.5,
+    "6": 0.6,
+    "7": 0.7,
+    "8": 0.8,
+    "9": 0.9
+   },
+   "hi": {
+    "0": 0.1,
+    "1": 0.2,
+    "2": 0.3,
+    "3": 0.4,
+    "4": 0.5,
+    "5": 0.6,
+    "6": 0.7,
+    "7": 0.8,
+    "8": 0.9,
+    "9": 1.0
+   },
+   "n": {
+    "0": 2058,
+    "1": 3523,
+    "2": 5730,
+    "3": 8418,
+    "4": 11145,
+    "5": 10775,
+    "6": 7828,
+    "7": 5216,
+    "8": 3056,
+    "9": 2002
+   },
+   "predicted": {
+    "0": 0.0526308444,
+    "1": 0.1535593395,
+    "2": 0.2544299498,
+    "3": 0.3532728829,
+    "4": 0.4513086931,
+    "5": 0.5487172015,
+    "6": 0.6467565684,
+    "7": 0.7455762889,
+    "8": 0.8459443075,
+    "9": 0.9473045568
+   },
+   "observed": {
+    "0": 0.0461613217,
+    "1": 0.1606585297,
+    "2": 0.2701570681,
+    "3": 0.3595866001,
+    "4": 0.4611036339,
+    "5": 0.5541531323,
+    "6": 0.6351558508,
+    "7": 0.7494248466,
+    "8": 0.8412958115,
+    "9": 0.953046953
+   }
+  },
+  "n_train_snapshots": 238899,
+  "n_test_snapshots": 59751,
+  "beats_baselines": true,
+  "seconds": 15.7
+ },
+ "builds": {
+  "name": "builds",
+  "export": "models/build_recommender.json",
+  "C": 0.01,
+  "items": 133,
+  "events_train": 919194,
+  "events_test": 229876,
+  "comparison": {
+   "n": {
+    "base rate": 229876,
+    "context only": 229876,
+    "context + item": 229876,
+    "full": 229876
+   },
+   "auc": {
+    "base rate": 0.5,
+    "context only": 0.7919635342,
+    "context + item": 0.7921708222,
+    "full": 0.8022883381
+   },
+   "log_loss": {
+    "base rate": 0.6925088173,
+    "context only": 0.5462259813,
+    "context + item": 0.5459101176,
+    "full": 0.53466022
+   },
+   "brier": {
+    "base rate": 0.2496808851,
+    "context only": 0.1855774381,
+    "context + item": 0.1854602182,
+    "full": 0.1809829748
+   },
+   "accuracy": {
+    "base rate": 0.5179096556,
+    "context only": 0.7113313265,
+    "context + item": 0.7115183838,
+    "full": 0.7202839792
+   },
+   "ece": {
+    "base rate": 0.001280957,
+    "context only": 0.0120837006,
+    "context + item": 0.0117508392,
+    "full": 0.0081072033
+   }
+  },
+  "by_badge_bracket": {
+   "n": {
+    "unranked (no badge) / context only": 177645,
+    "below Ritualist / context only": 23288,
+    "Ritualist to Archon / context only": 14362,
+    "Oracle / context only": 6071,
+    "Phantom+ / context only": 8510,
+    "unranked (no badge) / full": 177645,
+    "below Ritualist / full": 23288,
+    "Ritualist to Archon / full": 14362,
+    "Oracle / full": 6071,
+    "Phantom+ / full": 8510,
+    "unranked (no badge) / badge-weighted full": 177645,
+    "below Ritualist / badge-weighted full": 23288,
+    "Ritualist to Archon / badge-weighted full": 14362,
+    "Oracle / badge-weighted full": 6071,
+    "Phantom+ / badge-weighted full": 8510
+   },
+   "auc": {
+    "unranked (no badge) / context only": 0.7922009822,
+    "below Ritualist / context only": 0.8005397521,
+    "Ritualist to Archon / context only": 0.7379836535,
+    "Oracle / context only": 0.8532290013,
+    "Phantom+ / context only": 0.8094585502,
+    "unranked (no badge) / full": 0.8054801996,
+    "below Ritualist / full": 0.7932489686,
+    "Ritualist to Archon / full": 0.7476173056,
+    "Oracle / full": 0.8689250296,
+    "Phantom+ / full": 0.8076865344,
+    "unranked (no badge) / badge-weighted full": 0.8042600424,
+    "below Ritualist / badge-weighted full": 0.7919931354,
+    "Ritualist to Archon / badge-weighted full": 0.745450496,
+    "Oracle / badge-weighted full": 0.8643775923,
+    "Phantom+ / badge-weighted full": 0.8034334199
+   },
+   "log_loss": {
+    "unranked (no badge) / context only": 0.5457852136,
+    "below Ritualist / context only": 0.535072707,
+    "Ritualist to Archon / context only": 0.6046472076,
+    "Oracle / context only": 0.4879852374,
+    "Phantom+ / context only": 0.5289018358,
+    "unranked (no badge) / full": 0.5309759011,
+    "below Ritualist / full": 0.5444221488,
+    "Ritualist to Archon / full": 0.5956670437,
+    "Oracle / full": 0.463479335,
+    "Phantom+ / full": 0.5326771613,
+    "unranked (no badge) / badge-weighted full": 0.532204757,
+    "below Ritualist / badge-weighted full": 0.5452817976,
+    "Ritualist to Archon / badge-weighted full": 0.5973434174,
+    "Oracle / badge-weighted full": 0.4684708055,
+    "Phantom+ / badge-weighted full": 0.5363180824
+   },
+   "ece": {
+    "unranked (no badge) / context only": 0.011615913,
+    "below Ritualist / context only": 0.0169733553,
+    "Ritualist to Archon / context only": 0.0375835721,
+    "Oracle / context only": 0.0715175112,
+    "Phantom+ / context only": 0.0366639622,
+    "unranked (no badge) / full": 0.0115198618,
+    "below Ritualist / full": 0.0183999926,
+    "Ritualist to Archon / full": 0.0285345006,
+    "Oracle / full": 0.0556252752,
+    "Phantom+ / full": 0.0268571775,
+    "unranked (no badge) / badge-weighted full": 0.0112023913,
+    "below Ritualist / badge-weighted full": 0.019123835,
+    "Ritualist to Archon / badge-weighted full": 0.0293112953,
+    "Oracle / badge-weighted full": 0.0545411196,
+    "Phantom+ / badge-weighted full": 0.0233048354
+   }
+  },
+  "pairwise_full": {
+   "pairs": 42613,
+   "winner_item_ranked_higher": 0.5583038040034731
+  },
+  "pairwise_item_only": {
+   "pairs": 42613,
+   "winner_item_ranked_higher": 0.5213667190763382
+  },
+  "favoured_vs_enemy_spend": {
+   "weapon": [
+    "Improved Spirit",
+    "Torment Pulse",
+    "Radiant Regeneration",
+    "Spirit Lifesteal",
+    "Superior Cooldown"
+   ],
+   "vitality": [
+    "Healbane",
+    "Rapid Recharge",
+    "Spirit Snatch",
+    "Spirit Resilience",
+    "Intensifying Magazine"
+   ],
+   "spirit": [
+    "Trophy Collector",
+    "Boundless Spirit",
+    "Spiritual Overflow",
+    "Greater Expansion",
+    "Spirit Burn"
+   ]
+  },
+  "item_terms_help": true,
+  "val_note": "log loss gain of full over context only: 0.01157",
+  "seconds": 704.1
+ },
+ "top_items": {
+  "name": "top_items",
+  "export": "models/top_player_items.json",
+  "bracket": "top 10% of games (average badge >= 94), 859 matches",
+  "C": 1.0,
+  "export_prune": 0.05,
+  "items": 154,
+  "events_train": 134868,
+  "events_test": 33844,
+  "comparison": {
+   "top1": {
+    "hero + minute frequency": 0.2325375251,
+    "top-player model": 0.3522928732,
+    "top-player model (as exported)": 0.3485994563
+   },
+   "top3": {
+    "hero + minute frequency": 0.4718709372,
+    "top-player model": 0.592660442,
+    "top-player model (as exported)": 0.5909466966
+   },
+   "top5": {
+    "hero + minute frequency": 0.5946992081,
+    "top-player model": 0.7038175157,
+    "top-player model (as exported)": 0.7014537289
+   },
+   "log_loss": {
+    "hero + minute frequency": 2.9700787081,
+    "top-player model": 2.4856836835,
+    "top-player model (as exported)": 2.492242964
+   }
+  },
+  "export_size_sweep": {
+   "kb": {
+    "0.02": 701,
+    "0.05": 648,
+    "0.1": 569,
+    "0.15": 499,
+    "0.2": 442,
+    "0.3": 352,
+    "0.4": 282,
+    "0.6": 183
+   },
+   "top1": {
+    "0.02": 0.3517019265,
+    "0.05": 0.3485994563,
+    "0.1": 0.322715991,
+    "0.15": 0.2667533388,
+    "0.2": 0.2203935705,
+    "0.3": 0.1917326557,
+    "0.4": 0.1887779222,
+    "0.6": 0.2035220423
+   },
+   "top3": {
+    "0.02": 0.5928672734,
+    "0.05": 0.5909466966,
+    "0.1": 0.5713272663,
+    "0.15": 0.5225150691,
+    "0.2": 0.4778099515,
+    "0.3": 0.4291159437,
+    "0.4": 0.4193357759,
+    "0.6": 0.4299137218
+   },
+   "log_loss": {
+    "0.02": 2.4858667694,
+    "0.05": 2.492242964,
+    "0.1": 2.5603586496,
+    "0.15": 2.764384948,
+    "0.2": 2.9951592613,
+    "0.3": 3.2359192813,
+    "0.4": 3.2752673925,
+    "0.6": 3.231167666
+   }
+  },
+  "most_bought_by_top_players": [
+   "Extra Spirit",
+   "Improved Spirit",
+   "Mystic Expansion",
+   "Extra Regen",
+   "Mystic Burst",
+   "Superior Cooldown",
+   "High-Velocity Rounds",
+   "Tankbuster",
+   "Sprint Boots",
+   "Compress Cooldown"
+  ],
+  "beats_baseline": true,
+  "seconds": 904.6
+ },
+ "matchups": {
+  "name": "matchups",
+  "export": "models/matchups.json",
+  "bracket": "top 10% of games (average badge >= 94), 859 matches",
+  "pairs": 1892,
+  "pairs_with_50_top_games": 386,
+  "median_top_games_per_pair": 25.0,
+  "strongest_matchups": {
+   "delta_pts": {
+    "(7, 78)": 10.0,
+    "(31, 78)": 9.25,
+    "(12, 78)": 9.09,
+    "(17, 78)": 8.8,
+    "(78, 86)": 8.51,
+    "(85, 78)": 8.43,
+    "(78, 63)": 8.25,
+    "(86, 27)": 8.24,
+    "(6, 78)": 7.99,
+    "(65, 63)": 7.9
+   },
+   "top_games": {
+    "(7, 78)": 118,
+    "(31, 78)": 107,
+    "(12, 78)": 51,
+    "(17, 78)": 53,
+    "(78, 86)": 129,
+    "(85, 78)": 93,
+    "(78, 63)": 96,
+    "(86, 27)": 77,
+    "(6, 78)": 51,
+    "(65, 63)": 68
+   }
+  },
+  "seconds": 28.3
+ },
+ "playstyle": {
+  "name": "playstyle",
+  "export": "models/playstyle.json",
+  "k": 5,
+  "k_search": {
+   "silhouette": {
+    "4": 0.1470556103,
+    "5": 0.1263406604,
+    "6": 0.1194989281,
+    "7": 0.1240311877,
+    "8": 0.1195799498
+   },
+   "stability": {
+    "4": 0.7345840169,
+    "5": 0.8452806726,
+    "6": 0.6780983506,
+    "7": 0.636939466,
+    "8": 0.6620104886
+   }
+  },
+  "centroids_z": {
+   "kills_pm": {
+    "Support": -0.25,
+    "One-trick": -0.1,
+    "Soul farmer": 0.8,
+    "Brawler": 0.07,
+    "Flex player": -0.25
+   },
+   "deaths_pm": {
+    "Support": -0.56,
+    "One-trick": 0.19,
+    "Soul farmer": -0.9,
+    "Brawler": 1.09,
+    "Flex player": -0.19
+   },
+   "assists_pm": {
+    "Support": 1.05,
+    "One-trick": -0.75,
+    "Soul farmer": -0.11,
+    "Brawler": 0.19,
+    "Flex player": -0.28
+   },
+   "souls_pm": {
+    "Support": -0.47,
+    "One-trick": 0.37,
+    "Soul farmer": 1.36,
+    "Brawler": -0.75,
+    "Flex player": -0.03
+   },
+   "last_hits_pm": {
+    "Support": -0.69,
+    "One-trick": 0.57,
+    "Soul farmer": 0.96,
+    "Brawler": -0.77,
+    "Flex player": 0.2
+   },
+   "denies_pm": {
+    "Support": -0.23,
+    "One-trick": 0.31,
+    "Soul farmer": 0.48,
+    "Brawler": -0.34,
+    "Flex player": -0.01
+   },
+   "kda": {
+    "Support": 0.78,
+    "One-trick": -0.53,
+    "Soul farmer": 1.17,
+    "Brawler": -0.74,
+    "Flex player": -0.15
+   },
+   "hero_entropy": {
+    "Support": -0.7,
+    "One-trick": -1.11,
+    "Soul farmer": -0.03,
+    "Brawler": 0.26,
+    "Flex player": 0.84
+   },
+   "top_hero_share": {
+    "Support": 0.65,
+    "One-trick": 1.18,
+    "Soul farmer": -0.03,
+    "Brawler": -0.3,
+    "Flex player": -0.79
+   },
+   "players": {
+    "Support": 503,
+    "One-trick": 489,
+    "Soul farmer": 435,
+    "Brawler": 685,
+    "Flex player": 875
+   }
+  },
+  "players": 2987,
+  "outliers_dropped": 9,
+  "seconds": 14.3
+ },
+ "rank": {
+  "name": "rank",
+  "export": "models/rank_estimate.json",
+  "alpha": 0.1,
+  "comparison": {
+   "n": {
+    "median": 19299,
+    "ridge": 19299,
+    "boosted trees (not exported)": 19299
+   },
+   "mae_levels": {
+    "median": 12.3144204363,
+    "ridge": 10.2420850821,
+    "boosted trees (not exported)": 10.0234209026
+   },
+   "within_same_tier": {
+    "median": 0.1849836779,
+    "ridge": 0.186020001,
+    "boosted trees (not exported)": 0.1997512824
+   },
+   "within_one_tier": {
+    "median": 0.4932898078,
+    "ridge": 0.5211668998,
+    "boosted trees (not exported)": 0.5323073734
+   }
+  },
+  "resid_sd_levels": 12.791147922262928,
+  "windows": 98823,
+  "players": 2925,
+  "beats_baseline": true,
+  "seconds": 116.5
+ }
+}

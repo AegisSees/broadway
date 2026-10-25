@@ -139,7 +139,7 @@ def export_rows(feats: list[str], classes: np.ndarray, coef: np.ndarray, interce
 
 
 def train(tables: dict, out_dir, min_events: int = 40000, min_class_events: int = 50, n_enemy_items: int = 40,
-          test_frac: float = 0.2, max_bytes: int = 250_000) -> dict:
+          test_frac: float = 0.2, max_bytes: int = 700_000) -> dict:
     cat = item_catalog()
     m = tables["matches"]
     brackets = top_bracket(m)
@@ -192,16 +192,34 @@ def train(tables: dict, out_dir, min_events: int = 40000, min_class_events: int 
          "top5": topk_hit(P, yte, classes, 5), "log_loss": float(log_loss(yte, np.clip(P, 1e-9, 1), labels=classes))},
     ]).set_index("model")
 
-    # Prune small weights until the file fits the site bundle (the standalone build is near its 30 MiB cap).
-    for prune in (0.02, 0.05, 0.1, 0.2, 0.4):
+    # Softmax only sees differences between classes, so each feature's weights can be shifted by their mean over the
+    # items without changing a single probability. Centring first puts most weights near 0, so pruning costs far less
+    # (uncentred, the pruning that fit 250 KB scored below the frequency baseline). Even centred, quality falls off
+    # below about 600 KB on the first real pull (see export_size_sweep), hence the 700 KB cap.
+    coef_c = model.coef_ - model.coef_.mean(axis=0, keepdims=True)
+    icpt_c = model.intercept_ - model.intercept_.mean()
+    model.coef_, model.intercept_ = coef_c, icpt_c
+    # Prune small weights until the file fits the site bundle (the standalone build is near its 30 MiB cap). Every
+    # level is scored as the site would run it, so the report shows what each size costs.
+    def as_exported(prune):
+        keep_w = (np.abs(np.round(model.coef_, 3)) >= prune) | (np.array(feats) == "t")[None, :]
+        Z = np.asarray(X[te] @ (np.round(model.coef_, 3) * keep_w).T) + np.round(model.intercept_, 3)
+        Pp = np.exp(Z - Z.max(1, keepdims=True))
+        return masked(Pp / Pp.sum(1, keepdims=True), mask_te)
+
+    sweep, chosen_rows, chosen_prune = [], None, None
+    for prune in (0.02, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.6):
         rows = export_rows(feats, classes, model.coef_, model.intercept_, prune=prune)
-        if len(json.dumps(rows, separators=(",", ":"))) <= max_bytes:
-            break
-    # Score the pruned weights too: that is what the site will run.
-    keep_w = (np.abs(np.round(model.coef_, 3)) >= prune) | (np.array(feats) == "t")[None, :]
-    Z = np.asarray(X[te] @ (np.round(model.coef_, 3) * keep_w).T) + np.round(model.intercept_, 3)
-    Pp = np.exp(Z - Z.max(1, keepdims=True))
-    Pp = masked(Pp / Pp.sum(1, keepdims=True), mask_te)
+        size = len(json.dumps(rows, separators=(",", ":")))
+        Pp = as_exported(prune)
+        sweep.append({"prune": prune, "kb": round(size / 1000), "top1": topk_hit(Pp, yte, classes, 1),
+                      "top3": topk_hit(Pp, yte, classes, 3), "log_loss": float(log_loss(yte, np.clip(Pp, 1e-9, 1), labels=classes))})
+        if chosen_rows is None and size <= max_bytes:
+            chosen_rows, chosen_prune = rows, prune
+    if chosen_rows is None:
+        chosen_rows, chosen_prune = rows, prune
+    rows, prune = chosen_rows, chosen_prune
+    Pp = as_exported(prune)
     report.loc["top-player model (as exported)"] = [topk_hit(Pp, yte, classes, 1), topk_hit(Pp, yte, classes, 3),
                                                     topk_hit(Pp, yte, classes, 5),
                                                     float(log_loss(yte, np.clip(Pp, 1e-9, 1), labels=classes))]
@@ -224,6 +242,8 @@ def train(tables: dict, out_dir, min_events: int = 40000, min_class_events: int 
         "events_train": int(tr.sum()),
         "events_test": int(te.sum()),
         "comparison": report,
+        "export_size_sweep": pd.DataFrame(sweep).set_index("prune"),
         "most_bought_by_top_players": [names.get(int(i), str(i)) for i in counts.index[:10]],
-        "beats_baseline": bool(report.loc["top-player model", "log_loss"] < report.loc["hero + minute frequency", "log_loss"]),
+        "beats_baseline": bool(report.loc["top-player model (as exported)", "log_loss"]
+                               < report.loc["hero + minute frequency", "log_loss"]),
     }

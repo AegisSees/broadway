@@ -100,3 +100,31 @@ def rank_report(true_idx: np.ndarray, pred_idx: np.ndarray, name: str = "model")
         "within_same_tier": float(np.mean(t // 6 == p // 6)),
         "within_one_tier": float(np.mean(np.abs(t // 6 - p // 6) <= 1)),
     }
+
+
+# Average-badge brackets (tier = badge // 10: 5 Ritualist, 7 Archon, 8 Oracle, 9 Phantom, 10 Ascendant, 11 Eternus).
+BRACKETS = ((1, 50, "below Ritualist"), (50, 80, "Ritualist to Archon"), (80, 90, "Oracle"), (90, 200, "Phantom+"))
+
+
+def by_bracket(y: np.ndarray, predictions: dict[str, np.ndarray], badge: np.ndarray) -> pd.DataFrame:
+    """Test metrics per average-badge bracket. Unranked games have no badge and get their own row."""
+    y, badge = np.asarray(y), np.nan_to_num(np.asarray(badge, dtype=float))
+    groups = [("unranked (no badge)", badge <= 0)] + [(name, (badge >= lo) & (badge < hi)) for lo, hi, name in BRACKETS]
+    rows = []
+    for name, p in predictions.items():
+        for label, mask in groups:
+            if mask.sum() >= 50 and len(np.unique(y[mask])) > 1:
+                r = classification_report(y[mask], np.asarray(p)[mask], name)
+                rows.append({"bracket": label, "model": name, "n": r["n"], "auc": r["auc"], "log_loss": r["log_loss"],
+                             "ece": r["ece"]})
+    out = pd.DataFrame(rows)
+    out.index = out.pop("bracket") + " / " + out.pop("model")
+    out.index.name = "bracket / model"
+    return out
+
+
+def badge_weights(badge: np.ndarray, strength: float = 2.0) -> np.ndarray:
+    """Sample weights rising with average badge: 1 for unranked, 1 .. 1 + strength from Initiate I to Eternus VI."""
+    b = np.nan_to_num(np.asarray(badge, dtype=float))
+    idx = np.clip((b // 10) * 6 + (b % 10) - 1, 0, 71)
+    return np.where(b > 0, 1.0 + strength * idx / 71.0, 1.0)
