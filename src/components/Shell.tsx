@@ -8,7 +8,7 @@ import { useReveal } from '../lib/reveal';
 import { AUTHOR } from '../lib/credit';
 
 // The side rail is drawn as a subway line, Broadway being one: each page is a stop with its own coloured bullet.
-// The main pages are round local stops; the tools (compare, planner, ranks) are diamonds, like express service.
+// The main pages are round local stops; the tools (compare, planner, draft odds, ranks) are diamonds, like express service.
 const NAV: { to: string; label: string; mark: string; color: string; ink?: string; end?: boolean; express?: boolean }[] = [
   { to: '/', label: 'Home', mark: '✦', color: '#0d0a07', ink: '#efc46a', end: true },
   { to: '/heroes', label: 'Heroes', mark: 'H', color: '#ec7a2e' },
@@ -21,6 +21,7 @@ const NAV: { to: string; label: string; mark: string; color: string; ink?: strin
   { to: '/streams', label: 'Livestreams', mark: 'S', color: '#3fa7c2' },
   { to: '/compare', label: 'Compare', mark: 'C', color: '#efe3cf', ink: '#140c05', express: true },
   { to: '/planner', label: 'Planner', mark: 'P', color: '#efe3cf', ink: '#140c05', express: true },
+  { to: '/draft', label: 'Draft odds', mark: 'D', color: '#efe3cf', ink: '#140c05', express: true },
   { to: '/ranks', label: 'Ranks', mark: 'R', color: '#efe3cf', ink: '#140c05', express: true },
 ];
 
@@ -29,6 +30,7 @@ const MORE = [
   { to: '/player', label: 'Find a player' },
   { to: '/compare', label: 'Compare heroes' },
   { to: '/planner', label: 'Build planner' },
+  { to: '/draft', label: 'Draft odds' },
   { to: '/ranks', label: 'Rank distribution' },
   { to: '/about', label: 'About' },
 ];

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CopyCode } from '../components/BuildBoard';
+import { DraftOddsBar } from '../components/DraftOdds';
 import Kicker from '../components/Kicker';
 import RankBadge from '../components/RankBadge';
 import { SiteFooter } from '../components/Shell';
@@ -78,6 +79,7 @@ function MatchCard({ m, now }: { m: LiveMatch; now: number }) {
         <span className="am" style={{ width: `${((1 - share) * 100).toFixed(1)}%` }} />
       </div>
       <p className="lm-lead">{lead > 0 ? <><b className={leader.id}>{leader.label}</b> lead by {fmtSouls(lead)} souls</> : 'Dead even'}</p>
+      {m.mode === 'standard' && <DraftOddsBar team0={m.teams[0].players} team1={m.teams[1].players} />}
 
       <footer className="lm-foot">
         <span className="lbl">Match ID</span>

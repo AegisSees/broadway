@@ -74,6 +74,8 @@ export interface MatchPlayer {
   skills: SkillStep[];
   /** Net worth over the game, oldest first, starting at 0. */
   curve: { t: number; v: number }[];
+  /** The three-minute stat samples (souls, kills, deaths, assists, level so far), oldest first, for the live win model. */
+  snaps: { t: number; nw: number; k: number; d: number; a: number; lvl: number }[];
 }
 
 export interface TeamTotals {
@@ -185,6 +187,7 @@ function playerOf(p: MatchPlayerRaw, winner: string, ids: HeroIdMap): MatchPlaye
     bought, held,
     skills: skillsOf(rows.filter((r) => !isShop(r))),
     curve: samples.length ? [{ t: 0, v: 0 }, ...samples.map((s) => ({ t: s.time_stamp_s, v: s.net_worth! }))] : [],
+    snaps: samples.map((s) => ({ t: s.time_stamp_s, nw: s.net_worth!, k: s.kills ?? 0, d: s.deaths ?? 0, a: s.assists ?? 0, lvl: s.level ?? 0 })),
   };
 }
 

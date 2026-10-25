@@ -1,5 +1,5 @@
-// Scores the JSON models written by ml/broadway_ml/export.py. Not wired into the site yet: when a model is ready,
-// copy its JSON into src/ and import this file from the page that shows it.
+// Scores the JSON models written by ml/broadway_ml/export.py. The site loads the models from ml/models/ (src/ml/models.ts)
+// and calls this file through src/ml/predict.ts.
 
 export interface ModelBase {
   format: string;

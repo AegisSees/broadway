@@ -19,6 +19,7 @@ import { useAsync } from '../data/useAsync';
 import { fmtInt } from '../lib/stats';
 import { useTitle } from '../lib/useTitle';
 import SectionHeading from '../components/SectionHeading';
+import WinChance from '../components/WinChance';
 
 const k1 = (n: number | undefined) => (n === undefined ? '–' : n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 1 : 2).replace(/\.?0+$/, '')}K` : String(Math.round(n)));
 const clock = (s: number) => fmtDuration(s);
@@ -384,6 +385,7 @@ export default function MatchPage() {
           <Head m={m} />
           <Highlights m={m} names={names} onPick={pick} />
           <LeadChart m={m} />
+          <WinChance m={m} />
 
           <SectionHeading title="The two teams" />
           <div className="mt-grid">

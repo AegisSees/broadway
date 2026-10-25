@@ -10,6 +10,7 @@ import LaneBackdrop from '../components/LaneBackdrop';
 import Tip from '../components/Tip';
 import AbilityTip from '../components/AbilityTip';
 import MatchupColumn from '../components/MatchupColumn';
+import TopMatchups from '../components/TopMatchups';
 import { SiteFooter } from '../components/Shell';
 import { abilitySource, getAbilities } from '../data/abilities';
 import { getGloat } from '../data/heroGloat';
@@ -221,6 +222,7 @@ export default function HeroPage() {
                 {overview.matchups.length > 0
                   ? <div className="mugrid" data-n={overview.matchups.length}>{overview.matchups.map((g) => <MatchupColumn key={g.key} group={g} heroName={hero.name} heroSlug={hero.slug} />)}</div>
                   : <div className="panel empty"><h3>No matchup data yet</h3><p>Matchups need enough head-to-head matches before they are listed.</p></div>}
+                <TopMatchups slug={hero.slug} name={hero.name} />
               </>
             )}
           </>
