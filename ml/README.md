@@ -28,6 +28,7 @@ pytest -q                       # 14 tests, no network needed
 ```
 python -m broadway_ml.pull probe                     # checks the endpoints and saves their shapes to data/probe/
 python -m broadway_ml.pull matches --days 14         # bulk match metadata -> data/tables/*.parquet
+python -m broadway_ml.pull matches --top-up          # weekly: only matches newer than the newest saved, then retrain
 python -m broadway_ml.pull crawl --players 500       # fallback if `matches` fails: leaderboard -> histories -> matches
 python -m broadway_ml.pull histories --players 3000  # match histories for clusters and rank estimate
 ```

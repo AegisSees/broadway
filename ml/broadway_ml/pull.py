@@ -4,6 +4,7 @@ Run from the ml/ folder on a computer with normal internet access:
 
     python -m broadway_ml.pull probe                      # 3 tiny calls; saves shapes to data/probe/ so we can check them
     python -m broadway_ml.pull matches --days 14          # bulk match metadata, ranked Normal games, paged by match id
+    python -m broadway_ml.pull matches --top-up           # later runs: only matches newer than the newest saved
     python -m broadway_ml.pull crawl --seed-leaderboard Europe --players 500
                                                           # fallback: leaderboard -> match histories -> metadata by id
     python -m broadway_ml.pull histories --players 3000   # per-player match history (playstyle clusters, rank estimate)
@@ -106,6 +107,9 @@ def cmd_matches(api: DeadlockApi, args) -> None:
         "limit": args.per_request,
     }
     cursor, batch, part, total = None, [], len(list(OUT.glob("matches_*.parquet"))), 0
+    if args.top_up and part:
+        cursor = int(pd.concat([pd.read_parquet(p, columns=["match_id"]) for p in OUT.glob("matches_*.parquet")])["match_id"].max()) + 1
+        print(f"Topping up from match id {cursor}")
     while total < args.max_matches:
         rows = as_match_list(api.get("/v1/matches/metadata", {**params, "min_match_id": cursor}))
         if not rows:
@@ -184,6 +188,7 @@ def main(argv: list[str] | None = None) -> None:
     m.add_argument("--per-request", type=int, default=100)
     m.add_argument("--max-matches", type=int, default=50_000)
     m.add_argument("--part-size", type=int, default=2_000)
+    m.add_argument("--top-up", action="store_true", help="only fetch matches newer than the newest one already saved")
     c = sub.add_parser("crawl")
     c.add_argument("--seed-leaderboard", default="Europe")
     c.add_argument("--players", type=int, default=500)
