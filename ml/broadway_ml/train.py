@@ -18,10 +18,11 @@ from pathlib import Path
 import pandas as pd
 
 from .flatten import load_tables
-from .models import builds, draft, live, playstyle, rank
+from .models import builds, draft, live, matchups, playstyle, rank, top_items
 from .models.common import md_table
 
-MODELS = {"draft": draft, "live": live, "builds": builds, "playstyle": playstyle, "rank": rank}
+MODELS = {"draft": draft, "live": live, "builds": builds, "top_items": top_items, "matchups": matchups,
+          "playstyle": playstyle, "rank": rank}
 NEEDS_HISTORIES = {"playstyle", "rank"}
 
 

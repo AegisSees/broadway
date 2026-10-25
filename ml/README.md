@@ -8,6 +8,8 @@ loads the exported JSON and scores it in the browser (`web/score.ts`), so it sta
 | 1 | Draft win predictor | match cards, live matches | `draft.py`: logistic on heroes + teammate and matchup pairs, tuned C, optional Platt | `draft_win.json` (linear@1) |
 | 2 | Live win probability | match report, curve over the game | `live.py`: logistic on team gaps and gap x minute | `live_win.json` (linear@1) |
 | 3 | Build recommender (enemy lineup **and** enemy builds) | Builds page, "next item" | `builds.py`: logistic with item x (my hero, enemy heroes, enemy spend, enemy items) terms | `build_recommender.json` (table@1) |
+| 3b | "Top players buy" (what the top 1-10% buy next in this spot) | Builds page, next to "best win rate" | `top_items.py`: multinomial logistic over items, trained on the smallest top bracket with enough purchases | `top_player_items.json` (table@1, + owned items) |
+| 5 | Hero matchups as top players play them | hero pages, draft helper | `matchups.py`: pair win-rate deltas, top bracket shrunk toward all ranks | `matchups.json` (table@1) |
 | 4 | Playstyle clusters | player pages | `playstyle.py`: k-means, k by silhouette and stability, auto names | `playstyle.json` (centroids@1) |
 | 6 | Rank estimate | player pages (hidden or unranked) | `rank.py`: ridge (boosted trees as a ceiling check) | `rank_estimate.json` (linear@1) |
 
@@ -20,7 +22,7 @@ cd ml
 python -m venv .venv
 .venv\Scripts\activate          # Windows;  source .venv/bin/activate on macOS / Linux
 pip install -r requirements.txt
-pytest -q                       # 14 tests, no network needed
+pytest -q                       # 16 tests, no network needed
 ```
 
 ## Pull data
@@ -43,7 +45,7 @@ python -m broadway_ml.pull histories --players 3000  # match histories for clust
 ## Train
 
 ```
-python -m broadway_ml.train            # all five; or e.g. `python -m broadway_ml.train draft live`
+python -m broadway_ml.train            # all seven; or e.g. `python -m broadway_ml.train draft live`
 ```
 
 Writes the model JSON files and `models/report.md` (every model against its baselines, calibration tables, AUC by
@@ -73,6 +75,6 @@ minute, cluster table, the build recommender's pairwise check). A model whose da
 
 `broadway_ml.export` writes models to `models/`: about 1-10 KB each, except the build recommender (up to about 200 KB; raise its `prune` if the bundle needs room). JSON, not ONNX, because the standalone build must stay
 under 30 MiB (it is about 28.7 MB) and onnxruntime-web alone is several MB. `web/score.ts` scores every format
-(`scoreLinear`, `draftFeatures`, `liveFeatures`, `recommendItems`, `nearestCentroid`, `indexToBadge`).
+(`scoreLinear`, `draftFeatures`, `liveFeatures`, `recommendItems`, `bestInto`, `nearestCentroid`, `indexToBadge`).
 `web/golden.json` pins the Python feature layouts and `web/score.test.ts` checks the TypeScript side against it. Nothing under `ml/` is imported by the site yet; wiring a model in means copying its JSON into `src/` and
 calling `score.ts` from the page.

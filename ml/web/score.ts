@@ -36,6 +36,8 @@ export interface ItemTerms {
   e: Record<string, number>;
   s: [number, number, number];
   v: Record<string, number>;
+  /** Owned items (top-player model only). */
+  o?: Record<string, number>;
 }
 
 export interface ItemTableModel extends ModelBase {
@@ -108,6 +110,8 @@ export interface BuildContext {
   enemyItems: number[];
   /** Souls the enemy team has spent on weapon, vitality and spirit items. */
   enemySpend: [number, number, number];
+  /** Items the player already owns (used by the top-player model). */
+  owned?: number[];
 }
 
 /** Score of one candidate item in this moment; only differences between items mean anything. */
@@ -119,6 +123,7 @@ export function scoreItem(m: ItemTableModel, itemId: number, c: BuildContext): n
   for (const e of c.enemyHeroes) z += r.e[String(e)] ?? 0;
   if (tot > 0) z += c.enemySpend.reduce((s, v, i) => s + (r.s[i] * v) / tot, 0);
   for (const e of c.enemyItems) z += r.v[String(e)] ?? 0;
+  if (r.o) for (const o of new Set(c.owned ?? [])) z += r.o[String(o)] ?? 0;
   return z;
 }
 
@@ -130,6 +135,22 @@ export function recommendItems(m: ItemTableModel, c: BuildContext, owned: number
     .filter((id) => !have.has(id))
     .map((itemId) => ({ itemId, score: scoreItem(m, itemId, c) ?? -Infinity }))
     .sort((a, b) => b.score - a.score)
+    .slice(0, n);
+}
+
+/** Matchup table from models/matchups.py: rows[hero][enemy] = { d: win-rate points vs its own average, n: top games }. */
+export interface MatchupModel extends ModelBase {
+  format: 'broadway-ml/table@1';
+  key_names: string[];
+  rows: Record<string, Record<string, { d: number; n: number }>>;
+}
+
+/** Heroes that do best into `enemy`, strongest first. */
+export function bestInto(m: MatchupModel, enemy: number, n = 5): { hero: number; delta: number; games: number }[] {
+  return Object.entries(m.rows)
+    .filter(([, vs]) => vs[String(enemy)])
+    .map(([h, vs]) => ({ hero: Number(h), delta: vs[String(enemy)].d, games: vs[String(enemy)].n }))
+    .sort((a, b) => b.delta - a.delta)
     .slice(0, n);
 }
 

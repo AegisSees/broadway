@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import {
-  badgeToIndex, draftFeatures, indexToBadge, liveFeatures, nearestCentroid, recommendItems, scoreItem, scoreLinear,
-  type BuildContext, type CentroidModel, type ItemTableModel, type LinearModel,
+  badgeToIndex, bestInto, draftFeatures, indexToBadge, liveFeatures, nearestCentroid, recommendItems, scoreItem, scoreLinear,
+  type BuildContext, type CentroidModel, type ItemTableModel, type LinearModel, type MatchupModel,
 } from './score';
 
 const base = { name: 't', trained_at: '', metrics: {}, notes: '' };
@@ -40,6 +40,20 @@ describe('ml scorer', () => {
       centroids: [[0, 0], [1, 1]], labels: ['steady', 'aggressive'] };
     expect(nearestCentroid(m, { a: 20, b: 0.9 }).label).toBe('aggressive');
     expect(nearestCentroid(m, { a: 10, b: 0 }).label).toBe('steady');
+  });
+
+  it('adds owned-item terms for the top-player model', () => {
+    const m: ItemTableModel = { ...base, format: 'broadway-ml/table@1', key_names: ['item_id'],
+      rows: { '5': { b: 1, t: 0, h: {}, e: {}, s: [0, 0, 0], v: {}, o: { '7': 0.5 } }, '6': { b: 1.2, t: 0, h: {}, e: {}, s: [0, 0, 0], v: {} } } };
+    const c: BuildContext = { hero: 1, minute: 10, enemyHeroes: [], enemyItems: [], enemySpend: [0, 0, 0], owned: [7, 7] };
+    expect(scoreItem(m, 5, c)).toBeCloseTo(1.5);
+    expect(recommendItems(m, c, c.owned ?? [], 1)[0].itemId).toBe(5);
+  });
+
+  it('lists the heroes that do best into an enemy', () => {
+    const m: MatchupModel = { ...base, format: 'broadway-ml/table@1', key_names: ['hero_id', 'enemy_hero_id'],
+      rows: { '1': { '9': { d: 2.5, n: 300 } }, '2': { '9': { d: -1, n: 200 } }, '3': { '9': { d: 4, n: 80 } }, '4': {} } };
+    expect(bestInto(m, 9, 2).map((r) => r.hero)).toEqual([3, 1]);
   });
 
   it('round-trips badges', () => {

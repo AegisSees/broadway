@@ -11,7 +11,7 @@ import pandas as pd
 
 from broadway_ml import export as ex
 from broadway_ml.flatten import flatten_matches
-from broadway_ml.models import builds, draft, live, playstyle, rank
+from broadway_ml.models import builds, draft, live, matchups, playstyle, rank, top_items
 from broadway_ml.train import main as train_main
 from conftest import ML
 from test_pipeline import _histories
@@ -100,3 +100,28 @@ def test_golden_feature_layouts(fake_matches):
     if os.environ.get("UPDATE_GOLDEN") or not GOLDEN.exists():
         GOLDEN.write_text(json.dumps(g, indent=1))
     assert json.loads(GOLDEN.read_text()) == g
+
+
+def test_top_player_items_and_matchups(fake_matches, tmp_path):
+    t = flatten_matches(fake_matches)
+    r = top_items.train(t, tmp_path, min_events=10**9, min_class_events=20)
+    obj = json.loads((tmp_path / "top_player_items.json").read_text())
+    assert obj["format"] == "broadway-ml/table@1" and len(obj["rows"]) == r["items"]
+    assert set(next(iter(obj["rows"].values()))) == {"b", "t", "h", "e", "s", "v", "o"}
+    assert r["comparison"].loc["top-player model", "top3"] >= 0  # random fixture items: no signal expected
+    mu = matchups.train(t, tmp_path, min_top_matches=10)
+    rows = json.loads((tmp_path / "matchups.json").read_text())["rows"]
+    assert mu["pairs"] > 0 and all(set(v) == {"d", "n"} for vs in rows.values() for v in vs.values())
+    # hero 1 is planted as strong, so other heroes do worse than their own average when facing it
+    assert np.mean([vs["1"]["d"] < 0 for h, vs in rows.items() if h != "1" and "1" in vs]) > 0.7
+
+
+def test_owned_items_are_never_suggested(fake_matches):
+    t = flatten_matches(fake_matches[:50])
+    from broadway_ml.flatten import item_catalog
+    from broadway_ml import features as fe
+    evts = fe.purchase_events(t["matches"], t["players"], t["items"], t["stats"], item_catalog(), min_tier=1)
+    classes = np.array(sorted({int(i) for i in evts["item_id"]}))
+    M = top_items.owned_mask(evts, classes)
+    P = top_items.masked(np.ones((len(evts), len(classes))), M)
+    assert np.allclose(P[M], 0) and np.allclose(P.sum(1), 1)
