@@ -73,7 +73,7 @@ minute, cluster table, the build recommender's pairwise check). A model whose da
 
 ## Export and the site
 
-`broadway_ml.export` writes models to `models/`: about 1-10 KB each, except the build recommender (up to about 200 KB; raise its `prune` if the bundle needs room). JSON, not ONNX, because the standalone build must stay
+`broadway_ml.export` writes models to `models/`: about 1-10 KB each, except the build recommender (up to about 200 KB; raise its `prune` if the bundle needs room) and the top-player item model (about 650 KB; `max_bytes` in top_items.py, and the report's size sweep shows what a smaller file costs). JSON, not ONNX, because the standalone build must stay
 under 30 MiB (it is about 28.7 MB) and onnxruntime-web alone is several MB. `web/score.ts` scores every format
 (`scoreLinear`, `draftFeatures`, `liveFeatures`, `recommendItems`, `bestInto`, `nearestCentroid`, `indexToBadge`).
 `web/golden.json` pins the Python feature layouts and `web/score.test.ts` checks the TypeScript side against it. Nothing under `ml/` is imported by the site yet; wiring a model in means copying its JSON into `src/` and

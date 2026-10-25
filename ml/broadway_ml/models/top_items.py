@@ -139,7 +139,7 @@ def export_rows(feats: list[str], classes: np.ndarray, coef: np.ndarray, interce
 
 
 def train(tables: dict, out_dir, min_events: int = 40000, min_class_events: int = 50, n_enemy_items: int = 40,
-          test_frac: float = 0.2, max_bytes: int = 250_000) -> dict:
+          test_frac: float = 0.2, max_bytes: int = 700_000) -> dict:
     cat = item_catalog()
     m = tables["matches"]
     brackets = top_bracket(m)
@@ -194,7 +194,8 @@ def train(tables: dict, out_dir, min_events: int = 40000, min_class_events: int 
 
     # Softmax only sees differences between classes, so each feature's weights can be shifted by their mean over the
     # items without changing a single probability. Centring first puts most weights near 0, so pruning costs far less
-    # (uncentred, the pruning that fit 250 KB scored below the frequency baseline).
+    # (uncentred, the pruning that fit 250 KB scored below the frequency baseline). Even centred, quality falls off
+    # below about 600 KB on the first real pull (see export_size_sweep), hence the 700 KB cap.
     coef_c = model.coef_ - model.coef_.mean(axis=0, keepdims=True)
     icpt_c = model.intercept_ - model.intercept_.mean()
     model.coef_, model.intercept_ = coef_c, icpt_c
