@@ -125,7 +125,7 @@ def export_rows(feats, coef, items, prune: float = 0.01) -> dict:
 
 
 def train(tables: dict, out_dir, test_frac: float = 0.2, min_item_events: int = 200, n_enemy_items: int = 40,
-          max_matches: int | None = 20000) -> dict:
+          max_matches: int | None = 8000) -> dict:
     cat = item_catalog()
     m = tables["matches"].sort_values("start_time")
     if max_matches and len(m) > max_matches:

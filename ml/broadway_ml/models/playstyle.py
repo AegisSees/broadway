@@ -68,6 +68,11 @@ def stability(Xs: np.ndarray, k: int, runs: int = 5, seed: int = 0) -> float:
 def train(tables: dict, out_dir, histories: pd.DataFrame | None = None, ks=range(4, 9)) -> dict:
     hist = histories if histories is not None else tables["histories"]
     prof = fe.player_profiles(hist, last_n=50, min_matches=15)
+    # Drop broken profiles before fitting (the first real pull had one account at 54 sd on souls per minute, which
+    # took a whole cluster for itself). Such players still get the nearest centroid on the site.
+    z = StandardScaler().fit_transform(prof[STYLE_COLS])
+    outliers = int((np.abs(z) > 6).any(axis=1).sum())
+    prof = prof[~(np.abs(z) > 6).any(axis=1)]
     scaler = StandardScaler().fit(prof[STYLE_COLS])
     Xs = scaler.transform(prof[STYLE_COLS])
     sample = np.random.default_rng(0).choice(len(Xs), min(len(Xs), 5000), replace=False)
@@ -92,4 +97,4 @@ def train(tables: dict, out_dir, histories: pd.DataFrame | None = None, ks=range
     )
     centres = cz.round(2).assign(label=labels, players=sizes).set_index("label")
     return {"name": "playstyle", "export": str(path), "k": k, "k_search": choice, "centroids_z": centres,
-            "players": int(len(prof))}
+            "players": int(len(prof)), "outliers_dropped": outliers}

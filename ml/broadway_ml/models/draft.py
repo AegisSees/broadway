@@ -84,22 +84,30 @@ def train(tables: dict, out_dir, test_frac: float = 0.2) -> dict:
     Xtr, ytr = X[tr], y[tr]
     hero_cols = np.array([not f.startswith(("s_", "c_")) for f in feats])
 
-    # Heroes-only vs heroes + pairs, each with its own tuned C, compared on validation.
+    # Heroes-only vs heroes + pairs, compared on validation. There are ~4,000 pair terms against ~90 heroes, so pair
+    # columns are scaled down by `pair_scale` before fitting: that is a stronger penalty on pairs than on heroes (one C
+    # for both shrank the hero terms too far on the first real pull). Exported weights are scaled back to +/-1 inputs.
+    pair_cols = ~hero_cols
     variants = {}
-    for label, mask in (("heroes", hero_cols), ("heroes+pairs", np.ones(len(feats), bool))):
-        Xa = Xtr[:, mask]
+    for scale in (0.0, 0.1, 0.2, 0.4):
+        mask = hero_cols if scale == 0 else np.ones(len(feats), bool)
+        Xa = (Xtr @ sparse.diags(np.where(pair_cols, scale, 1.0)).tocsr())[:, mask]
         C, grid = tune_logistic(Xa[fit_m], ytr[fit_m], Xa[val_m], ytr[val_m])
-        variants[label] = (C, min(grid.values()), mask)
+        variants["heroes" if scale == 0 else f"heroes+pairs x{scale}"] = (C, min(grid.values()), mask, scale)
     label = min(variants, key=lambda k: variants[k][1])
-    C, _, mask = variants[label]
+    C, _, mask, scale = variants[label]
     used = [f for f, k in zip(feats, mask) if k]
+    D = sparse.diags(np.where(pair_cols, scale, 1.0)).tocsr()
+    Xs = (X @ D)[:, mask]
+    Xtr_s = Xs[tr]
 
-    model = fit_logistic(Xtr[fit_m][:, mask], ytr[fit_m], C)
-    lin, cal = maybe_calibrate(model, None, used, Xtr[val_m][:, mask], ytr[val_m])
+    model = fit_logistic(Xtr_s[fit_m], ytr[fit_m], C)
+    lin, cal = maybe_calibrate(model, None, used, Xtr_s[val_m], ytr[val_m])
     # Refit on all training games with the chosen C, carrying the calibration over.
-    full = fit_logistic(Xtr[:, mask], ytr, C)
+    full = fit_logistic(Xtr_s, ytr, C)
     a, b = (cal["platt_a"], cal["platt_b"]) if cal["applied"] else (1.0, 0.0)
     coef, icpt = np.ravel(full.coef_) * a, float(full.intercept_[0]) * a + b
+    coef = coef * np.where(pair_cols[mask], scale, 1.0)  # back to the unscaled +/-1 layout the site builds
 
     Xte = X[te][:, mask]
     p = 1 / (1 + np.exp(-(np.asarray(Xte @ coef).ravel() + icpt)))
@@ -114,8 +122,8 @@ def train(tables: dict, out_dir, test_frac: float = 0.2) -> dict:
     # By rank bracket, and a fit that weights high-badge games more (asked 2026-10-25: should the models train on the
     # top players only?). The weighted fit is reported, not exported.
     badge = pd.Series(mids).map(tables["matches"].set_index("match_id")["average_badge"]).to_numpy(dtype=float)
-    wfit = fit_logistic(Xtr[:, mask], ytr, C, sample_weight=ev.badge_weights(badge[tr]))
-    p_w = wfit.predict_proba(Xte)[:, 1]
+    wfit = fit_logistic(Xtr_s, ytr, C, sample_weight=ev.badge_weights(badge[tr]))
+    p_w = wfit.predict_proba(Xs[te])[:, 1]
     brackets = ev.by_bracket(y[te], {"hero win rates": preds["hero win rates"], f"logistic ({label})": p,
                                      "badge-weighted fit": p_w}, badge[te])
 
@@ -132,6 +140,7 @@ def train(tables: dict, out_dir, test_frac: float = 0.2) -> dict:
         "variant": label,
         "C": C,
         "variants_val_log_loss": {k: v[1] for k, v in variants.items()},
+        "pair_scale": scale,
         "calibration": cal,
         "side_advantage_logit": icpt,
         "comparison": report,
