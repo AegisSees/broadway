@@ -31,6 +31,9 @@ from ..flatten import item_catalog
 from .common import fit_logistic, inner_split, tune_logistic
 
 CATS = ("weapon", "vitality", "spirit")
+# Strong regularisation always wins on this many sparse terms (C=0.01 on the first real pull), and each fit on a
+# million purchases takes minutes, so the grid skips the weak end.
+BUILD_C_GRID = (0.003, 0.01, 0.03, 0.1)
 
 
 def build_matrix(evts: pd.DataFrame, items: list[int], enemy_items: list[int]):
@@ -146,12 +149,19 @@ def train(tables: dict, out_dir, test_frac: float = 0.2, min_item_events: int = 
     one_hot = np.array([f.startswith(("ctx_", "i_")) for f in feats])
     results, models = {}, {}
     for label, mask in (("context only", ctx), ("context + item", one_hot), ("full", np.ones(len(feats), bool))):
-        C, _ = tune_logistic(Xtr[fit_m][:, mask], ytr[fit_m], Xtr[val_m][:, mask], ytr[val_m])
+        C, _ = tune_logistic(Xtr[fit_m][:, mask], ytr[fit_m], Xtr[val_m][:, mask], ytr[val_m], grid=BUILD_C_GRID)
         mod = fit_logistic(Xtr[:, mask], ytr, C)
         p = mod.predict_proba(X[te][:, mask])[:, 1]
         results[label] = p
         models[label] = (mod, mask, C)
     report = ev.compare(y[te], {"base rate": np.full(te.sum(), ytr.mean()), **results})
+
+    # By rank bracket, plus one fit that weights high-badge games more (reported, not exported).
+    badge = evts["match_id"].map(m.set_index("match_id")["average_badge"]).to_numpy(dtype=float)
+    full_m, full_mask, full_C = models["full"]
+    wfit = fit_logistic(Xtr[:, full_mask], ytr, full_C, sample_weight=ev.badge_weights(badge[tr]))
+    brackets = ev.by_bracket(y[te], {"context only": results["context only"], "full": results["full"],
+                                     "badge-weighted full": wfit.predict_proba(X[te][:, full_mask])[:, 1]}, badge[te])
 
     full, mask, C = models["full"]
     coef = np.zeros(len(feats))
@@ -184,6 +194,7 @@ def train(tables: dict, out_dir, test_frac: float = 0.2, min_item_events: int = 
         "events_train": int(tr.sum()),
         "events_test": int(te.sum()),
         "comparison": report,
+        "by_badge_bracket": brackets,
         "pairwise_full": pair_full,
         "pairwise_item_only": pair_v0,
         "favoured_vs_enemy_spend": vs_spend,

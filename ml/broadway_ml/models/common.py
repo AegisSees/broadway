@@ -9,7 +9,7 @@ from sklearn.metrics import log_loss
 
 from .. import evaluate as ev
 
-C_GRID = (0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0)
+C_GRID = (0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0)
 
 
 @dataclass

@@ -11,10 +11,11 @@ Run from the ml/ folder on a computer with normal internet access:
 
 Everything is cached under data/cache, so stopping and re-running picks up where it left off.
 
-The bulk endpoint's parameter names below come from the API docs as we remember them and have NOT been checked against
-a live response yet (this container cannot reach the API). `probe` exists to check them first: if it reports a 400 or
-an empty list, read https://api.deadlock-api.com/docs and fix BULK_PARAMS, or use `crawl`, which only uses endpoints
-the site already calls successfully.
+BULK_PARAMS were checked against a live response on 2026-10-25 (`probe`). The bulk endpoint allows 30 requests per
+minute per IP and a full match with items and stats is about 0.5 MB of JSON, so `matches` spreads its requests over the
+window (one slice per hour by default, `--per-request` matches each) instead of paging from the start, which would only
+cover the first few hours: Deadlock plays roughly 150 matches a minute. Bulk responses are written straight to parquet
+(one part file per slice, so a stopped pull resumes) rather than to the JSON cache, which would need tens of GB.
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ import time
 from pathlib import Path
 
 import pandas as pd
+import requests
 
 from .client import DeadlockApi, chunks
 from .flatten import flatten_matches, save_tables
@@ -31,12 +33,13 @@ from .flatten import flatten_matches, save_tables
 DAY = 86400
 OUT = Path("data/tables")
 
-# Unverified: see the module docstring.
 BULK_PARAMS = {
+    "game_mode": "normal",
     "include_info": True,
     "include_player_info": True,
     "include_player_items": True,
     "include_player_stats": True,
+    "include_player_final_stats": True,
     "include_objectives": False,
     "include_mid_boss": False,
     "include_player_death_details": False,
@@ -97,33 +100,33 @@ def write_part(batch: list[dict], part: int) -> None:
 
 def cmd_matches(api: DeadlockApi, args) -> None:
     now = int(time.time())
-    params = {
-        **BULK_PARAMS,
-        "min_unix_timestamp": now - args.days * DAY,
-        "max_unix_timestamp": now,
-        "min_average_badge": args.min_badge,
-        "order_by": "match_id",
-        "order_direction": "asc",
-        "limit": args.per_request,
-    }
-    cursor, batch, part, total = None, [], len(list(OUT.glob("matches_*.parquet"))), 0
-    if args.top_up and part:
-        cursor = int(pd.concat([pd.read_parquet(p, columns=["match_id"]) for p in OUT.glob("matches_*.parquet")])["match_id"].max()) + 1
-        print(f"Topping up from match id {cursor}")
-    while total < args.max_matches:
-        rows = as_match_list(api.get("/v1/matches/metadata", {**params, "min_match_id": cursor}))
-        if not rows:
-            break
+    OUT.mkdir(parents=True, exist_ok=True)
+    start = now - args.days * DAY
+    if args.top_up and list(OUT.glob("matches_*.parquet")):
+        start = int(pd.concat([pd.read_parquet(p, columns=["start_time"]) for p in OUT.glob("matches_*.parquet")])["start_time"].max()) + 1
+        print(f"Topping up from {time.strftime('%Y-%m-%d %H:%M', time.gmtime(start))} UTC")
+    step = int(args.slice_hours * 3600)
+    slices = list(range(start, now - 600, step))
+    total = 0
+    for i, t0 in enumerate(slices):
+        part = OUT / f"matches_{t0}.parquet"
+        if part.exists():
+            continue
+        params = {
+            **BULK_PARAMS,
+            "min_unix_timestamp": t0,
+            "max_unix_timestamp": min(t0 + step, now),
+            "min_average_badge": args.min_badge or None,
+            "order_by": "match_id",
+            "order_direction": "asc",
+            "limit": args.per_request,
+        }
+        rows = as_match_list(api.get("/v1/matches/metadata", params, use_cache=False))
         kept = [m for m in rows if keep_match(m)]
-        batch += kept
+        tables = flatten_matches(kept)
+        save_tables(tables, OUT, suffix=f"_{t0}")
         total += len(kept)
-        cursor = max(int(m["match_id"]) for m in rows) + 1
-        print(f"{total} matches (cursor {cursor}, {api.calls} calls)")
-        if len(batch) >= args.part_size:
-            write_part(batch, part)
-            batch, part = [], part + 1
-    if batch:
-        write_part(batch, part)
+        print(f"slice {i + 1}/{len(slices)} {time.strftime('%m-%d %H:%M', time.gmtime(t0))}: {len(kept)} kept, {total} total")
 
 
 def fetch_by_ids(api: DeadlockApi, match_ids: list[int], part_size: int) -> None:
@@ -165,16 +168,26 @@ def cmd_crawl(api: DeadlockApi, args) -> None:
 
 
 def cmd_histories(api: DeadlockApi, args) -> None:
-    players = pd.concat([pd.read_parquet(p) for p in sorted(OUT.glob("players*.parquet"))])
-    counts = players["account_id"].value_counts()
-    accounts = [int(a) for a in counts.index[: args.players] if a]
-    rows = []
+    players = pd.concat([pd.read_parquet(p, columns=["account_id", "badge"]) for p in sorted(OUT.glob("players*.parquet"))])
+    players = players[players["account_id"].fillna(0) > 0]
+    # Ranked players first: the rank estimate needs 20+ ranked games with a badge, and most games are unranked.
+    order = players.assign(ranked=players["badge"].fillna(0) > 0).groupby("account_id").agg(
+        ranked=("ranked", "sum"), games=("ranked", "size")).sort_values(["ranked", "games"], ascending=False)
+    accounts = [int(a) for a in order.index[: args.players]]
+    rows, protected = [], 0
     for i, acc in enumerate(accounts):
-        rows += api.get(f"/v1/players/{acc}/match-history") or []
+        try:
+            hist = api.get(f"/v1/players/{acc}/match-history") or []
+        except requests.HTTPError as e:
+            if e.response is None or e.response.status_code != 403:
+                raise
+            protected += 1  # "The requested user is protected." (the player opted out)
+            continue
+        rows += [r for r in hist if r.get("game_mode") in (1, "Normal")]
         if i % 50 == 0:
             print(f"{i}/{len(accounts)} players")
     pd.DataFrame(rows).to_parquet(OUT / "histories.parquet", index=False)
-    print(f"Saved {len(rows)} history rows for {len(accounts)} players")
+    print(f"Saved {len(rows)} history rows for {len(accounts) - protected} players ({protected} protected, skipped)")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -185,9 +198,8 @@ def main(argv: list[str] | None = None) -> None:
     m = sub.add_parser("matches")
     m.add_argument("--days", type=int, default=14)
     m.add_argument("--min-badge", type=int, default=0)
-    m.add_argument("--per-request", type=int, default=100)
-    m.add_argument("--max-matches", type=int, default=50_000)
-    m.add_argument("--part-size", type=int, default=2_000)
+    m.add_argument("--per-request", type=int, default=150, help="matches per slice (default 150)")
+    m.add_argument("--slice-hours", type=float, default=1.0, help="one request per this many hours (default 1)")
     m.add_argument("--top-up", action="store_true", help="only fetch matches newer than the newest one already saved")
     c = sub.add_parser("crawl")
     c.add_argument("--seed-leaderboard", default="Europe")
