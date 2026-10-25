@@ -90,41 +90,53 @@ def purchase_events(
 
     `hero_ids` limits the rows to purchases by those heroes, which keeps the table small while exploring."""
     shop = items[items["is_shop"]].merge(catalog[["item_id", "category", "tier", "cost"]], on="item_id", how="left")
-    win = matches.set_index("match_id")["winning_team"]
+    shop = shop.sort_values(["match_id", "game_time_s"])
+    win = matches.set_index("match_id")["winning_team"].to_dict()
+    lineups = players.groupby(["match_id", "team"])["hero_id"].apply(list).to_dict()
     team_nw = stats.groupby(["match_id", "t", "team"])["net_worth"].sum().unstack("team").fillna(0)
-    lineups = players.groupby(["match_id", "team"])["hero_id"].apply(list)
+    nw_by_match = {mid: (g.index.get_level_values("t").to_numpy(), g.get(0, 0).to_numpy(), g.get(1, 0).to_numpy())
+                   for mid, g in team_nw.groupby(level="match_id")}
+    cat_code = {"weapon": 0, "vitality": 1, "spirit": 2}
+    hero_set = set(hero_ids) if hero_ids is not None else None
     rows = []
     for mid, mi in shop.groupby("match_id", sort=False):
-        targets = mi[mi["tier"].fillna(0) >= min_tier]
-        if hero_ids is not None:
-            targets = targets[targets["hero_id"].isin(hero_ids)]
-        if targets.empty:
-            continue
-        nw = team_nw.loc[mid] if mid in team_nw.index.get_level_values(0) else None
-        for ev in targets.itertuples(index=False):
-            t, team = ev.game_time_s, ev.team
+        acc = mi["account_id"].to_numpy()
+        team_arr = mi["team"].to_numpy()
+        item = mi["item_id"].to_numpy()
+        t_buy = mi["game_time_s"].to_numpy(dtype=float)
+        sold = mi["sold_time_s"].fillna(0).to_numpy(dtype=float)
+        tier = mi["tier"].fillna(0).to_numpy()
+        cost = mi["cost"].fillna(0).to_numpy(dtype=float)
+        cat = mi["category"].map(cat_code).fillna(-1).to_numpy()
+        hero = mi["hero_id"].to_numpy()
+        nw = nw_by_match.get(mid)
+        w = win.get(mid)
+        for k in np.flatnonzero(tier >= min_tier):
+            if hero_set is not None and hero[k] not in hero_set:
+                continue
+            t, team = t_buy[k], team_arr[k]
             enemy = 1 - team
-            mine = held_at(mi[(mi["account_id"] == ev.account_id) & (mi["game_time_s"] < t)], t)
-            theirs = held_at(mi[mi["team"] == enemy], t)
-            spend = theirs.groupby("category")["cost"].sum()
+            alive = (t_buy <= t) & ((sold == 0) | (sold > t))
+            mine = (acc == acc[k]) & (t_buy < t) & alive
+            theirs = (team_arr == enemy) & alive
+            spend = [float(cost[theirs & (cat == c)].sum()) for c in range(3)]
             nw_diff = 0.0
             if nw is not None:
-                past = nw[nw.index <= t]
-                if len(past):
-                    last = past.iloc[-1]
-                    nw_diff = float(last.get(team, 0) - last.get(enemy, 0))
+                j = np.searchsorted(nw[0], t, side="right") - 1
+                if j >= 0:
+                    nw_diff = float((nw[1][j] - nw[2][j]) * (1 if team == 0 else -1))
             rows.append({
-                "match_id": mid, "account_id": ev.account_id, "hero_id": ev.hero_id, "team": team,
-                "item_id": ev.item_id, "t": t,
-                "own_items": mine["item_id"].tolist(),
+                "match_id": mid, "account_id": acc[k], "hero_id": hero[k], "team": team,
+                "item_id": item[k], "t": t,
+                "own_items": item[mine].tolist(),
                 "enemy_heroes": lineups.get((mid, enemy), []),
-                "ally_heroes": [h for h in lineups.get((mid, team), []) if h != ev.hero_id],
-                "enemy_items": theirs["item_id"].tolist(),
-                "enemy_weapon_spend": float(spend.get("weapon", 0)),
-                "enemy_vitality_spend": float(spend.get("vitality", 0)),
-                "enemy_spirit_spend": float(spend.get("spirit", 0)),
+                "ally_heroes": [h for h in lineups.get((mid, team), []) if h != hero[k]],
+                "enemy_items": item[theirs].tolist(),
+                "enemy_weapon_spend": spend[0],
+                "enemy_vitality_spend": spend[1],
+                "enemy_spirit_spend": spend[2],
                 "nw_diff": nw_diff,
-                "win": int(win.get(mid) == team),
+                "win": int(w == team),
             })
     return pd.DataFrame(rows)
 

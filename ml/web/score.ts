@@ -28,6 +28,22 @@ export interface CentroidModel extends ModelBase {
   labels: string[];
 }
 
+/** One item's terms in the build recommender (see ml/broadway_ml/models/builds.py). */
+export interface ItemTerms {
+  b: number;
+  t: number;
+  h: Record<string, number>;
+  e: Record<string, number>;
+  s: [number, number, number];
+  v: Record<string, number>;
+}
+
+export interface ItemTableModel extends ModelBase {
+  format: 'broadway-ml/table@1';
+  key_names: string[];
+  rows: Record<string, ItemTerms>;
+}
+
 export type Features = Record<string, number | undefined>;
 
 /** Win chance (logistic) or a plain number (identity). Missing features count as 0, as in training. */
@@ -51,12 +67,70 @@ export function nearestCentroid(m: CentroidModel, x: Features): { label: string;
   return { label: m.labels[best], index: best, distance: bestD };
 }
 
-/** Draft features in the same layout as features.draft_features: +1 for team 0 heroes, -1 for team 1. */
-export function draftFeatures(team0: number[], team1: number[], averageBadge: number): Features {
-  const x: Features = { badge: averageBadge / 10 };
-  for (const h of team0) x[`h_${h}`] = 1;
-  for (const h of team1) x[`h_${h}`] = -1;
+/**
+ * Draft features in the layout of models/draft.py: h_<id> +1 / -1 by side, s_<a>_<b> for teammates (a < b, +1 on
+ * team 0), c_<a>_<b> for opponents (a < b, +1 when a is on team 0), and badge_diff when both team badges are known.
+ * The result is the chance that team 0 (the Hidden King) wins.
+ */
+export function draftFeatures(team0: number[], team1: number[], badge0 = 0, badge1 = 0): Features {
+  const x: Features = {};
+  const add = (k: string, v: number) => (x[k] = (x[k] ?? 0) + v);
+  for (const h of team0) add(`h_${h}`, 1);
+  for (const h of team1) add(`h_${h}`, -1);
+  for (const [team, sign] of [[team0, 1], [team1, -1]] as const) {
+    const s = [...team].sort((a, b) => a - b);
+    for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) add(`s_${s[i]}_${s[j]}`, sign);
+  }
+  for (const a of team0) for (const b of team1) add(a < b ? `c_${a}_${b}` : `c_${b}_${a}`, a < b ? 1 : -1);
+  if (badge0 > 0 && badge1 > 0) x.badge_diff = (badge0 - badge1) / 10;
   return x;
+}
+
+/** Live features in the layout of models/live.py, from team 0 minus team 1 gaps at a moment of the game. */
+export function liveFeatures(g: { netWorth: number; kills: number; deaths: number; assists: number; level: number; netWorthShare: number }, minute: number): Features {
+  const gaps: Record<string, number> = {
+    nw_k: g.netWorth / 1000, kills_diff: g.kills, deaths_diff: g.deaths, assists_diff: g.assists, level_diff: g.level,
+    net_worth_share: g.netWorthShare,
+  };
+  const x: Features = { minute };
+  for (const [k, v] of Object.entries(gaps)) {
+    x[k] = v;
+    x[`${k}__x_min`] = (v * minute) / 30;
+  }
+  return x;
+}
+
+export interface BuildContext {
+  hero: number;
+  minute: number;
+  enemyHeroes: number[];
+  /** Item ids the enemy team holds right now, one entry per copy. */
+  enemyItems: number[];
+  /** Souls the enemy team has spent on weapon, vitality and spirit items. */
+  enemySpend: [number, number, number];
+}
+
+/** Score of one candidate item in this moment; only differences between items mean anything. */
+export function scoreItem(m: ItemTableModel, itemId: number, c: BuildContext): number | undefined {
+  const r = m.rows[String(itemId)];
+  if (!r) return undefined;
+  const tot = c.enemySpend[0] + c.enemySpend[1] + c.enemySpend[2];
+  let z = r.b + (r.t * c.minute) / 30 + (r.h[String(c.hero)] ?? 0);
+  for (const e of c.enemyHeroes) z += r.e[String(e)] ?? 0;
+  if (tot > 0) z += c.enemySpend.reduce((s, v, i) => s + (r.s[i] * v) / tot, 0);
+  for (const e of c.enemyItems) z += r.v[String(e)] ?? 0;
+  return z;
+}
+
+/** The best `n` items to buy next, leaving out what the player already holds. */
+export function recommendItems(m: ItemTableModel, c: BuildContext, owned: number[], n = 3): { itemId: number; score: number }[] {
+  const have = new Set(owned);
+  return Object.keys(m.rows)
+    .map(Number)
+    .filter((id) => !have.has(id))
+    .map((itemId) => ({ itemId, score: scoreItem(m, itemId, c) ?? -Infinity }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n);
 }
 
 /** Badge 116 (Eternus VI) <-> the 0..71 level scale the rank model predicts on. */

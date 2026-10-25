@@ -64,6 +64,34 @@ def export_linear(model, features: list[str], path: str | Path, scaler=None, nam
     return _write(obj, path)
 
 
+def export_linear_arrays(features: list[str], coef, intercept: float, path: str | Path, mean=None, scale=None,
+                         link: str = "logistic", name: str = "", metrics: dict | None = None, notes: str = "",
+                         prune: float = 0.0, extra: dict | None = None) -> Path:
+    """Same format as export_linear, from plain arrays. `prune` drops features whose |coef| is below it, which is
+    only exact when the features are unscaled (mean 0): a dropped feature then adds nothing to the score."""
+    coef = np.ravel(np.asarray(coef, dtype=float))
+    n = len(features)
+    mean = np.zeros(n) if mean is None else np.asarray(mean, dtype=float)
+    scale = np.ones(n) if scale is None else np.asarray(scale, dtype=float)
+    keep = np.ones(n, dtype=bool)
+    if prune > 0:
+        if np.any(mean != 0):
+            raise ValueError("prune needs unscaled features")
+        keep = np.abs(coef) >= prune
+    obj = _base("broadway-ml/linear@1", name, metrics, notes)
+    obj.update({
+        "link": link,
+        "features": [f for f, k in zip(features, keep) if k],
+        "mean": _r(mean[keep]),
+        "scale": _r(scale[keep]),
+        "coef": _r(coef[keep]),
+        "intercept": round(float(intercept), 6),
+    })
+    if extra:
+        obj["extra"] = extra
+    return _write(obj, path)
+
+
 def export_centroids(kmeans, features: list[str], labels: list[str], path: str | Path, scaler=None, name: str = "",
                      metrics: dict | None = None, notes: str = "") -> Path:
     n = len(features)

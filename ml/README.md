@@ -3,13 +3,15 @@
 Offline machine learning for Broadway. Python pulls match data from the Deadlock API and trains small models; the site
 loads the exported JSON and scores it in the browser (`web/score.ts`), so it stays a static site.
 
-| # | Feature | Where it shows | Notebook | Export |
+| # | Feature | Where it shows | Model (`broadway_ml/models/`) | Export |
 |---|---|---|---|---|
-| 1 | Draft win predictor | match cards, live matches | `02_draft_win_predictor` | `linear@1` (logistic) |
-| 2 | Live win probability | match report, curve over the game | `03_live_win_probability` | `linear@1` (logistic) |
-| 3 | Build recommender (enemy lineup **and** enemy builds) | Builds page, "next item" | `04_build_recommender` | `table@1` now, `linear@1` later |
-| 4 | Playstyle clusters | player pages | `05_playstyle_clusters` | `centroids@1` |
-| 6 | Rank estimate | player pages (hidden or unranked) | `06_rank_estimate` | `linear@1` (identity) |
+| 1 | Draft win predictor | match cards, live matches | `draft.py`: logistic on heroes + teammate and matchup pairs, tuned C, optional Platt | `draft_win.json` (linear@1) |
+| 2 | Live win probability | match report, curve over the game | `live.py`: logistic on team gaps and gap x minute | `live_win.json` (linear@1) |
+| 3 | Build recommender (enemy lineup **and** enemy builds) | Builds page, "next item" | `builds.py`: logistic with item x (my hero, enemy heroes, enemy spend, enemy items) terms | `build_recommender.json` (table@1) |
+| 4 | Playstyle clusters | player pages | `playstyle.py`: k-means, k by silhouette and stability, auto names | `playstyle.json` (centroids@1) |
+| 6 | Rank estimate | player pages (hidden or unranked) | `rank.py`: ridge (boosted trees as a ceiling check) | `rank_estimate.json` (linear@1) |
+
+Notebooks `01`-`06` run these models and show the evidence (comparison tables, reliability and AUC-by-minute plots).
 
 ## Setup (on your PC)
 
@@ -18,7 +20,7 @@ cd ml
 python -m venv .venv
 .venv\Scripts\activate          # Windows;  source .venv/bin/activate on macOS / Linux
 pip install -r requirements.txt
-pytest -q                       # 10 tests, no network needed
+pytest -q                       # 14 tests, no network needed
 ```
 
 ## Pull data
@@ -36,6 +38,15 @@ python -m broadway_ml.pull histories --players 3000  # match histories for clust
 - **Run `probe` first.** The bulk parameters (`include_player_items`, `min_match_id`, ...) have not been checked
   against a live response yet. If `probe` shows an error or no items/stats, fix `BULK_PARAMS` in `pull.py` or use `crawl`.
 - `data/` is git-ignored. Only Normal-mode, scored, 12-player games are kept.
+
+## Train
+
+```
+python -m broadway_ml.train            # all five; or e.g. `python -m broadway_ml.train draft live`
+```
+
+Writes the model JSON files and `models/report.md` (every model against its baselines, calibration tables, AUC by
+minute, cluster table, the build recommender's pairwise check). A model whose data is missing is skipped.
 
 ## Tables
 
@@ -59,8 +70,8 @@ python -m broadway_ml.pull histories --players 3000  # match histories for clust
 
 ## Export and the site
 
-`broadway_ml.export` writes models of a few KB each to `models/`. JSON, not ONNX, because the standalone build must stay
+`broadway_ml.export` writes models to `models/`: about 1-10 KB each, except the build recommender (up to about 200 KB; raise its `prune` if the bundle needs room). JSON, not ONNX, because the standalone build must stay
 under 30 MiB (it is about 28.7 MB) and onnxruntime-web alone is several MB. `web/score.ts` scores every format
-(`scoreLinear`, `nearestCentroid`, `draftFeatures`, `indexToBadge`), and `export.score_linear` is its Python twin used
-in the tests. Nothing under `ml/` is imported by the site yet; wiring a model in means copying its JSON into `src/` and
+(`scoreLinear`, `draftFeatures`, `liveFeatures`, `recommendItems`, `nearestCentroid`, `indexToBadge`).
+`web/golden.json` pins the Python feature layouts and `web/score.test.ts` checks the TypeScript side against it. Nothing under `ml/` is imported by the site yet; wiring a model in means copying its JSON into `src/` and
 calling `score.ts` from the page.
