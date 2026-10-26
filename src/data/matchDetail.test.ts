@@ -120,7 +120,8 @@ describe('normalizeMatch edge cases', () => {
   it('reads a Street Brawl game: round score, eight players, no ban list needed', () => {
     const brawl: MatchMetadataRaw = {
       ...match, game_mode: 'StreetBrawl', match_mode: 'Unranked', team_score: [2, 3], winning_team: 'Team1', average_badge: null,
-      players: match.players.filter((_, i) => i < 8).map((p, i) => ({ ...p, team: i % 2 ? 'Team1' : 'Team0' })),
+      // Street Brawl players carry no rank badge (checked against live games on 26 Oct 2026)
+      players: match.players.filter((_, i) => i < 8).map((p, i) => ({ ...p, team: i % 2 ? 'Team1' : 'Team0', player_rank_initial_display_rank: 0 })),
     };
     const b = normalizeMatch(brawl, ids);
     expect(b.kind).toBe('brawl');

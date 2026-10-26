@@ -477,3 +477,11 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - Fixed on the way: match history now counts a win when `match_result == player_team` if `player_match_outcome` is 0 (stored history sends 0); history lines carry denies.
 - Team colours on the new pieces are the match page's amber/blue (semantic, so the same in every theme); everything else uses theme tokens. Motion: bars ease with the site curve; off under reduced motion.
 - Standalone build is now 31.0 MB (29.6 MiB) with ~950 KB of models; 30 MiB leaves ~450 KB. If it needs room, raise `prune` on the top-player model (report.md's size sweep shows the cost).
+
+## Round 54 · Placing players by their lobbies (2026-10-26)
+
+- **Stats-only rank estimate removed.** V saw top players placed at Phantom/Ritualist and their own ex-Eternus account at Emissary. The ridge model only beat guessing the median by about 2 levels of 72: per-minute stats are measured against opponents of the same rank, so everyone looks average and the guess regresses to the middle.
+- **Plays in card** replaces it: the median of the average lobby rank over the last 20 ranked games (topped up with standard games when there are fewer than 10 ranked), with the 25th–75th range and a note comparing it with the player's badge. Uses the API's `average_badge` first, else the other players' badges (6+ known). Hidden on error or with fewer than 3 lobbies.
+- **Lobby chip** on player match cards: the game's average rank badge, next to the draft chip.
+- Match and team averages fall back to the players' own badges when the API sends 0 (team averages always do).
+- Rank card and profile header fall back to the badge from the newest ranked game in the history ("Going into their last ranked game").

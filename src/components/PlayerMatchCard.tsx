@@ -5,7 +5,9 @@ import { heroIdOf } from '../ml/predict';
 import { HeroFace } from './HeroFace';
 import { ItemIcon, MvpTag } from './MatchBits';
 import { getHeroColor } from '../data/heroColors';
-import { badgeLabel } from '../data/leaderboard';
+import { badgeLabel, badgeParts } from '../data/leaderboard';
+import { RANK_COLOR } from '../data/ranks';
+import RankBadge from './RankBadge';
 import { SIDE_SHORT, type MatchDetail, type MatchPlayer } from '../data/matchDetail';
 import { fmtDuration, kdaRatio, QUEUE_LABEL, timeAgo, type PlayerHit, type PlayerMatchLine } from '../data/player';
 import { getHero } from '../data/roster';
@@ -63,6 +65,16 @@ function useNear(ref: React.RefObject<HTMLElement>, enabled: boolean): boolean {
     return () => io.disconnect();
   }, [ref, enabled, near]);
   return near;
+}
+
+/** The lobby's average rank going in (ranked games; from the players' own badges). */
+function LobbyChip({ badge }: { badge: number }) {
+  const p = badgeParts(badge);
+  return (
+    <span className="ml-lobby" title={`Average rank of the lobby going in: ${badgeLabel(badge)}`} style={{ ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties}>
+      <RankBadge rank={p.rank} sub={p.sub} size="xs" />Lobby {badgeLabel(badge)}
+    </span>
+  );
 }
 
 type Tab = 'board' | 'me' | 'build';
@@ -242,6 +254,7 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
             <span className={`qchip ${line.kind}`}>{line.kind === 'unranked' ? 'Standard' : QUEUE_LABEL[line.kind]}</span>
             {me?.mvp ? <MvpTag rank={me.mvp} /> : null}
             {m && me ? <DraftChip m={m} side={me.side} /> : null}
+            {m?.avgBadge ? <LobbyChip badge={m.avgBadge} /> : null}
             {line.rankDelta !== undefined && line.badge ? <span className={`dchip ${line.rankDelta >= 0 ? 'up' : 'down'}`} title={`Rank going in: ${badgeLabel(line.badge)}`}>{line.rankDelta >= 0 ? '+' : '−'}{Math.abs(line.rankDelta)}</span> : null}
           </span>
         </div>

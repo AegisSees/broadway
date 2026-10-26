@@ -230,6 +230,14 @@ export class DeadlockApi {
     return row;
   }
 
+  /** The lineups of several games with each player's rank badge going in (no items or stats, so it is small). */
+  matchLobbies(matchIds: readonly number[], signal?: AbortSignal): Promise<MatchMetadataRaw[]> {
+    if (!matchIds.length) return Promise.resolve([]);
+    return this.request<MatchMetadataRaw[]>('/v1/matches/metadata', {
+      match_ids: matchIds.join(','), limit: matchIds.length, include_info: true, include_player_info: true,
+    }, DAY, signal);
+  }
+
   /** Players this account has shared a team with, most games first in practice. */
   mateStats(accountId: number, minMatches = 5, signal?: AbortSignal) {
     return this.request<MateRow[]>(`/v1/players/${accountId}/mate-stats`, { min_matches_played: minMatches }, 30 * 60 * 1000, signal);
