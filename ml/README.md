@@ -76,5 +76,7 @@ minute, cluster table, the build recommender's pairwise check). A model whose da
 `broadway_ml.export` writes models to `models/`: about 1-10 KB each, except the build recommender (up to about 200 KB; raise its `prune` if the bundle needs room) and the top-player item model (about 650 KB; `max_bytes` in top_items.py, and the report's size sweep shows what a smaller file costs). JSON, not ONNX, because the standalone build must stay
 under 30 MiB (it is about 28.7 MB) and onnxruntime-web alone is several MB. `web/score.ts` scores every format
 (`scoreLinear`, `draftFeatures`, `liveFeatures`, `recommendItems`, `bestInto`, `nearestCentroid`, `indexToBadge`).
-`web/golden.json` pins the Python feature layouts and `web/score.test.ts` checks the TypeScript side against it. Nothing under `ml/` is imported by the site yet; wiring a model in means copying its JSON into `src/` and
-calling `score.ts` from the page.
+`web/golden.json` pins the Python feature layouts and `web/score.test.ts` checks the TypeScript side against it. The site reads the models straight from `models/` (`src/ml/models.ts` loads each one on first use) and
+`src/ml/predict.ts` turns pages' records into inputs, so retraining and rebuilding is all it takes to update the site.
+Where each one shows: win chance on match pages and draft odds on match cards (draft, live), `/draft` (draft, matchups),
+the planner's Next buy panel (builds, top_items), hero pages (matchups), player pages (playstyle, rank).

@@ -1,0 +1,170 @@
+/* The trained models on the site (src/ml): win chance on the match page, draft odds on match cards and the draft page,
+   next-item picks in the planner, playstyle and rank estimate on player pages, top-bracket matchups on hero pages. */
+
+/* ---- match page: win chance ---- */
+.mt-win-notes { display: flex; flex-wrap: wrap; gap: 8px 26px; list-style: none; margin: 6px 0 4px; padding: 0; }
+.mt-win-notes li { --t: var(--hk-t); display: grid; line-height: 1.15; padding-left: 10px; border-left: 3px solid var(--t); }
+.mt-win-notes li.archmother { --t: var(--am-t); }
+.mt-win-notes small { font: 700 9.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.mt-win-notes b { font: 400 20px var(--display); color: var(--t); letter-spacing: 0.02em; }
+.mt-win-notes em { font: 600 12px var(--ui); font-style: normal; color: var(--ink-2); }
+.mt-dot.draft { fill: var(--panel); stroke: var(--ink); stroke-width: 2; }
+.mt-win-fine { margin: 2px 0 0; font-size: 12px; }
+
+/* ---- draft odds bar (live match cards) and chip (player match cards) ---- */
+.ml-odds { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px; margin-top: -2px; }
+.ml-odds-l { font: 700 9.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.ml-odds-bar { display: flex; height: 16px; border-radius: 2px; overflow: hidden; background: var(--line-2); gap: 2px; }
+.ml-odds-bar i { display: flex; align-items: center; min-width: 30px; transition: width 0.5s cubic-bezier(.2, .8, .2, 1); }
+.ml-odds-bar .hk { background: color-mix(in srgb, #e0a03a 70%, transparent); justify-content: flex-start; }
+.ml-odds-bar .am { background: color-mix(in srgb, #4f9fe3 70%, transparent); justify-content: flex-end; }
+.ml-odds-bar b { padding: 0 6px; font: 700 10.5px var(--ui); color: #120d06; font-variant-numeric: tabular-nums; }
+.ml-chip { display: inline-block; padding: 3px 8px 2px; font: 700 10.5px / 1.2 var(--ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line); }
+.ml-chip.up { color: var(--good); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 50%, transparent); }
+.ml-chip.down { color: var(--bad); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bad) 50%, transparent); }
+
+/* ---- draft page ---- */
+.df { --hk: #e0a03a; --am: #4f9fe3; --hk-t: #f2b862; --am-t: #86c2f6; }
+.df .dir-head .chip { margin-top: 0; }
+.df-board { display: grid; grid-template-columns: minmax(0, 1fr) 230px minmax(0, 1fr); gap: 16px; align-items: stretch; margin-top: 14px; }
+.df-board .df-team.archmother { order: 3; }
+.df-board .df-meter { order: 2; }
+.df-team { --c: var(--hk); --t: var(--hk-t); padding: 0 0 12px; overflow: hidden; border-top: 4px solid var(--c); }
+.df-team.archmother { --c: var(--am); --t: var(--am-t); }
+.df-team.on { box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 60%, transparent), 0 10px 30px -18px var(--c); }
+.df-team header { padding: 0; }
+.df-side { display: grid; width: 100%; padding: 12px 16px 10px; text-align: left; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 16%, transparent), transparent 75%); border: 0; color: inherit; cursor: var(--cur-hand); }
+.df-side b { font: 400 21px var(--display); letter-spacing: 0.03em; color: var(--ink); }
+.df-side small { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--t); }
+.df-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; list-style: none; margin: 0; padding: 10px 14px 0; }
+.df-slot { display: grid; justify-items: center; gap: 6px; width: 100%; min-height: 92px; padding: 10px 6px 8px; border: 1px dashed var(--line); background: none; color: var(--muted); font: 600 12px var(--ui); cursor: var(--cur-hand); transition: border-color 0.2s, background-color 0.2s; }
+.df-slot i { display: grid; place-items: center; width: 44px; height: 44px; font: 400 24px var(--display); font-style: normal; color: var(--dim); }
+.df-slot.full { border-style: solid; border-color: color-mix(in srgb, var(--c) 45%, transparent); color: var(--ink); background: color-mix(in srgb, var(--c) 8%, transparent); }
+.df-slot.full:hover { border-color: var(--bad); }
+.df-slot.on { border-color: var(--t); color: var(--t); }
+.df-slot.on i { color: var(--t); }
+.df-slot span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-meter { display: grid; align-content: center; justify-items: center; gap: 8px; padding: 18px 16px; text-align: center; }
+.df-meter > small { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.df-meter p { margin: 0; font-size: 12px; }
+.df-split { display: flex; gap: 18px; }
+.df-split span { display: grid; line-height: 1; }
+.df-split b { font: 400 44px var(--display); font-variant-numeric: tabular-nums; }
+.df-split em { font: 700 10px var(--ui); font-style: normal; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 4px; }
+.df-split .hidden-king { color: var(--hk-t); } .df-split .archmother { color: var(--am-t); }
+.df-bar { display: flex; width: 100%; height: 10px; gap: 2px; border-radius: 2px; overflow: hidden; }
+.df-bar i { transition: width 0.5s cubic-bezier(.2, .8, .2, 1); }
+.df-bar .hk { background: var(--hk); } .df-bar .am { background: var(--am); }
+.df-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; margin-top: 16px; }
+.df-pool-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 12px; }
+.df-pool-h h3, .df-list h3, .df-terms h3 { margin: 0; font: 400 20px var(--display); }
+.df-pool-h small, .df-list > small, .df-terms > small { color: var(--muted); font-size: 12.5px; }
+.df-pool-h .search-box { margin-left: auto; width: 220px; }
+.df-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; list-style: none; margin: 0; padding: 0; }
+.df-heroes button { display: grid; justify-items: center; gap: 5px; width: 100%; padding: 8px 4px 7px; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--ink-2); font: 600 11.5px var(--ui); cursor: var(--cur-hand); transition: border-color 0.2s, transform 0.25s cubic-bezier(.2, .8, .2, 1); }
+.df-heroes button span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-heroes button:hover:not(:disabled) { border-color: var(--brass); transform: translateY(-2px); }
+.df-heroes button:disabled { cursor: default; opacity: 0.45; }
+.df-heroes button.in { opacity: 0.8; }
+.df-heroes button.in.hidden-king { border-color: var(--hk); } .df-heroes button.in.archmother { border-color: var(--am); }
+.df-side-col { display: grid; gap: 14px; }
+.df-list ol, .df-terms ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; }
+.df-list li button { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border: 1px solid transparent; background: none; color: var(--ink); font: 600 13.5px var(--ui); text-align: left; cursor: var(--cur-hand); }
+.df-list li button:hover { border-color: var(--line); background: var(--panel-2); }
+.df-list li em { font: 700 14px var(--ui); font-style: normal; font-variant-numeric: tabular-nums; color: var(--brass-2); }
+.df-list li em.good { color: var(--good); } .df-list li em.bad { color: var(--bad); }
+.df-list p { margin: 8px 0 0; font-size: 13px; }
+.df-terms li { --t: var(--hk-t); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 5px 0 5px 8px; border-left: 3px solid var(--t); }
+.df-terms li.archmother { --t: var(--am-t); }
+.df-faces { display: inline-flex; }
+.df-faces .face + .face { margin-left: -10px; }
+.df-tw { display: grid; min-width: 0; line-height: 1.2; }
+.df-tw b { font: 600 13px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-tw small { font-size: 11px; color: var(--muted); }
+.df-terms em { font: 700 12.5px var(--ui); font-style: normal; color: var(--t); white-space: nowrap; }
+
+/* ---- planner: next buy ---- */
+.bp-next { padding: 16px; }
+.bp-next > p { margin: 0 0 10px; font-size: 12.5px; }
+.nb-ctx { display: flex; align-items: end; gap: 10px; margin-bottom: 12px; }
+.nb-ctx .chip { margin: 0 0 2px; white-space: nowrap; }
+.nb-min { display: grid; flex: 1; gap: 4px; font: 600 12px var(--ui); color: var(--ink-2); }
+.nb-min b { font: 700 14px var(--ui); color: var(--ink); }
+.nb-min small { color: var(--muted); font-weight: 400; }
+.nb-min input { width: 100%; accent-color: var(--glow-2); }
+.nb-vs { margin-bottom: 12px; }
+.nb-lbl { display: block; margin-bottom: 5px; font: 700 9.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.bp-side .nb-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.nb-chips button { display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px 2px 3px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font: 600 11.5px var(--ui); cursor: var(--cur-hand); }
+.nb-chips button .face { width: 20px; height: 20px; }
+.nb-chips button img { width: 18px; height: 18px; object-fit: contain; }
+.nb-chips button i { font-style: normal; color: var(--muted); margin-left: 2px; }
+.nb-chips button:hover i { color: var(--bad); }
+.nb-chips button.weapon { border-color: color-mix(in srgb, var(--weapon) 55%, transparent); }
+.nb-chips button.vitality { border-color: color-mix(in srgb, var(--vitality) 55%, transparent); }
+.nb-chips button.spirit { border-color: color-mix(in srgb, var(--spirit) 55%, transparent); }
+.nb-chips select { max-width: 150px; padding: 3px 6px; font: 600 11.5px var(--ui); }
+.nb-spend { display: flex; height: 16px; gap: 2px; margin-top: 7px; overflow: hidden; border-radius: 2px; }
+.nb-spend i { display: flex; align-items: center; min-width: 0; padding: 0 5px; overflow: hidden; white-space: nowrap; font: 700 9.5px var(--ui); font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; color: #120d06; }
+.nb-spend .weapon { background: var(--weapon); } .nb-spend .vitality { background: var(--vitality); } .nb-spend .spirit { background: var(--spirit); }
+.nb-cols { display: grid; gap: 14px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+.nb-cols h4 { margin: 0; font: 400 17px var(--display); color: var(--ink); }
+.nb-cols > div > small { display: block; font-size: 11.5px; }
+.nb-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.nb-item { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 9px; width: 100%; padding: 5px 8px 5px 5px; overflow: hidden; border: 1px solid var(--line-2); border-left: 3px solid var(--c, var(--line)); background: var(--panel-2); color: var(--ink); text-align: left; cursor: var(--cur-hand); }
+.nb-item.weapon { --c: var(--weapon); } .nb-item.vitality { --c: var(--vitality); } .nb-item.spirit { --c: var(--spirit); }
+.nb-item:hover:not(:disabled) { border-color: var(--c); }
+.nb-item .im { display: grid; place-items: center; width: 34px; height: 34px; background: color-mix(in srgb, var(--c) 22%, transparent); }
+.nb-item .im img { width: 28px; height: 28px; object-fit: contain; }
+.nb-item .nm { display: grid; min-width: 0; line-height: 1.15; }
+.nb-item .nm b { font: 600 13px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-item .nm small { font-size: 11px; color: var(--muted); }
+.nb-item em { font: 700 14px var(--ui); font-style: normal; font-variant-numeric: tabular-nums; color: var(--good); }
+.nb-item em small { font-size: 10px; color: var(--muted); }
+.nb-bar { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--c); opacity: 0.8; }
+.nb-src { display: block; margin-top: 12px; font-size: 11px; color: var(--muted); }
+
+/* ---- player page: playstyle and rank estimate ---- */
+.ps-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 10px 0 2px; }
+.ps-name b { font: 400 26px var(--display); color: var(--brass-2); letter-spacing: 0.02em; }
+.ps-name small { font-size: 12px; color: var(--muted); }
+.ps-note { margin: 0 0 10px; font-size: 12.5px; }
+.ps-traits { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ps-traits li { display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: center; gap: 10px; font: 600 11.5px var(--ui); color: var(--ink-2); }
+.ps-track { position: relative; height: 8px; background: var(--line-2); }
+.ps-track::after { content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--ink-2); opacity: 0.6; }
+.ps-track i { position: absolute; top: 0; bottom: 0; }
+.ps-track i.up { background: var(--good); } .ps-track i.down { background: var(--bad); }
+.ps-axis { display: flex; justify-content: space-between; margin: 5px 0 0 88px; font-size: 10.5px; color: var(--muted); }
+.rg-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; margin-top: 12px; }
+.rg-row .rbadge { width: 52px; height: 52px; }
+.rg-n { display: grid; gap: 3px; }
+.rg-n b { font: 400 21px / 1.05 var(--display); color: var(--rc, var(--brass-2)); }
+.rg-n small { font-size: 12px; color: var(--muted); }
+.rg-note { margin: 10px 0 0; font-size: 12px; }
+
+/* ---- hero page: matchups at the top ---- */
+.ml-topmu { margin-top: 18px; }
+.ml-topmu-h { margin: 0 0 12px; font-size: 13px; }
+
+@media (max-width: 1100px) {
+  .df-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  .df-board { grid-template-columns: minmax(0, 1fr); }
+  .df-board .df-meter { order: 0; position: sticky; top: 60px; z-index: 3; padding: 10px 14px; }
+  .df-board .df-team.hidden-king { order: 1; }
+  .df-split b { font-size: 32px; }
+}
+@media (max-width: 520px) {
+  .df-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 8px 10px 0; }
+  .df-slot { min-height: 80px; font-size: 11px; }
+  .df-heroes { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+  .df-pool-h .search-box { width: 100%; margin-left: 0; }
+  .mt-win-notes { gap: 8px 16px; }
+  .mt-win-notes b { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ml-odds-bar i, .df-bar i, .df-heroes button { transition: none; }
+  .df-heroes button:hover:not(:disabled) { transform: none; }
+}

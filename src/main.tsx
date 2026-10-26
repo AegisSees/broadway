@@ -16,6 +16,7 @@ import './styles/vitals.css';
 import './styles/profile.css';
 import './styles/pop.css';
 import './styles/tilt.css';
+import './styles/ml.css';
 import { initTheme } from './lib/theme';
 import { installPlateLean } from './lib/plateLean';
 import { loadLiveHeroColors } from './data/heroColors';

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import ItemCard from '../components/ItemCard';
+import NextBuy from '../components/NextBuy';
 import Kicker from '../components/Kicker';
 import { SiteFooter } from '../components/Shell';
 import Tip from '../components/Tip';
@@ -25,12 +26,23 @@ function parseItems(csv: string | null): string[] {
   return out.slice(0, SLOTS);
 }
 
+/** Enemy items may repeat (two enemies can hold the same one), so they skip the de-duplication above. */
+function parseList(csv: string | null, max: number): string[] {
+  return (csv ?? '').split(',').map((s) => itemFromSlug(s)).filter((n): n is string => !!n && (getItem(n)?.tier ?? 5) < 5).slice(0, max);
+}
+const parseHeroes = (csv: string | null) => [...new Set((csv ?? '').split(','))].filter((s) => !!getHero(s)).slice(0, 6);
+/** Souls spent on items, roughly 1,000 a minute in a normal game (the average player earns about 1,150 a minute). */
+const minuteFor = (cost: number) => Math.min(50, Math.max(1, Math.round(cost / 1000)));
+
 /** Build planner: pick up to twelve items, see the cost, the always-on stat totals and what a hero looks like with them. */
 export default function PlannerPage() {
   useTitle('Build planner');
   const [params, setParams] = useSearchParams();
   const [items, setItems] = useState<string[]>(() => parseItems(params.get('i')));
   const [hero, setHero] = useState<string>(() => (getHeroStats(params.get('hero') ?? '') ? (params.get('hero') as string) : ''));
+  const [enemies, setEnemies] = useState<string[]>(() => parseHeroes(params.get('vs')));
+  const [enemyItems, setEnemyItems] = useState<string[]>(() => parseList(params.get('ei'), 36));
+  const [minuteSet, setMinuteSet] = useState<number | null>(() => { const m = Number(params.get('min')); return m >= 1 && m <= 50 ? Math.round(m) : null; });
   const [cat, setCat] = useState<ItemCategory | 'all'>('all');
   const [q, setQ] = useState('');
   const [name, setName] = useState('');
@@ -41,8 +53,11 @@ export default function PlannerPage() {
     const next = new URLSearchParams();
     if (hero) next.set('hero', hero);
     if (items.length) next.set('i', items.map((n) => itemSlug(n)).filter(Boolean).join(','));
+    if (enemies.length) next.set('vs', enemies.join(','));
+    if (enemyItems.length) next.set('ei', enemyItems.map((n) => itemSlug(n)).filter(Boolean).join(','));
+    if (minuteSet !== null) next.set('min', String(minuteSet));
     setParams(next, { replace: true });
-  }, [items, hero, setParams]);
+  }, [items, hero, enemies, enemyItems, minuteSet, setParams]);
 
   const all = useMemo(() => ALL_ITEM_NAMES.map((n) => getItem(n)).filter((i): i is ItemInfo => !!i && i.tier !== 5), []);
   const needle = q.trim().toLowerCase();
@@ -175,6 +190,11 @@ export default function PlannerPage() {
             })}
             <small className="inv-src">Steps from the Deadlock Wiki's investment table (800 to 28,800 souls). Not yet read from the game files.</small>
           </section>
+
+          <NextBuy
+            hero={hero} owned={items} minute={minuteSet ?? minuteFor(cost)} autoMinute={minuteSet === null} enemies={enemies} enemyItems={enemyItems} full={items.length >= SLOTS}
+            onAdd={add} onMinute={setMinuteSet} onEnemies={setEnemies} onEnemyItems={setEnemyItems}
+          />
 
           {proj && heroStats && (
             <section className="panel bp-proj">

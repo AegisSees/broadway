@@ -85,6 +85,7 @@ export interface PlayerMatchLine {
   assists: number;
   netWorth: number;
   lastHits: number;
+  denies?: number;
   level: number;
   /** Rank change from this game, in the game's own progress units, when ranked. */
   rankDelta?: number;
@@ -196,10 +197,11 @@ export function normalizeHistory(rows: readonly MatchHistoryRow[], ids: HeroIdMa
       heroSlug: ids.slugById(r.hero_id),
       start: r.start_time,
       durationS: r.match_duration_s,
-      won: r.player_match_outcome === 1,
+      // stored history can send outcome 0; then the team that won says it (checked 25 Oct 2026)
+      won: r.player_match_outcome === 1 || (r.player_match_outcome !== 2 && r.match_result === r.player_team),
       kind,
       kills: r.player_kills, deaths: r.player_deaths, assists: r.player_assists,
-      netWorth: r.net_worth, lastHits: r.last_hits, level: r.hero_level,
+      netWorth: r.net_worth, lastHits: r.last_hits, denies: r.denies, level: r.hero_level,
       rankDelta: kind === 'ranked' && typeof r.ranked_delta === 'number' ? r.ranked_delta : undefined,
       badge: kind === 'ranked' && typeof r.ranked_display_badge === 'number' && r.ranked_display_badge > 0 ? r.ranked_display_badge : undefined,
       abandoned: r.team_abandoned,
@@ -315,7 +317,7 @@ export function sampleMatches(accountId: number, core = sampleCore(accountId)): 
     const dur = Math.round(1300 + r() * 1700);
     lines.push({
       id: 112_000_000 - i * 37 - Math.floor(r() * 30), heroId: 0, heroSlug: slug, start: t, durationS: dur, won, kind,
-      kills: Math.round(3 + r() * 14), deaths: Math.round(1 + r() * 9), assists: Math.round(4 + r() * 18), netWorth: Math.round(dur * (22 + r() * 14)), lastHits: Math.round(dur / 60 * (4 + r() * 4)), level: 22 + Math.floor(r() * 14),
+      kills: Math.round(3 + r() * 14), deaths: Math.round(1 + r() * 9), assists: Math.round(4 + r() * 18), netWorth: Math.round(dur * (22 + r() * 14)), lastHits: Math.round(dur / 60 * (4 + r() * 4)), denies: Math.round(dur / 60 * (0.04 + r() * 0.1)), level: 22 + Math.floor(r() * 14),
       rankDelta: kind === 'ranked' ? (won ? 300 : -300) : undefined, badge: kind === 'ranked' ? badge : undefined, abandoned: false,
     });
   }

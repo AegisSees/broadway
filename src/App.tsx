@@ -1,6 +1,7 @@
 import ComparePage from './pages/ComparePage';
 import BuildsHub from './pages/BuildsHub';
 import PlannerPage from './pages/PlannerPage';
+import DraftPage from './pages/DraftPage';
 import MatchesPage from './pages/MatchesPage';
 import MatchPage from './pages/MatchPage';
 import StreamsPage from './pages/StreamsPage';
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/ranks" element={<RanksPage />} />
         <Route path="/builds" element={<BuildsHub />} />
         <Route path="/planner" element={<PlannerPage />} />
+        <Route path="/draft" element={<DraftPage />} />
         <Route path="/matches" element={<MatchesPage />} />
         <Route path="/streams" element={<StreamsPage />} />
         <Route path="/compare" element={<ComparePage />} />

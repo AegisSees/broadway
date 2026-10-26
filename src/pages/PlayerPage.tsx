@@ -25,6 +25,7 @@ import { useTitle } from '../lib/useTitle';
 import PlayerLookup from './PlayerLookup';
 import Avatar from '../components/Avatar';
 import SectionHeading from '../components/SectionHeading';
+import { PlaystyleCard, RankGuessCard } from '../components/PlayerModels';
 
 const n0 = (n: number) => n.toLocaleString('en-US');
 const souls = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(Math.round(n)));
@@ -408,6 +409,8 @@ export default function PlayerPage() {
             <RankCard core={c} />
             {matches && <Trajectory matches={matches.matches} />}
             <Performance core={c} matches={matches?.matches ?? null} />
+            {matches && <PlaystyleCard matches={matches.matches} />}
+            {matches && <RankGuessCard matches={matches.matches} rank={c.rank} />}
             {matches && <Recent30 matches={matches.matches} now={now} />}
             {mates.status === 'ready' && <div id="mates"><Mates mates={mates.value} /></div>}
             <p className="muted pl-fine">

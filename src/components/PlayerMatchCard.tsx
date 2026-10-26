@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { DraftChip } from './DraftOdds';
+import { heroIdOf } from '../ml/predict';
 import { HeroFace } from './HeroFace';
 import { ItemIcon, MvpTag } from './MatchBits';
 import { getHeroColor } from '../data/heroColors';
@@ -24,7 +26,7 @@ export function placeSelf(m: MatchDetail, line: PlayerMatchLine, accountId: numb
   if (!m.illustrative || m.players.some((p) => p.accountId === accountId)) return m;
   const stand = m.players.find((p) => p.won === line.won) ?? m.players[0];
   const me: MatchPlayer = {
-    ...stand, accountId, heroSlug: line.heroSlug, heroId: line.heroId, kills: line.kills, deaths: line.deaths, assists: line.assists,
+    ...stand, accountId, heroSlug: line.heroSlug, heroId: line.heroId || heroIdOf(line.heroSlug) || stand.heroId, kills: line.kills, deaths: line.deaths, assists: line.assists,
     netWorth: line.netWorth, lastHits: line.lastHits, level: line.level,
   };
   const swap = (p: MatchPlayer) => (p === stand ? me : p);
@@ -239,6 +241,7 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
           <span className="pc-chips">
             <span className={`qchip ${line.kind}`}>{line.kind === 'unranked' ? 'Standard' : QUEUE_LABEL[line.kind]}</span>
             {me?.mvp ? <MvpTag rank={me.mvp} /> : null}
+            {m && me ? <DraftChip m={m} side={me.side} /> : null}
             {line.rankDelta !== undefined && line.badge ? <span className={`dchip ${line.rankDelta >= 0 ? 'up' : 'down'}`} title={`Rank going in: ${badgeLabel(line.badge)}`}>{line.rankDelta >= 0 ? '+' : '−'}{Math.abs(line.rankDelta)}</span> : null}
           </span>
         </div>
