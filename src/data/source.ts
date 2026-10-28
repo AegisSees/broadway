@@ -23,7 +23,7 @@ import {
   type PlayerCore, type PlayerHit, type PlayerMate, type PlayerMatches,
 } from './player';
 import { sampleTierList } from './sampleTiers';
-import { normalizeMatch, type MatchDetail } from './matchDetail';
+import { avgBadgeOf, normalizeMatch, type MatchDetail } from './matchDetail';
 import { sampleMatchDetail } from './sampleMatch';
 import { buildTierRows, type TierList } from './tiers';
 
@@ -68,6 +68,11 @@ export interface DataSource {
   searchPlayers(query: string, signal?: AbortSignal): Promise<PlayerHit[]>;
   /** Names, avatars and ranks for a set of account ids (accounts the API has never seen are left out). */
   playerHits(accountIds: readonly number[], signal?: AbortSignal): Promise<Map<number, PlayerHit>>;
+  /**
+   * For each of the given games, the lobby's average badge: the API's own average when it reports one, else the other
+   * players' badges going in (games where fewer than half the lobby has one are left out). Used to place a player by the lobbies matchmaking gives them.
+   */
+  lobbyRanks(accountId: number, matchIds: readonly number[], signal?: AbortSignal): Promise<Map<number, number>>;
   /** One finished game in full. Rejects with a 404 ApiError when the id is unknown. The sample source answers any id with its labelled sample game. */
   matchDetail(matchId: number, signal?: AbortSignal): Promise<MatchDetail>;
 }
@@ -135,6 +140,20 @@ export const fixtureSource: DataSource = {
   },
   async matchDetail(matchId) {
     return sampleMatchDetail(matchId);
+  },
+  async lobbyRanks(accountId, matchIds) {
+    // the sample lobbies sit within a few levels of the sample player's rank
+    const lines = new Map(samplePlayerMatches(accountId).matches.map((m) => [m.id, m]));
+    const own = sampleCore(accountId).rank?.badge;
+    const out = new Map<number, number>();
+    for (const id of matchIds) {
+      const b = lines.get(id)?.badge ? own : undefined;
+      if (!b) continue;
+      const idx = Math.floor(b / 10) * 6 + (b % 10) - 1 + ((id * 7919) % 7) - 3;
+      const i = Math.min(71, Math.max(6, idx));
+      out.set(id, Math.floor(i / 6) * 10 + (i % 6) + 1);
+    }
+    return out;
   },
 };
 
@@ -430,6 +449,17 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       const [raw, ids] = await Promise.all([api.matchMetadata(matchId, signal), heroIds(signal)]);
       return normalizeMatch(raw, ids);
     },
+
+    async lobbyRanks(accountId, matchIds, signal) {
+      const out = new Map<number, number>();
+      for (const m of await api.matchLobbies(matchIds, signal)) {
+        // the API's lobby average when it has one (older standard games carry it too), else the other players' badges
+        const others = m.players.filter((p) => p.account_id !== accountId).map((p) => ({ badge: p.player_rank_initial_display_rank }));
+        const avg = m.average_badge && m.average_badge > 0 ? m.average_badge : avgBadgeOf(others, 6);
+        if (avg) out.set(m.match_id, avg);
+      }
+      return out;
+    },
   };
 }
 
@@ -475,6 +505,7 @@ export function createHybridSource(live: DataSource, sample: DataSource): DataSo
     playerMatches: (id, signal) => watch(() => live.playerMatches(id, signal), signal),
     playerMates: (id, signal) => watch(() => live.playerMates(id, signal), signal),
     matchDetail: (id, signal) => watch(() => live.matchDetail(id, signal), signal),
+    lobbyRanks: (id, ids, signal) => watch(() => live.lobbyRanks(id, ids, signal), signal),
     searchPlayers: (q, signal) => watch(() => live.searchPlayers(q, signal), signal),
     heroOverview: (slug, f, signal) => guard(() => live.heroOverview(slug, f, signal), () => sample.heroOverview(slug, f, signal), signal, true),
     tierList: (f, signal) => guard(() => live.tierList(f, signal), () => sample.tierList(f, signal), signal),

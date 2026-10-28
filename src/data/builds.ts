@@ -316,3 +316,23 @@ export function browseBuilds(all: HeroBuild[], opts: { filter: BuildFilter; sort
   // Pro builds are ranked on win rate unless the person asks for another order.
   return [...list].sort(opts.filter === 'pro' && opts.sort === 'popular' ? by.winrate : by[opts.sort]);
 }
+
+/** Sections with this many items or fewer can share a row with a short neighbour. */
+export const SHORT_PHASE = 6;
+
+/**
+ * How wide each build section sits on the board: two short sections in a row share it half and half, in buy order;
+ * everything else (long sections, and a short one without a short neighbour) takes the full width.
+ */
+export function phaseWidths(phases: readonly { items: readonly unknown[] }[]): ('full' | 'half')[] {
+  const out: ('full' | 'half')[] = [];
+  for (let i = 0; i < phases.length; i++) {
+    const next = phases[i + 1];
+    if (phases[i].items.length <= SHORT_PHASE && next && next.items.length <= SHORT_PHASE) { out.push('half', 'half'); i++; }
+    else out.push('full');
+  }
+  return out;
+}
+
+/** The soul cost of a section's items (Street Brawl legendaries cost nothing). */
+export const phaseCost = (items: readonly { name: string }[]): number => items.reduce((s, i) => s + (getItem(i.name)?.cost ?? 0), 0);

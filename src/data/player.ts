@@ -244,6 +244,25 @@ export function buildCore(accountId: number, parts: { steam?: SteamProfile | nul
   };
 }
 
+/**
+ * The rank to show: the API's current rank, or else the badge shown going into their newest ranked game (the rank lookup
+ * sometimes comes back empty for players with a long ranked record). `fromHistory` says which one it is.
+ */
+export function shownRank(core: PlayerCore, matches: readonly PlayerMatchLine[] | null): (PlayerRank & { fromHistory?: number }) | null {
+  if (core.rank) return core.rank;
+  const last = matches?.find((m) => m.kind === 'ranked' && m.badge);
+  const r = last?.badge ? normalizeRank({ badge: last.badge, rank: Math.floor(last.badge / 10), subrank: last.badge % 10 }) : null;
+  return r && last ? { ...r, streak: undefined, fromHistory: last.start } : null;
+}
+
+/** Where a player's lobbies sit: the median of the lobby badges given, and the middle half of them. */
+export function placement(lobbies: readonly number[]): { badge: number; low: number; high: number; n: number } | null {
+  if (!lobbies.length) return null;
+  const s = [...lobbies].sort((a, b) => a - b);
+  const at = (q: number) => s[Math.min(s.length - 1, Math.max(0, Math.round(q * (s.length - 1))))];
+  return { badge: at(0.5), low: at(0.25), high: at(0.75), n: s.length };
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // Summaries
 // ---------------------------------------------------------------------------------------------------------

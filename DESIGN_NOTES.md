@@ -477,3 +477,17 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - Fixed on the way: match history now counts a win when `match_result == player_team` if `player_match_outcome` is 0 (stored history sends 0); history lines carry denies.
 - Team colours on the new pieces are the match page's amber/blue (semantic, so the same in every theme); everything else uses theme tokens. Motion: bars ease with the site curve; off under reduced motion.
 - Standalone build is now 31.0 MB (29.6 MiB) with ~950 KB of models; 30 MiB leaves ~450 KB. If it needs room, raise `prune` on the top-player model (report.md's size sweep shows the cost).
+
+## Round 54 · Placing players by their lobbies (2026-10-26)
+
+- **Stats-only rank estimate removed.** V saw top players placed at Phantom/Ritualist and their own ex-Eternus account at Emissary. The ridge model only beat guessing the median by about 2 levels of 72: per-minute stats are measured against opponents of the same rank, so everyone looks average and the guess regresses to the middle.
+- **Plays in card** replaces it: the median of the average lobby rank over the last 20 ranked games (topped up with standard games when there are fewer than 10 ranked), with the 25th–75th range and a note comparing it with the player's badge. Uses the API's `average_badge` first, else the other players' badges (6+ known). Hidden on error or with fewer than 3 lobbies.
+- **Lobby chip** on player match cards: the game's average rank badge, next to the draft chip.
+- Match and team averages fall back to the players' own badges when the API sends 0 (team averages always do).
+- Rank card and profile header fall back to the badge from the newest ranked game in the history ("Going into their last ranked game").
+
+## Round 55 · Build sections as boxes, items as cards (2026-10-28)
+
+- V wanted the build area closer to a reference (Deadlock-Labs-style "The build" board) and found the coloured strip down the left of each section distracting. The strip is gone.
+- Each section is a dark box with its name in capitals and, on the right, its item count and soul cost. Two short sections in a row (6 items or fewer each) share a line half and half, in buy order (`phaseWidths` in data/builds.ts); everything else is full width. Below 1100px every section is full width.
+- Items are 78px cards tinted by category (weapon, vitality, spirit mixed into cream), art on top, name below, tier as a roman numeral in a corner triangle. The buy-order number is dropped (the order reads left to right); the note dot sits top left; the sampled win rate is a dark strip under the card. Cards lift 2px on hover, off under reduced motion.

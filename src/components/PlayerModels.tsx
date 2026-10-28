@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
 import { badgeLabel, badgeParts } from '../data/leaderboard';
-import type { PlayerMatchLine, PlayerRank } from '../data/player';
+import { placement, type PlayerMatchLine, type PlayerRank } from '../data/player';
+import { dataSource } from '../data/source';
+import { useAsync } from '../data/useAsync';
 import { RANK_COLOR } from '../data/ranks';
 import { useModel } from '../ml/models';
-import { PLAYSTYLE_GAMES, PLAYSTYLE_MIN, playstyleOf, RANK_GAMES, rankGuess } from '../ml/predict';
+import { badgeToIndex } from '../../ml/web/score';
+import { PLAYSTYLE_GAMES, PLAYSTYLE_MIN, playstyleOf } from '../ml/predict';
 import RankBadge from './RankBadge';
 
 /** One line per playstyle, in the words of the cluster table in ml/models/report.md. */
@@ -60,30 +63,43 @@ export function PlaystyleCard({ matches }: { matches: PlayerMatchLine[] }) {
   );
 }
 
-/** Rank estimate: the rank the player's last 20 ranked games play like, from their per-minute numbers and win rate. */
-export function RankGuessCard({ matches, rank }: { matches: PlayerMatchLine[]; rank: PlayerRank | null }) {
-  const model = useModel('rank');
-  const g = useMemo(() => (model ? rankGuess(model, matches) : null), [model, matches]);
-  if (!model || !g) return null;
-  const p = badgeParts(g.badge);
-  const diff = rank ? Math.round((g.badge - rank.badge) / 10) : 0;
+const LOBBY_GAMES = 20;
+
+/**
+ * Plays at: the rank of the lobbies matchmaking puts the player in, from the other eleven players' badges in their
+ * last 20 ranked games (topped up with standard games when there are few ranked ones). Matchmaking already weighs everything the player does, so this places a player far better
+ * than their per-minute numbers can (those are measured against opponents of the same rank, so every rank looks
+ * average to a stats-only model). Players whose lobbies carry no badges get no card rather than a guess.
+ */
+export function PlaysAtCard({ accountId, matches, rank }: { accountId: number; matches: PlayerMatchLine[]; rank: (PlayerRank & { fromHistory?: number }) | null }) {
+  // ranked games first; players with few of them are placed by their standard games too, whose lobbies often carry badges
+  const ranked = useMemo(() => matches.filter((m) => m.kind === 'ranked').slice(0, LOBBY_GAMES), [matches]);
+  const ids = useMemo(() => (ranked.length >= LOBBY_GAMES / 2 ? ranked : [...ranked, ...matches.filter((m) => m.kind === 'unranked').slice(0, LOBBY_GAMES - ranked.length)]).map((m) => m.id), [matches, ranked]);
+  const what = ranked.length >= LOBBY_GAMES / 2 ? 'ranked lobbies' : ranked.length ? 'lobbies' : 'standard lobbies';
+  const state = useAsync((signal) => (ids.length ? dataSource.lobbyRanks(accountId, ids, signal) : Promise.resolve(new Map<number, number>())), [accountId, ids.join(',')]);
+  if (!ids.length || state.status === 'error') return null;
+  const at = state.status === 'ready' ? placement([...state.value.values()]) : null;
+  if (state.status === 'ready' && (!at || at.n < 3)) return null;
+  const p = at ? badgeParts(at.badge) : null;
+  const diff = at && rank ? badgeToIndex(at.badge) - badgeToIndex(rank.badge) : 0;
   return (
-    <div className="panel pad pc-card ml-rg" style={{ ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties}>
-      <div className="pc-card-h"><h3>Plays like</h3><small>Last {g.games} {g.fromRanked ? 'ranked' : 'standard'} games</small></div>
-      <div className="rg-row">
-        <RankBadge rank={p.rank} sub={p.sub} size="md" />
-        <span className="rg-n">
-          <b>{badgeLabel(g.badge)}</b>
-          <small>Likely {badgeParts(g.low).rank} to {badgeParts(g.high).rank}</small>
-        </span>
-      </div>
-      <p className="muted rg-note">
-        {rank
-          ? diff >= 1 ? `Playing above the ${rank.label} on the badge.` : diff <= -1 ? `The badge (${rank.label}) is ahead of these numbers.` : `Right around the badge (${rank.label}).`
-          : 'An estimate for a player with no badge.'}
-        {!g.fromRanked && ` Read from standard games: fewer than ${RANK_GAMES} ranked ones on record.`}
-        {' '}A rough read: about half the time it lands within one rank.
-      </p>
+    <div className="panel pad pc-card ml-rg" style={p ? { ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
+      <div className="pc-card-h"><h3>Plays in</h3><small>{at ? `Last ${at.n} ${what}` : 'Reading lobbies…'}</small></div>
+      {at && p ? (
+        <>
+          <div className="rg-row">
+            <RankBadge rank={p.rank} sub={p.sub} size="md" />
+            <span className="rg-n">
+              <b>{badgeLabel(at.badge)}</b>
+              <small>{at.low === at.high ? 'Every lobby about there' : `Most between ${badgeLabel(at.low)} and ${badgeLabel(at.high)}`}</small>
+            </span>
+          </div>
+          <p className="muted rg-note">
+            The average rank of each game’s lobby.
+            {rank ? (diff >= 4 ? ` Matchmaking puts them above their ${rank.label} badge.` : diff <= -4 ? ` Their lobbies sit below their ${rank.label} badge.` : ` In line with their ${rank.label} badge.`) : ''}
+          </p>
+        </>
+      ) : <div className="rg-row" aria-busy="true"><span className="rg-n"><small>Looking up the ranks of their recent lobbies…</small></span></div>}
     </div>
   );
 }

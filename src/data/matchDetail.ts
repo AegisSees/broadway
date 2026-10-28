@@ -191,6 +191,12 @@ function playerOf(p: MatchPlayerRaw, winner: string, ids: HeroIdMap): MatchPlaye
   };
 }
 
+/** Average of the badges known among `players`, when at least `min` of them have one (only ranked games carry badges). */
+export function avgBadgeOf(players: readonly { badge?: number }[], min: number): number | undefined {
+  const known = players.map((p) => p.badge).filter((b): b is number => !!b && b > 0);
+  return known.length >= min ? Math.round(known.reduce((a, b) => a + b, 0) / known.length) : undefined;
+}
+
 const sum = (list: readonly MatchPlayer[], f: (p: MatchPlayer) => number | undefined) => list.reduce((n, p) => n + (f(p) ?? 0), 0);
 
 /** Net worth lead of the first team over the second at every moment both have a sample. */
@@ -221,7 +227,8 @@ export function normalizeMatch(raw: MatchMetadataRaw, ids: HeroIdMap, opts: { il
       side, won: winner === side, score: score?.[i],
       kills: sum(list, (p) => p.kills), deaths: sum(list, (p) => p.deaths), assists: sum(list, (p) => p.assists),
       netWorth: sum(list, (p) => p.netWorth), damage: sum(list, (p) => p.damage), healing: sum(list, (p) => p.healing), bossDamage: sum(list, (p) => p.bossDamage),
-      players: list, avgBadge: avg && avg > 0 ? avg : undefined,
+      // the API sends 0 for the team averages, so they come from the players' own badges
+      players: list, avgBadge: avg && avg > 0 ? avg : avgBadgeOf(list, 3),
     };
   };
   const hk = team('hidden-king', 0);
@@ -235,7 +242,7 @@ export function normalizeMatch(raw: MatchMetadataRaw, ids: HeroIdMap, opts: { il
     notScored: !!raw.not_scored,
     teams: [hk, am],
     players,
-    avgBadge: raw.average_badge && raw.average_badge > 0 ? raw.average_badge : undefined,
+    avgBadge: raw.average_badge && raw.average_badge > 0 ? raw.average_badge : avgBadgeOf(players, 6),
     lead: leadCurve(hk.players, am.players),
     bans: (raw.banned_hero_ids ?? []).map((id) => ids.slugById(id)).filter((s): s is string => !!s),
     illustrative: !!opts.illustrative,

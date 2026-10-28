@@ -11,7 +11,7 @@ import { getHeroColor } from '../data/heroColors';
 import { getHeroBg } from '../data/heroStats';
 import { badgeLabel, badgeParts } from '../data/leaderboard';
 import {
-  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, streakOf, timeAgo, winPct,
+  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, shownRank, streakOf, timeAgo, winPct,
   type PlayerCore, type PlayerHeroLine, type PlayerMate, type PlayerMatchLine, type PlayerMatches, type QueueKind,
 } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
@@ -25,7 +25,7 @@ import { useTitle } from '../lib/useTitle';
 import PlayerLookup from './PlayerLookup';
 import Avatar from '../components/Avatar';
 import SectionHeading from '../components/SectionHeading';
-import { PlaystyleCard, RankGuessCard } from '../components/PlayerModels';
+import { PlaysAtCard, PlaystyleCard } from '../components/PlayerModels';
 
 const n0 = (n: number) => n.toLocaleString('en-US');
 const souls = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(Math.round(n)));
@@ -74,7 +74,7 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
   const bust = top ? getGloat(top) : undefined;
   const art = bust ?? (hero ? hero.render ?? hero.art ?? hero.portrait : undefined);
   const steamHref = safeSteamHref(core.profileUrl);
-  const r = core.rank;
+  const r = shownRank(core, matches);
   const streak = matches ? streakOf(matches) : null;
   const last = matches?.[0];
   return (
@@ -112,8 +112,8 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
 // Recent form
 // ---------------------------------------------------------------------------------------------------------
 
-function RankCard({ core }: { core: PlayerCore }) {
-  const r = core.rank;
+function RankCard({ core, matches }: { core: PlayerCore; matches: PlayerMatchLine[] | null }) {
+  const r = shownRank(core, matches);
   const t = core.totals;
   const wr = t ? winPct(t.wins, t.matches) : null;
   return (
@@ -121,7 +121,7 @@ function RankCard({ core }: { core: PlayerCore }) {
       <div className="pc-card-h"><h3>Rank</h3><h3>Record</h3></div>
       <div className="ph-rc">
         {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-        <span className="ph-rc-n"><b>{r ? r.label : 'Unranked'}</b><small>{r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
+        <span className="ph-rc-n"><b>{r ? r.label : 'Unranked'}</b><small>{r?.fromHistory ? `Going into their last ranked game, ${timeAgo(r.fromHistory)}` : r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
         {t && <span className="ph-rc-wl"><b><span className="w">{n0(t.wins)}</span>{' / '}<span className="l">{n0(t.matches - t.wins)}</span></b>{wr !== null && <small className={wr >= 50 ? 'good' : 'bad'}>{wr.toFixed(1)}%</small>}</span>}
       </div>
     </div>
@@ -406,11 +406,11 @@ export default function PlayerPage() {
 
         <div className="pl-grid ph-grid">
           <aside className="pl-aside" aria-label="Rank, form and teammates">
-            <RankCard core={c} />
+            <RankCard core={c} matches={matches?.matches ?? null} />
             {matches && <Trajectory matches={matches.matches} />}
             <Performance core={c} matches={matches?.matches ?? null} />
             {matches && <PlaystyleCard matches={matches.matches} />}
-            {matches && <RankGuessCard matches={matches.matches} rank={c.rank} />}
+            {matches && <PlaysAtCard accountId={c.accountId} matches={matches.matches} rank={shownRank(c, matches.matches)} />}
             {matches && <Recent30 matches={matches.matches} now={now} />}
             {mates.status === 'ready' && <div id="mates"><Mates mates={mates.value} /></div>}
             <p className="muted pl-fine">
