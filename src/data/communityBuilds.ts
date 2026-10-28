@@ -130,18 +130,28 @@ export function normalizeBuild(raw: BuildRaw, ctx: BuildContext): HeroBuild | nu
   };
 }
 
+/** Builds need this many games before they can be a hero's "Best results". */
+export const BEST_MIN_GAMES = 50;
 /**
- * The tabs on a hero page, from one hero's published builds: the most favorited build, the one played most in sampled
- * games, the one with the best results (50+ games), and the most favorited this week. A build appears once.
+ * A build's win rate pulled toward 50% by 250 imaginary even games, so results count only as far as the play behind
+ * them: a 54% build over 52 games scores 50.8%, a 51% build over 6,000 games 51.0%.
+ */
+export const buildResultScore = (wins: number, matches: number): number => (wins + 125) / (matches + 250);
+
+/**
+ * The tabs on a hero page, from one hero's published builds: the best results (50+ games, weighed by how much it was
+ * played), the one played most in sampled games, the most favorited build, and the most favorited this week. A build
+ * appears once, under the first tab it earns. With no played builds the most favorited one leads.
  */
 export function heroBuildTabs(builds: readonly HeroBuild[], weekly: readonly HeroBuild[] = []): HeroBuild[] {
   const out: HeroBuild[] = [];
   const add = (b: HeroBuild | undefined, tab: string) => { if (b && !out.some((x) => x.id === b.id)) out.push({ ...b, tab }); };
+  const played = builds.filter((b) => (b.matches ?? 0) > 0);
+  const score = (b: HeroBuild) => buildResultScore(((b.winRate ?? 0) / 100) * (b.matches ?? 0), b.matches ?? 0);
+  add(played.filter((b) => (b.matches ?? 0) >= BEST_MIN_GAMES).sort((a, b) => score(b) - score(a))[0], 'Best results');
+  add([...played].sort((a, b) => (b.matches ?? 0) - (a.matches ?? 0))[0], 'Most played');
   const byFav = [...builds].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0));
   add(byFav[0], 'Most favorited');
-  const played = builds.filter((b) => (b.matches ?? 0) > 0);
-  add([...played].sort((a, b) => (b.matches ?? 0) - (a.matches ?? 0))[0], 'Most played');
-  add(played.filter((b) => (b.matches ?? 0) >= 50).sort((a, b) => (b.winRate ?? 0) - (a.winRate ?? 0))[0], 'Best results');
   add([...weekly].sort((a, b) => b.trend - a.trend).find((b) => !out.some((x) => x.id === b.id)), 'Hot this week');
   for (const [i, b] of byFav.entries()) { if (out.length >= 4) break; add(b, `No. ${i + 1} favorite`); }
   return out.slice(0, 4);

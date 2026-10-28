@@ -3,7 +3,7 @@ import buildsSample from '../../api-samples/builds.json';
 import assetsSample from '../../api-samples/assets-heroes.json';
 import { DeadlockApi } from '../api/client';
 import type { AssetHero, BuildRaw, HeroBuildStatsRow } from '../api/types';
-import { heroBuildTabs, normalizeBuild, sectionName, skillFromOrder } from './communityBuilds';
+import { buildResultScore, heroBuildTabs, normalizeBuild, sectionName, skillFromOrder } from './communityBuilds';
 import { buildItemNames, itemCount } from './builds';
 import { getItem } from './items';
 import { createLiveSource } from './source';
@@ -73,12 +73,17 @@ describe('published builds (shape from api-samples/builds.json)', () => {
   it('picks up to four distinct tabs for a hero page', () => {
     const stats = new Map<number, HeroBuildStatsRow>([
       [234272, { hero_id: 15, hero_build_id: 234272, wins: 300, losses: 200, matches: 500, players: 300 }],
-      [1242, { hero_id: 15, hero_build_id: 1242, wins: 70, losses: 30, matches: 100, players: 90 }],
+      [1242, { hero_id: 15, hero_build_id: 1242, wins: 260, losses: 140, matches: 400, players: 90 }],
     ]);
     const list = RAWS.map((r) => normalizeBuild(r, { slugById, stats, now: NOW })!);
     const tabs = heroBuildTabs(list);
-    expect(tabs.map((t) => t.tab)).toEqual(['Most favorited', 'Most played', 'Best results']);
-    expect(tabs.map((t) => t.code)).toEqual(['1084', '234272', '1242']);
+    expect(tabs.map((t) => t.tab)).toEqual(['Best results', 'Most played', 'Most favorited']);
+    expect(tabs.map((t) => t.code)).toEqual(['1242', '234272', '1084']);
+  });
+
+  it('weighs best results by how much a build was played', () => {
+    expect(buildResultScore(3300, 6128)).toBeGreaterThan(buildResultScore(28, 52));
+    expect(buildResultScore(3300, 6128)).toBeLessThan(buildResultScore(700, 1200));
   });
 });
 
@@ -96,8 +101,9 @@ describe('live source builds', () => {
   it('serves a hero’s published builds as tabs', async () => {
     expect((assetsSample as AssetHero[]).some((h) => h.id === 15)).toBe(true);
     const tabs = await src.heroBuilds('bebop', DEFAULT_FILTERS);
-    expect(tabs?.[0].code).toBe('1084');
-    expect(tabs?.find((t) => t.tab === 'Most played')?.code).toBe('1242');
+    expect(tabs?.[0].code).toBe('1242');
+    expect(tabs?.[0].tab).toBe('Best results');
+    expect(tabs?.find((t) => t.tab === 'Most favorited')?.code).toBe('1084');
     expect(tabs?.every((t) => !t.illustrative)).toBe(true);
   });
 
