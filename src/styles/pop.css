@@ -902,40 +902,45 @@ main { overflow-x: clip; }
 /* ---------- Round 48: the empty-state moth sits above the heading, not on it (.panel::before is an absolute inset frame) ---------- */
 .panel.empty::before { position: relative; inset: auto; border: 0; border-radius: 0; }
 
-/* ---------- Round 52 · builds as dark shelves ----------
+/* ---------- Round 52 · builds as dark shelves (Round 55: sections as boxes, items as category cards) ----------
    V found the cream columns glaring against the dark page and hard to read with long author notes. A build is now one
    dark row per section: the section name on the left in its tape colour, the items as icons with their names in buy
    order. Notes wait in each item's tooltip (a dot marks the items that have one) and behind one toggle. Hub cards go
    dark too; the hero-colour band and bust stay. */
-.bs { position: relative; z-index: 1; display: grid; gap: 10px; }
-.bs-row { --tape: var(--pop-orange); display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 10px 16px; align-items: start; padding: 14px 16px 12px; background: color-mix(in srgb, var(--s3) 78%, transparent); border: 1px solid var(--line-2); border-left: 4px solid var(--tape); border-radius: 4px; }
-.bs-row:nth-child(3n + 2) { --tape: #5b8fd3; }
-.bs-row:nth-child(3n + 3) { --tape: #cf9d3a; }
-.bs-row header { display: grid; gap: 4px; align-content: start; padding-top: 4px; }
-.bs-row h4 { font: 400 18px/1.1 var(--display); color: color-mix(in srgb, var(--tape) 70%, var(--ink)); }
+.bs { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.bs-row { display: grid; align-content: start; gap: 12px; padding: 12px 14px 14px; background: color-mix(in srgb, var(--s3) 72%, transparent); border: 1px solid var(--line-2); border-radius: 4px; }
+.bs-row.full { grid-column: 1 / -1; }
+.bs-row header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.bs-row h4 { font: 400 17px/1.1 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
 .bs-row header small { font: 600 10.5px/1.35 var(--ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-.bs-items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 8px; }
-.bs-it { position: relative; width: 78px; display: grid; justify-items: center; align-content: start; gap: 5px; text-align: center; }
-.bs-it .item { width: 52px; height: 52px; border-radius: 5px; box-shadow: 0 0 0 1px #0008, 2px 3px 0 #0006; }
-.bs-it .nm { font: 600 11.5px/1.15 var(--ui); color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.bs-it .st { font: 600 10.5px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.bs-sum { margin-left: auto; display: flex; align-items: baseline; gap: 12px; font: 700 10.5px var(--ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bs-sum b { font: 700 12.5px var(--ui); letter-spacing: 0; color: var(--ink); }
+.bs-sum b i { font: 600 10px var(--ui); font-style: normal; letter-spacing: 0.08em; color: var(--muted); }
+.bs-items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, 78px); gap: 10px 7px; }
+/* each item a card in its category's colour, art on top, name below, tier in the top-right corner */
+.bs-it { --cc: var(--weapon); position: relative; display: grid; grid-template-rows: auto 1fr auto; border-radius: 6px; overflow: hidden; background: color-mix(in srgb, var(--cc) 48%, #e8e2d4); box-shadow: 0 0 0 1px #0009, 2px 3px 0 #0006; text-align: center; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.bs-it.vitality { --cc: var(--vitality); } .bs-it.spirit { --cc: var(--spirit); }
+.bs-it:hover { transform: translateY(-2px); }
+.bs-it .item-tip { display: block; }
+.bs-it .item { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 0; box-shadow: none; }
+.bs-it .nm { display: grid; place-items: center; min-height: 2.5em; padding: 4px 4px 5px; font: 700 10.5px/1.12 var(--ui); color: #1b1814; }
+.bs-it .tr { position: absolute; top: 0; right: 0; width: 26px; height: 26px; padding: 2px 3px 0 0; text-align: right; font: 800 9.5px/1 var(--ui); font-style: normal; color: #fff; background: color-mix(in srgb, var(--cc) 70%, #000); clip-path: polygon(0 0, 100% 0, 100% 100%); pointer-events: none; }
+.bs-it .dot { position: absolute; top: 5px; left: 5px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--pop-orange); box-shadow: 0 0 0 2px #000a; pointer-events: none; }
+.bs-it .st { padding: 3px 0; font: 700 10.5px var(--ui); background: #000000b8; color: var(--muted); font-variant-numeric: tabular-nums; }
 .bs-it .st.up { color: var(--good); } .bs-it .st.down { color: var(--bad); }
-.bs-it .no { position: absolute; top: -6px; left: 6px; z-index: 2; min-width: 17px; height: 17px; padding: 0 3px; display: grid; place-items: center; border-radius: 9px; background: var(--s0); color: var(--ink-2); font: 700 9.5px var(--ui); box-shadow: 0 0 0 1px var(--line-2); pointer-events: none; }
-.bs-it .dot { position: absolute; top: -3px; right: 10px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--tape); box-shadow: 0 0 0 2px var(--s2); pointer-events: none; }
-.bs-notes { grid-column: 2; list-style: none; margin: 4px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--line-2); columns: 2 280px; column-gap: 28px; }
+.bs-notes { list-style: none; margin: 0; padding: 10px 0 0; border-top: 1px dashed var(--line-2); columns: 2 280px; column-gap: 28px; }
 .bs-notes li { break-inside: avoid; margin-bottom: 7px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
 .bs-notes b { color: var(--ink); font-weight: 700; margin-right: 4px; }
 .bs-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; }
 .bs-foot .chip { margin: 0 0 0 auto; }
 .tip-note { max-width: 280px; margin: 0 0 8px; padding: 8px 10px; font: 600 12.5px/1.4 var(--ui); color: var(--ink); background: var(--s3); border-left: 3px solid var(--pop-orange); border-radius: 3px; white-space: normal; }
+@media (max-width: 1100px) { .bs { grid-template-columns: 1fr; } }
 @media (max-width: 720px) {
-  .bs-row { grid-template-columns: 1fr; padding: 12px; }
-  .bs-row header { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; padding-top: 0; }
-  .bs-items { gap: 10px 4px; }
-  .bs-it { width: 68px; }
-  .bs-it .item { width: 46px; height: 46px; }
-  .bs-notes { grid-column: 1; }
+  .bs-row { padding: 12px; }
+  .bs-items { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px 6px; }
+  .bs-it .nm { font-size: 10px; }
 }
+@media (prefers-reduced-motion: reduce) { .bs-it { transition: none; } .bs-it:hover { transform: none; } }
 
 .bc { color: var(--ink); background: var(--s2); box-shadow: inset 0 0 0 1px var(--line-2), 6px 6px 0 var(--pop-shadow); }
 .bc:not(.open):hover { box-shadow: inset 0 0 0 1px var(--line), 10px 11px 0 var(--pop-shadow); }

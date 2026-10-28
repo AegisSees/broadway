@@ -485,3 +485,9 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Lobby chip** on player match cards: the game's average rank badge, next to the draft chip.
 - Match and team averages fall back to the players' own badges when the API sends 0 (team averages always do).
 - Rank card and profile header fall back to the badge from the newest ranked game in the history ("Going into their last ranked game").
+
+## Round 55 · Build sections as boxes, items as cards (2026-10-28)
+
+- V wanted the build area closer to a reference (Deadlock-Labs-style "The build" board) and found the coloured strip down the left of each section distracting. The strip is gone.
+- Each section is a dark box with its name in capitals and, on the right, its item count and soul cost. Two short sections in a row (6 items or fewer each) share a line half and half, in buy order (`phaseWidths` in data/builds.ts); everything else is full width. Below 1100px every section is full width.
+- Items are 78px cards tinted by category (weapon, vitality, spirit mixed into cream), art on top, name below, tier as a roman numeral in a corner triangle. The buy-order number is dropped (the order reads left to right); the note dot sits top left; the sampled win rate is a dark strip under the card. Cards lift 2px on hover, off under reduced motion.

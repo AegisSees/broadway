@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allSampleBuilds, browseBuilds, buildItemNames, fmtBuy, itemCount, plannerLink, sampleHeroBuilds, sampleSkill } from './builds';
+import { allSampleBuilds, browseBuilds, buildItemNames, fmtBuy, itemCount, phaseCost, phaseWidths, plannerLink, sampleHeroBuilds, sampleSkill } from './builds';
 import { getItem } from './items';
 
 describe('sample hero builds', () => {
@@ -75,5 +75,17 @@ describe('browseBuilds', () => {
     expect(w[0].winRate).toBeGreaterThanOrEqual(w[w.length - 1].winRate!);
     const n = browseBuilds(all, { filter: 'community', sort: 'newest' });
     expect(n[0].ageDays ?? 999).toBeLessThanOrEqual(n[n.length - 1].ageDays ?? 999);
+  });
+});
+
+describe('phaseWidths', () => {
+  const ph = (n: number) => ({ items: Array.from({ length: n }) });
+  it('pairs neighbouring short sections in order and leaves the rest full width', () => {
+    expect(phaseWidths([ph(12), ph(4), ph(5), ph(11)])).toEqual(['full', 'half', 'half', 'full']);
+    expect(phaseWidths([ph(3), ph(9), ph(2)])).toEqual(['full', 'full', 'full']);
+    expect(phaseWidths([ph(2), ph(2), ph(2)])).toEqual(['half', 'half', 'full']);
+  });
+  it('adds up the soul cost of known items', () => {
+    expect(phaseCost([{ name: 'Extra Regen' }, { name: 'Not an item' }])).toBe(getItem('Extra Regen')!.cost);
   });
 });
