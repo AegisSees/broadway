@@ -78,7 +78,7 @@ function LobbyStat({ badge, delta, mine }: { badge?: number; delta?: number; min
   const name = badge ? `Lobby: ${badgeLabel(badge)}` : 'Lobby rank unknown';
   return (
     <div className="pc-stat pc-lob" style={p ? { ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
-      {p ? <Tip className="pc-lob-r" content={<span className="pc-lob-tip">{name}</span>}><span role="img" aria-label={name}><RankBadge rank={p.rank} sub={p.sub} size="md" /></span></Tip> : null}
+      {p ? <Tip className="pc-lob-r" content={<span className="pc-lob-tip" style={p ? { color: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } : undefined}>{name}</span>}><span role="img" aria-label={name}><RankBadge rank={p.rank} sub={p.sub} size="md" /></span></Tip> : null}
       {delta !== undefined && mine ? <em className={delta >= 0 ? 'up' : 'down'} title={`Rank going in: ${badgeLabel(mine)}`}>{delta >= 0 ? '+' : '−'}{Math.abs(delta)} MMR</em> : null}
     </div>
   );
