@@ -83,9 +83,9 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
               </a>
             )}
           </div>
-          <div className="ph-rank" aria-label={r ? `Rank: ${r.label}` : 'Unranked'}>
-            {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-            <b>{r ? r.label : 'Unranked'}</b>
+          <div className="ph-rank" aria-label={r ? `Rank: ${r.label}` : 'Unranked (Obscurus)'}>
+            {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <RankBadge rank="Obscurus" size="lg" />}
+            <b>{r ? r.label : 'Obscurus'}</b>
           </div>
         </div>
       </div>
@@ -105,8 +105,8 @@ function RankCard({ core, matches }: { core: PlayerCore; matches: PlayerMatchLin
     <div className="panel pad pc-card ph-rankcard" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
       <div className="pc-card-h"><h3>Rank</h3><h3>Record</h3></div>
       <div className="ph-rc">
-        {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-        <span className="ph-rc-n"><b>{r ? r.label : 'Unranked'}</b><small>{r?.fromHistory ? `Going into their last ranked game, ${timeAgo(r.fromHistory)}` : r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
+        {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <RankBadge rank="Obscurus" size="md" />}
+        <span className="ph-rc-n"><b>{r ? r.label : 'Obscurus'}</b><small>{r?.fromHistory ? `Going into their last ranked game, ${timeAgo(r.fromHistory)}` : r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
         {t && <span className="ph-rc-wl"><b><span className="w">{n0(t.wins)}</span>{' / '}<span className="l">{n0(t.matches - t.wins)}</span></b>{wr !== null && <small className={wr >= 50 ? 'good' : 'bad'}>{wr.toFixed(1)}%</small>}</span>}
       </div>
     </div>
