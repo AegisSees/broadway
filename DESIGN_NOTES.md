@@ -552,3 +552,10 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - Matchup columns lose the star/Haze badge and the small subtitle ("Opponent's match win rate"); the section lede
   still explains what the numbers are. Titles are hero-specific: "Best picks vs Graves", "Worst picks vs Graves",
   "Best lane partners for Graves", "Worst lanes for Graves".
+
+## Round 62 — Obscurus badge, real Initiate and Acolyte badges (2026-11-01)
+
+- V supplied the Obscurus (unranked) badge; it is the game's own `ranked/badges/rank00_lg.png`, now `rank/rank0.webp`.
+  Unranked players show it in the player banner and rank card, labelled "Obscurus", instead of a dotted "?" circle.
+- The same folder had the real Initiate (moth) and Acolyte (rat) badges, so the drawn stand-ins for tiers 1 and 3 are
+  replaced too and `PLACEHOLDER_TIERS` is gone.
