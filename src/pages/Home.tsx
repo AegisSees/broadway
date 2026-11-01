@@ -155,9 +155,7 @@ export default function Home() {
         <div className="wrap">
           <div className="inner">
             <div>
-              <Kicker>The city has its secrets</Kicker>
               <h1>Find your edge.<em>Rule Manhattan.</em></h1>
-              <p className="lede">Ranked hero stats, builds and matchups, with the sample size shown next to every number.</p>
               <div style={{ marginTop: 24 }}><SearchBox large /></div>
               <div className="quick">
                 {['haze', 'ivy', 'wraith'].map((s) => { const h = getHero(s); return h && (

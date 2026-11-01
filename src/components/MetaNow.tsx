@@ -51,7 +51,6 @@ export default function MetaNow({ list }: { list: TierList | null }) {
     <section className="meta-now" aria-labelledby="meta-now-h">
       <div className="dotline"><span>Standard {'·'} Ranked {'·'} {list.illustrative ? 'illustrative sample' : 'live'}</span></div>
       <h2 id="meta-now-h" className="meta-now-title">The meta <em>right now</em></h2>
-      <p className="mn-lede">What is winning, and who is worth a look before your next match.</p>
       <div className="mn-row">
         {picks.map((p, i) => {
           const h = getHero(p.row.slug);

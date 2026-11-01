@@ -1,3 +1,4 @@
+import RoughEdges from './RoughEdges';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import SearchBox from './SearchBox';
@@ -89,6 +90,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
   return (
     <>
+      <RoughEdges />
       <aside className="rail" aria-label="Primary">
         <span className="rail-line" aria-hidden="true" />
         {NAV.map((n) => (

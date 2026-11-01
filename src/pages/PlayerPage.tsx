@@ -153,13 +153,6 @@ function Trajectory({ matches }: { matches: PlayerMatchLine[] }) {
   );
 }
 
-/** A hand-drawn ring, as if someone circled the number in pen. */
-const Ring = () => (
-  <svg className="ph-ring" viewBox="0 0 120 60" aria-hidden="true" preserveAspectRatio="none">
-    <path d="M14 34c-4-14 22-25 50-25 30 0 52 9 50 22-2 15-33 23-60 21C27 50 8 42 12 30 15 20 38 12 66 12" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-  </svg>
-);
-
 function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatchLine[] | null }) {
   const t = core.totals;
   if (!t) return null;
@@ -178,7 +171,7 @@ function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatch
         <div><dt>Avg assists</dt><dd className="a">{(t.assists / g).toFixed(1)}</dd></div>
         <div><dt>KDA</dt><dd>{kdaRatio(t.kills, t.deaths, t.assists).toFixed(2)}</dd></div>
         {avgSouls !== null && <div><dt>Avg souls <i>last {recent.length}</i></dt><dd className="souls">{souls(avgSouls)}</dd></div>}
-        {wr !== null && <div className="ringed"><dt>Win rate</dt><dd className={wr >= 50 ? 'good' : 'bad'}>{Math.round(wr)}%<Ring /></dd></div>}
+        {wr !== null && <div><dt>Win rate</dt><dd className={wr >= 50 ? 'good' : 'bad'}>{Math.round(wr)}%</dd></div>}
         {avgCs !== null && <div><dt>Avg CS <i>last {recent.length}</i></dt><dd>{Math.round(avgCs)}</dd></div>}
         {core.matches30d !== undefined && <div><dt>Last 30 days</dt><dd>{n0(core.matches30d)}</dd></div>}
       </dl>
