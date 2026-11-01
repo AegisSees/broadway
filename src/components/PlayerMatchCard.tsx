@@ -1,3 +1,4 @@
+import Tip from './Tip';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDraftChance } from './DraftOdds';
@@ -68,17 +69,17 @@ function useNear(ref: React.RefObject<HTMLElement>, enabled: boolean): boolean {
 }
 
 /**
- * The lobby's average rank going in, as its own column: the badge at a readable size, the rank in words under a small
- * label, and the player's rank change for the game when the API sends one (Round 57, after V found the chip unreadable).
+ * The lobby's average rank going in, as its own column: just the badge, large, with the player's MMR change for the
+ * game under it. The rank's name shows on hover (V, Round 58: no "Lobby" word, no rank name on the card).
  */
 function LobbyStat({ badge, delta, mine }: { badge?: number; delta?: number; mine?: number }) {
   if (!badge && delta === undefined) return <div className="pc-stat pc-lob pc-none" aria-hidden="true" />;
   const p = badge ? badgeParts(badge) : null;
+  const name = badge ? `Lobby: ${badgeLabel(badge)}` : 'Lobby rank unknown';
   return (
     <div className="pc-stat pc-lob" style={p ? { ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
-      <span className="pc-lab">Lobby</span>
-      {p && badge ? <span className="pc-lob-r" title={`Average rank of the lobby going in: ${badgeLabel(badge)}`}><RankBadge rank={p.rank} sub={p.sub} size="sm" /><b>{badgeLabel(badge)}</b></span> : <b className="muted">Unranked</b>}
-      {delta !== undefined && mine ? <em className={delta >= 0 ? 'up' : 'down'} title={`Rank going in: ${badgeLabel(mine)}`}>{delta >= 0 ? '+' : '−'}{Math.abs(delta)} rank</em> : null}
+      {p ? <Tip className="pc-lob-r" content={<span className="pc-lob-tip">{name}</span>}><span role="img" aria-label={name}><RankBadge rank={p.rank} sub={p.sub} size="md" /></span></Tip> : null}
+      {delta !== undefined && mine ? <em className={delta >= 0 ? 'up' : 'down'} title={`Rank going in: ${badgeLabel(mine)}`}>{delta >= 0 ? '+' : '−'}{Math.abs(delta)} MMR</em> : null}
     </div>
   );
 }

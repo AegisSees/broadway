@@ -129,10 +129,11 @@
 .pc-items { grid-area: items; } .pc-toggle { grid-area: tog; }
 .pc-stat { display: grid; gap: 4px; align-content: center; min-width: 0; }
 .pc-lab { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
-.pc-lob-r { display: flex; align-items: center; gap: 7px; min-width: 0; }
-.pc-lob-r .rbadge { flex: none; width: 30px; height: 30px; }
-.pc-lob-r b { font: 700 13.5px / 1.15 var(--ui); color: var(--rc, var(--ink)); letter-spacing: 0.02em; }
-.pc-lob em { font: 700 12px var(--ui); font-style: normal; font-variant-numeric: tabular-nums; }
+.pc-lob { justify-items: center; text-align: center; }
+.pc-lob-r { display: block; line-height: 0; }
+.pc-lob-r .rbadge { width: 54px; height: 54px; filter: drop-shadow(0 3px 0 #0006); }
+.pc-lob-tip { font: 700 12px var(--ui); letter-spacing: 0.06em; color: var(--rc, var(--ink)); white-space: nowrap; }
+.pc-lob em { font: 700 13px var(--ui); font-style: normal; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 .pc-lob em.up { color: var(--good); } .pc-lob em.down { color: var(--bad); }
 .pc-draft b { font: 400 24px / 1 var(--display); color: var(--ink); }
 .pc-draft.up b { color: var(--good); } .pc-draft.down b { color: var(--bad); }

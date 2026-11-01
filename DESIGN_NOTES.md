@@ -508,4 +508,10 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Banner:** the dashed marching border round the name is replaced by a thick bar in the hero's colour under the name. The colour band behind the hero fades in from the left instead of cutting in on a diagonal, and the hero bust stands whole inside the banner. A missing Steam avatar now shows an empty print instead of collapsing.
 - **Hover:** the hero card on each match lifts with the site's smooth easing instead of eight held frames; the open/close arrow too.
 - **Home copy:** the "The city has its secrets" tape, the lede under the headline and the line under "The meta right now" are removed.
-- **Torn edges:** `RoughEdges.tsx` adds three SVG displacement filters (a slow wavy tear, a chewed edge, a fine fibrous one). The meta cards and the explore tiles draw their colour on a `::before` with one of the three, so neighbours never share an edge and the hard shadow follows the torn shape. Text and art are not filtered.
+
+## Round 58 · Lobby badge, hero art banner (2026-11-01)
+
+- **Torn edges removed.** The Round 57 SVG tear on the meta cards, explore tiles and fan cards was not what V meant; it is gone (and `RoughEdges.tsx` with it).
+- **Lobby column:** no "Lobby" label and no rank name on the card. The lobby's average rank badge is shown large (54px) with the player's change under it as "−300 MMR" / "+370 MMR"; the rank's name appears in a tooltip on hover or focus.
+- **Banner:** the hero's own painted art (the render, else the splash) fills the right ~60% of the player banner and fades into the dark under the name, replacing the colour band and the cut-out bust. On phones it sits behind the whole banner at 45%.
+
