@@ -15,7 +15,7 @@ import {
   type PlayerCore, type PlayerHeroLine, type PlayerMate, type PlayerMatchLine, type PlayerMatches, type QueueKind,
 } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
-import { getHero } from '../data/roster';
+import { getHero, shortName } from '../data/roster';
 import { dataSource } from '../data/source';
 import { useAsync } from '../data/useAsync';
 import { rememberPlayer } from '../lib/recentPlayers';
@@ -190,23 +190,55 @@ function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatch
   );
 }
 
+/**
+ * Heroes over the last 30 days (Round 58, after a reference V liked): the three most played stand as busts with their
+ * win rate on a tab, games and KDA under them, and lift out of the card on hover; the next five follow as a ranked list.
+ */
 function Recent30({ matches, now }: { matches: PlayerMatchLine[]; now: number }) {
   const month = matches.filter((m) => m.start >= now - 30 * DAY_S);
-  const list = heroesIn(month).slice(0, 4);
+  const list = heroesIn(month).slice(0, 8).map((h) => {
+    const mine = month.filter((m) => m.heroSlug === h.slug);
+    const k = mine.reduce((a, m) => a + m.kills, 0), d = mine.reduce((a, m) => a + m.deaths, 0), as = mine.reduce((a, m) => a + m.assists, 0);
+    return { ...h, kda: kdaRatio(k, d, as) };
+  });
   if (!list.length) return null;
+  const wr = (h: { wins: number; matches: number }) => Math.round((h.wins / h.matches) * 100);
+  const top = list.slice(0, 3);
+  const rest = list.slice(3);
   return (
-    <div className="panel pad pl-side pc-card">
-      <h3>Playing lately</h3>
-      <small>Last 30 days · {n0(month.length)} games</small>
-      <ul>
-        {list.map((h) => (
-          <li key={h.slug}>
-            <HeroLine slug={h.slug} />
-            <span className="pl-n">{h.matches} <small>games</small></span>
-            <WinRate wins={h.wins} matches={h.matches} />
-          </li>
-        ))}
-      </ul>
+    <div className="panel pad pl-side pc-card pl-lately">
+      <div className="pc-card-h"><h3>Playing lately</h3><small>{n0(month.length)} games · 30 days</small></div>
+      <div className="pl-podium">
+        {top.map((h) => {
+          const hero = getHero(h.slug);
+          const pic = getGloat(h.slug) ?? hero?.portrait;
+          const w = wr(h);
+          return (
+            <Link key={h.slug} to={`/hero/${h.slug}`} className="pl-pod" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+              <span className="pl-pod-pic">{pic && <img src={pic} alt="" loading="lazy" />}<b className={w >= 50 ? 'up' : 'down'}>{w}%</b></span>
+              <strong>{hero ? shortName(hero) : h.slug}</strong>
+              <small>{h.matches} games</small>
+              <small>{h.kda.toFixed(2)} KDA</small>
+            </Link>
+          );
+        })}
+      </div>
+      {rest.length > 0 && (
+        <ol className="pl-rest" start={4}>
+          {rest.map((h, i) => {
+            const hero = getHero(h.slug);
+            const w = wr(h);
+            return (
+              <li key={h.slug}>
+                <span className="n">{i + 4}</span>
+                {hero ? <HeroFace hero={hero} size="sm" /> : <span />}
+                <span className="nm"><Link to={`/hero/${h.slug}`}>{hero ? shortName(hero) : h.slug}</Link><small>{h.matches} games · {h.kda.toFixed(2)} KDA</small></span>
+                <b className={w >= 50 ? 'up' : 'down'}>{w}%</b>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </div>
   );
 }

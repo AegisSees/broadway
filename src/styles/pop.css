@@ -992,3 +992,73 @@ main { overflow-x: clip; }
 .hero .hero-tag { margin: 0 0 6px; font: 700 clamp(22px, 2.5vw, 34px) / 1.05 var(--display); text-transform: uppercase; letter-spacing: 0.02em; color: var(--ink-2); filter: drop-shadow(2px 2px 0 var(--pop-shadow)); }
 .hero .hero-tag em { display: block; font-style: italic; color: var(--brass-2); }
 
+
+/* ---------- Round 58 · leaderboard top five, thin lines (after a reference V liked) ----------
+   Dark cards with a hairline border and no colour fills; number one gets a wide banner with their main hero's art
+   on the right (kept at its own proportions, never stretched) and a thin glow line along the bottom. Two to five
+   are four identical cards. */
+.lb5 { display: grid; gap: 14px; margin: 18px 0 18px; }
+.lb5-one, .lb5-card { position: relative; overflow: hidden; background: linear-gradient(180deg, #ffffff06, #0000), #0d1214; border: 1px solid #ffffff14; border-radius: 4px; }
+.lb5-one { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 28px; min-height: 230px; padding: 26px 34px; }
+.lb5-one::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--hc) 30%, var(--hc) 70%, transparent); opacity: 0.8; }
+.lb5-art { position: absolute; top: 0; right: 0; bottom: 0; z-index: 0; height: 100%; width: auto; max-width: 46%; object-fit: cover; object-position: 50% 20%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%); mask-image: linear-gradient(90deg, transparent, #000 40%); pointer-events: none; }
+.lb5-big { position: relative; z-index: 1; font: 400 128px / 0.8 var(--display); color: #e7a53a; text-shadow: 4px 4px 0 #0008; }
+.lb5-info { position: relative; z-index: 1; display: grid; gap: 10px; justify-items: start; min-width: 0; }
+.lb5-kick { font: 700 11px var(--ui); letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+.lb5-one h2 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: clamp(26px, 3vw, 38px); min-width: 0; }
+.lb5 h2 a, .lb5 h3 a, .lb5 h2 span, .lb5 h3 span:not(.lb5-no) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.lb5 .avatar { flex: none; border-radius: 4px; }
+.lb5-rank { display: flex; align-items: center; gap: 8px; } .lb5-rank b { font: 700 14px var(--ui); letter-spacing: 0.02em; }
+.lb5-rank .rbadge { width: 30px; height: 30px; }
+.lb5-foot { display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap; }
+.lb5-nums { display: flex; gap: 22px; margin: 0; }
+.lb5-nums div { display: grid; gap: 2px; }
+.lb5-nums dd { margin: 0; font: 700 22px / 1 var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+.lb5-nums dd.up { color: var(--good); } .lb5-nums dd.down { color: var(--bad); }
+.lb5-nums dt { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.lb5-one .lb5-nums dd { font-size: 28px; }
+.lb5-heroes { display: grid; gap: 4px; } .lb5-heroes span { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.lb5-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.lb5-card { display: grid; gap: 10px; padding: 16px 16px 14px; }
+.lb5-card h3 { display: flex; align-items: center; gap: 10px; margin: 0; font: 700 17px var(--ui); min-width: 0; }
+.lb5-no { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff3a; font: 400 18px / 1 var(--display); color: var(--ink-2); }
+.lb5-card.p2 .lb5-no { border-color: #c9d1dc; color: #e6ecf3; } .lb5-card.p3 .lb5-no { border-color: #e08a3a; color: #f2b06a; }
+.lb5-card .lb5-foot { justify-content: space-between; }
+.lb5-card .lb5-nums dd { font-size: 17px; }
+.lb5 .hs > div { display: flex; gap: 4px; }
+@media (max-width: 1100px) { .lb5-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .lb5-one { grid-template-columns: 1fr; padding: 18px; min-height: 0; }
+  .lb5-big { font-size: 72px; } .lb5-art { max-width: 70%; opacity: 0.35; }
+  .lb5-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Round 58 · "Playing lately": three busts that pop, then a ranked list ---------- */
+.pl-lately .pc-card-h { margin-bottom: 6px; }
+.pl-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 6px; }
+.pl-pod { display: grid; justify-items: center; gap: 2px; text-align: center; color: var(--ink); text-decoration: none; }
+.pl-pod-pic { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1.05; margin-bottom: 8px; }
+.pl-pod-pic img { position: absolute; left: 50%; bottom: 0; height: 100%; width: auto; max-width: 140%; translate: -50% 0; object-fit: contain; object-position: center bottom;
+  filter: drop-shadow(0 6px 10px #0009); transform-origin: 50% 100%; transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.28s; }
+.pl-pod-pic::before { content: ''; position: absolute; inset: 22% 10% 0; border-radius: 50% 50% 6px 6px; background: radial-gradient(closest-side, color-mix(in srgb, var(--hc) 55%, transparent), transparent); opacity: 0.55; transition: opacity 0.28s; }
+.pl-pod-pic b { position: absolute; left: 50%; bottom: -8px; translate: -50% 0; padding: 2px 9px 1px; font: 700 13px var(--ui); color: #fff; background: #a8322a; border-radius: 2px; box-shadow: 0 2px 0 #0007; }
+.pl-pod-pic b.up { background: #2f8a55; }
+.pl-pod strong { margin-top: 4px; font: 700 14px var(--ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.pl-pod small { color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.pl-pod:hover .pl-pod-pic img, .pl-pod:focus-visible .pl-pod-pic img { transform: translateY(-8px) scale(1.12); filter: drop-shadow(0 12px 14px #000b); }
+.pl-pod:hover .pl-pod-pic::before { opacity: 0.9; }
+.pl-pod:hover strong { color: var(--brass-2); }
+.pl-rest { list-style: none; margin: 8px 0 0; padding: 0; border-top: 1px solid #ffffff12; }
+.pl-rest li { display: grid; grid-template-columns: 16px 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 2px; border-bottom: 1px solid #ffffff0d; }
+.pl-rest li:last-child { border-bottom: 0; }
+.pl-rest .n { color: var(--dim); font: 700 12px var(--ui); }
+.pl-rest .nm { display: grid; min-width: 0; } .pl-rest .nm a { font: 700 14px var(--ui); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-rest .nm small { color: var(--muted); font-size: 11.5px; }
+.pl-rest b { font: 700 16px var(--ui); font-variant-numeric: tabular-nums; } .pl-rest b.up { color: var(--good); } .pl-rest b.down { color: var(--bad); }
+@media (prefers-reduced-motion: reduce) { .pl-pod-pic img, .pl-pod-pic::before { transition: none; } .pl-pod:hover .pl-pod-pic img { transform: none; } }
+
+/* ---------- Round 58 · panels in thin lines (V liked the reference's borders) ----------
+   Dark fill, a faint hairline edge and a soft corner; the teal outline, inner line and glow are gone. */
+.panel { border: 1px solid #ffffff14; border-radius: 6px; box-shadow: 0 14px 30px -18px #000; }
+.panel::before { display: none; }

@@ -69,3 +69,9 @@ export const initials = (name: string): string =>
 
 /** Heroes that have splash art, used for the home-page spotlight (a different one is picked per visit). */
 export const SPOTLIGHT_POOL: Hero[] = HEROES.filter((h) => h.art);
+
+/** Names that are too long for tight spaces (V: "Danny" rather than "Deadman Danny" where room is short). */
+const SHORT: Record<string, string> = { 'deadman-danny': 'Danny' };
+/** The hero's name for a narrow slot: a short form where one exists, otherwise the full name. */
+export const shortName = (h: Pick<Hero, 'slug' | 'name'>): string => SHORT[h.slug] ?? h.name;
+
