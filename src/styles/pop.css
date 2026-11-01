@@ -973,19 +973,16 @@ main { overflow-x: clip; }
   .phead .pl-art.bust { top: auto; height: 46%; max-height: none; }
 }
 
-/* ---------- Round 57 · rough card edges (components/RoughEdges.tsx) ----------
-   V found the straight, clean borders on the meta cards too tidy for Deadlock's printed look. The card's colour now
-   sits on its own layer behind the content with a torn edge, three kinds of tear across the row so no two neighbours
-   match. The hard offset shadow follows the torn shape. Text and busts are not filtered. */
-.mn-card { background: none; box-shadow: none; isolation: isolate; }
-.mn-card::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--cb); border-radius: 2px; filter: url(#rough-a) drop-shadow(6px 6px 0 var(--pop-shadow)); transition: filter 0.2s; }
-.mn-card:nth-child(4n + 2)::before { filter: url(#rough-b) drop-shadow(6px 6px 0 var(--pop-shadow)); }
-.mn-card:nth-child(4n + 3)::before { filter: url(#rough-c) drop-shadow(6px 6px 0 var(--pop-shadow)); }
-.mn-card:nth-child(4n + 4)::before { filter: url(#rough-b) drop-shadow(6px 6px 0 var(--pop-shadow)); }
-.mn-card:hover, .mn-card:focus-visible { box-shadow: none; }
+/* ---------- Round 58 · the hero's art in the player banner ----------
+   The colour band and the cut-out bust are replaced by the hero's own painted art, filling the right of the banner
+   and fading into the dark under the name. The rank card stays pinned on top. */
+.phead:has(.pl-splash)::before { content: none; }
+.pl-splash {
+  position: absolute; top: 0; right: 0; bottom: 0; z-index: -1; width: 62%; height: 100%; object-fit: cover; object-position: 50% 22%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 42%); mask-image: linear-gradient(90deg, transparent, #000 42%);
+  filter: saturate(1.05) brightness(0.92);
+}
+@media (max-width: 860px) {
+  .pl-splash { width: 100%; opacity: 0.45; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent); mask-image: linear-gradient(180deg, #000 30%, transparent); }
+}
 
-/* the explore tiles get the same torn frames */
-.tiles .tile { background: none; box-shadow: none; isolation: isolate; }
-.tiles .tile::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--mat); filter: url(#rough-c) drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.32)); }
-.tiles .tile:nth-child(3n + 2)::before { filter: url(#rough-a) drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.32)); }
-.tiles .tile:nth-child(3n + 3)::before { filter: url(#rough-b) drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.32)); }
