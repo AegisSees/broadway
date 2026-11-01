@@ -283,3 +283,8 @@
   .pc-face, .pc-mood img { transition: none; }
   .ph-marquee::before { animation: none; }
 }
+
+/* Round 60 (V): the lobby tooltip hugs its text, and the MMR change sits clear of the badge's numeral */
+.tip:has(> .pc-lob-tip) { width: max-content; padding: 6px 11px 5px; border-radius: 6px; }
+.pc-lob { gap: 10px; }
+.pc-lob em { margin-top: 2px; }

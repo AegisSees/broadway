@@ -533,5 +533,6 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **MMR left out.** The game does not show an MMR number. The Deadlock API only has its own estimate (`player_score`,
   0–66 scale), so it is not shown as "in-game MMR".
 - **Leaderboard** intro paragraph removed.
+- **Lobby badge tooltip** on match cards hugs its text (in the rank colour), and the MMR change sits 10px clear of the badge.
 - **Top-bracket matchups** are one two-sided bar graph (zero in the middle, beats to the right in green, struggles
   into to the left in red) instead of two lopsided columns.
