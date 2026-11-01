@@ -1,0 +1,47 @@
+/* ==========================================================================================================
+   Front-page trial · three random hero cards fanned under a spotlight (V, 2026-11-01; layout after a Deadlock Labs
+   home screenshot, structure only). Not shipped: lives on its own branch until V decides.
+   ========================================================================================================== */
+.hero.fan-hero .inner { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); min-height: min(76vh, 680px); padding: 40px 0 40px; }
+.fan-stage { position: relative; display: grid; justify-items: center; align-content: center; min-height: 520px; }
+/* the spotlight: a soft cone falling from above the top right corner onto the cards */
+.fan-beam {
+  position: absolute; top: -260px; bottom: -40px; left: -40%; right: -45%; pointer-events: none; z-index: 0;
+  clip-path: polygon(78% 0, 86% 0, 100% 100%, 8% 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--glow-2) 30%, transparent), color-mix(in srgb, var(--glow-2) 14%, transparent) 70%, color-mix(in srgb, var(--glow-2) 4%, transparent));
+  filter: blur(2px); mix-blend-mode: screen;
+}
+.fan-stage::after { /* where the light lands */
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: 18px; height: 70px; z-index: 0; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-2) 22%, transparent), transparent);
+}
+.fan { position: relative; z-index: 1; width: 440px; height: 430px; }
+.fan-card { position: absolute; top: 40px; display: grid; justify-items: center; gap: 10px; width: 190px; color: var(--ink); text-decoration: none;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); animation: fan-deal 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.08) both; }
+.fan-frame { position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 7px; background: #e9e1d2; border-radius: 4px; box-shadow: 6px 7px 0 #0009, 0 24px 40px -18px #000; overflow: hidden; }
+.fan-pic { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; background: color-mix(in srgb, var(--hc) 55%, #111); }
+.fan-frame::after { content: ''; position: absolute; inset: 7px; background: linear-gradient(0deg, #000c, transparent 45%); pointer-events: none; }
+.fan-wm { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 1; height: 54px; width: calc(100% - 24px); object-fit: contain; object-position: center bottom; filter: drop-shadow(0 3px 6px #000); }
+.fan-name { position: absolute; left: 12px; right: 12px; bottom: 16px; z-index: 1; text-align: center; font: 700 26px/1 var(--display); color: #fff; text-shadow: 0 3px 8px #000; }
+.fan-wr { font: 700 15px var(--ui); color: var(--ink-2); letter-spacing: 0.02em; padding: 0 6px; }
+.fan-l .fan-frame, .fan-r .fan-frame { width: 92%; }
+.fan-l { left: 0; justify-items: start; transform: rotate(-9deg) translateY(10px); animation-delay: 0.05s; --r: -9deg; }
+.fan-r { right: 0; justify-items: end; transform: rotate(8deg) translateY(4px); animation-delay: 0.15s; --r: 8deg; }
+.fan-c { left: 50%; top: 52px; width: 210px; margin-left: -105px; z-index: 2; transform: rotate(-1.5deg); animation-delay: 0.28s; --r: -1.5deg; }
+.fan-c .fan-wr { font-size: 22px; color: var(--brass-2); }
+.fan-tape { position: absolute; top: -14px; left: -6px; z-index: 3; background: var(--mat); color: var(--mat-ink); font: 700 11px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 10px 5px; transform: rotate(-4deg); box-shadow: 3px 3px 0 #0008; }
+.fan-l:hover, .fan-r:hover { transform: rotate(var(--r)) translateY(-14px); z-index: 3; }
+.fan-c:hover { transform: rotate(var(--r)) translateY(-10px); }
+.fan-l:hover, .fan-r:hover, .fan-c:hover { color: var(--ink); }
+.fan-again { position: relative; z-index: 1; margin-top: 4px; border: 1px solid var(--line); background: color-mix(in srgb, var(--s1) 70%, transparent); color: var(--ink-2); font: 700 11px var(--ui); letter-spacing: 0.18em; text-transform: uppercase; padding: 7px 14px 6px; border-radius: 2px; }
+.fan-again:hover { color: var(--brass-2); border-color: var(--brass); }
+@keyframes fan-deal { from { opacity: 0; translate: 0 60px; } to { opacity: 1; translate: 0 0; } }
+@media (max-width: 960px) {
+  .hero.fan-hero .inner { grid-template-columns: 1fr; min-height: 0; }
+  .fan-stage { min-height: 0; padding-bottom: 10px; }
+  .fan { width: 330px; height: 340px; }
+  .fan-card { width: 140px; }
+  .fan-c { width: 160px; margin-left: -80px; }
+  .fan-wm { height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .fan-card { animation: none; transition: none; } }

@@ -10,7 +10,7 @@ import { getHero } from '../data/roster';
 import { getItem } from '../data/items';
 import { getHeroBg } from '../data/heroStats';
 import { rankBadge } from '../data/ranks';
-import Spotlight from '../components/Spotlight';
+import CardFan from '../components/CardFan';
 import Intro from '../components/Intro';
 import MetaNow from '../components/MetaNow';
 import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
@@ -149,7 +149,7 @@ export default function Home() {
   return (
     <>
       <Intro />
-      <section className="hero">
+      <section className="hero fan-hero">
         <HallBackdrop />
         <div className="wash" />
         <div className="wrap">
@@ -168,7 +168,7 @@ export default function Home() {
                 <Link to="/hero/haze?mode=street_brawl" className="plain">Street Brawl</Link>
               </div>
             </div>
-            <div className="spot-hold"><Spotlight /></div>
+            <CardFan rows={tierList?.rows ?? null} />
           </div>
         </div>
       </section>
