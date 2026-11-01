@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DraftChip } from './DraftOdds';
+import { useDraftChance } from './DraftOdds';
 import { heroIdOf } from '../ml/predict';
 import { HeroFace } from './HeroFace';
 import { ItemIcon, MvpTag } from './MatchBits';
@@ -67,13 +67,33 @@ function useNear(ref: React.RefObject<HTMLElement>, enabled: boolean): boolean {
   return near;
 }
 
-/** The lobby's average rank going in (ranked games; from the players' own badges). */
-function LobbyChip({ badge }: { badge: number }) {
-  const p = badgeParts(badge);
+/**
+ * The lobby's average rank going in, as its own column: the badge at a readable size, the rank in words under a small
+ * label, and the player's rank change for the game when the API sends one (Round 57, after V found the chip unreadable).
+ */
+function LobbyStat({ badge, delta, mine }: { badge?: number; delta?: number; mine?: number }) {
+  if (!badge && delta === undefined) return <div className="pc-stat pc-lob pc-none" aria-hidden="true" />;
+  const p = badge ? badgeParts(badge) : null;
   return (
-    <span className="ml-lobby" title={`Average rank of the lobby going in: ${badgeLabel(badge)}`} style={{ ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties}>
-      <RankBadge rank={p.rank} sub={p.sub} size="xs" />Lobby {badgeLabel(badge)}
-    </span>
+    <div className="pc-stat pc-lob" style={p ? { ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
+      <span className="pc-lab">Lobby</span>
+      {p && badge ? <span className="pc-lob-r" title={`Average rank of the lobby going in: ${badgeLabel(badge)}`}><RankBadge rank={p.rank} sub={p.sub} size="sm" /><b>{badgeLabel(badge)}</b></span> : <b className="muted">Unranked</b>}
+      {delta !== undefined && mine ? <em className={delta >= 0 ? 'up' : 'down'} title={`Rank going in: ${badgeLabel(mine)}`}>{delta >= 0 ? '+' : '−'}{Math.abs(delta)} rank</em> : null}
+    </div>
+  );
+}
+
+/** The draft model's chance for the player's own side, as a column with a small bar. */
+function DraftStat({ m, side }: { m: MatchDetail | null; side: MatchPlayer['side'] | undefined }) {
+  const v = useDraftChance(m, side);
+  if (v === null) return <div className="pc-stat pc-draft pc-none" aria-hidden="true" />;
+  const tone = v >= 55 ? 'up' : v <= 45 ? 'down' : '';
+  return (
+    <div className={`pc-stat pc-draft ${tone}`} title="The chance the draft model gave this side before the game started, from the twelve heroes and ranks">
+      <span className="pc-lab">Draft odds</span>
+      <b>{v}%</b>
+      <i className="pc-bar" aria-hidden="true"><i style={{ width: `${v}%` }} /></i>
+    </div>
   );
 }
 
@@ -83,29 +103,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'me', label: 'Your numbers' },
   { id: 'build', label: 'Build' },
 ];
-
-function Lobby({ m, me, names }: { m: MatchDetail; me: number; names: Names }) {
-  return (
-    <div className="pc-lobby" aria-label="Who played">
-      {m.teams.map((t) => (
-        <ul key={t.side} className={t.side}>
-          {t.players.map((p) => {
-            const h = getHero(p.heroSlug);
-            return (
-              <li key={p.slot} className={p.accountId === me ? 'me' : undefined}>
-                {h?.icon ? <img src={h.icon} alt="" loading="lazy" /> : <i aria-hidden="true" />}
-                {/* everyone else links straight to their own page, without opening this game */}
-                {p.accountId !== me && p.accountId > 0
-                  ? <Link to={`/player/${p.accountId}`} title={h ? `${h.name} · open their profile` : 'Open their profile'}>{names.get(p.accountId)?.name ?? `Player ${p.accountId}`}</Link>
-                  : <span>{names.get(p.accountId)?.name ?? (p.accountId === me ? 'You' : `Player ${p.accountId}`)}</span>}
-              </li>
-            );
-          })}
-        </ul>
-      ))}
-    </div>
-  );
-}
 
 function Board({ m, me, names }: { m: MatchDetail; me: number; names: Names }) {
   return (
@@ -253,9 +250,6 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
           <span className="pc-chips">
             <span className={`qchip ${line.kind}`}>{line.kind === 'unranked' ? 'Standard' : QUEUE_LABEL[line.kind]}</span>
             {me?.mvp ? <MvpTag rank={me.mvp} /> : null}
-            {m && me ? <DraftChip m={m} side={me.side} /> : null}
-            {m?.avgBadge ? <LobbyChip badge={m.avgBadge} /> : null}
-            {line.rankDelta !== undefined && line.badge ? <span className={`dchip ${line.rankDelta >= 0 ? 'up' : 'down'}`} title={`Rank going in: ${badgeLabel(line.badge)}`}>{line.rankDelta >= 0 ? '+' : '−'}{Math.abs(line.rankDelta)}</span> : null}
           </span>
         </div>
         <div className="pc-kda">
@@ -263,12 +257,13 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
           <small>{kda.toFixed(2)} KDA</small>
           <small>{line.lastHits} CS {'·'} {perMin.toFixed(1)}/m {'·'} {k1(line.netWorth)} souls</small>
         </div>
+        <LobbyStat badge={m?.avgBadge} delta={line.rankDelta} mine={line.badge} />
+        <DraftStat m={m} side={me?.side} />
         <div className="pc-items" aria-label="Final items">
           {me && me.held.length
             ? me.held.slice(0, 12).map((i) => <ItemIcon key={`${i.id}-${i.at}`} item={i} size="sm" />)
             : Array.from({ length: 12 }, (_, i) => <i key={i} className={`pc-slot${detail.status === 'loading' && want ? ' busy' : ''}`} />)}
         </div>
-        {m ? <Lobby m={m} me={accountId} names={names} /> : <div className="pc-lobby pending" aria-hidden="true">{detail.status === 'error' ? 'Lobby unavailable' : ''}</div>}
         <button type="button" className="pc-toggle" aria-expanded={open} aria-controls={bodyId} aria-label={open ? 'Close this game' : 'Open this game'} onClick={() => setOpen((v) => !v)}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" /></svg>
         </button>

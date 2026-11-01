@@ -500,3 +500,12 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **New heroes are ordinary heroes.** The patch after their release folded the six City Never Sleeps heroes into the roster, so the hero page only gives them the "New hero · Out" plate, the update intro and the FAQ band while still unreleased; once out they get the normal lore intro and Lore band. The directory "New" flag shows only for unreleased heroes. Compare falls back to "Hero" when a kit has no type.
 - **Spotlight order.** The home deck no longer opens on the newest hero; every visit deals the whole roster in a fresh random order.
 
+
+### Round 57, second pass · player page and torn edges (2026-11-01)
+
+- **Match cards:** the two lobby name lists are gone from the closed card (the opened card's Scoreboard lists both teams with links). Their room goes to labelled columns: K/D/A, **Lobby** (the average rank badge at 30px with the rank in words, and the game's rank change under it) and **Draft odds** (big number plus a small bar), then the twelve items. The layout follows the card's own width through a container query: one row above 800px, items on a second row below that, and a stacked phone layout under 640px. Standard games simply leave the lobby column empty.
+- **Win rate:** the pen ring around it is removed.
+- **Banner:** the dashed marching border round the name is replaced by a thick bar in the hero's colour under the name. The colour band behind the hero fades in from the left instead of cutting in on a diagonal, and the hero bust stands whole inside the banner. A missing Steam avatar now shows an empty print instead of collapsing.
+- **Hover:** the hero card on each match lifts with the site's smooth easing instead of eight held frames; the open/close arrow too.
+- **Home copy:** the "The city has its secrets" tape, the lede under the headline and the line under "The meta right now" are removed.
+- **Torn edges:** `RoughEdges.tsx` adds three SVG displacement filters (a slow wavy tear, a chewed edge, a fine fibrous one). The meta cards and the explore tiles draw their colour on a `::before` with one of the three, so neighbours never share an edge and the hard shadow follows the torn shape. Text and art are not filtered.

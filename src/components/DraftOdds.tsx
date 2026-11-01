@@ -30,11 +30,17 @@ export function DraftOddsBar({ team0, team1 }: { team0: { heroSlug: string; badg
 }
 
 /** A chip with the chance the draft gave one side of a finished game (a player's own side on their match cards). */
-export function DraftChip({ m, side }: { m: MatchDetail; side: Side }) {
+/** The chance (0-100) the draft model gave one side of a finished game, or null while the model loads. */
+export function useDraftChance(m: MatchDetail | null, side: Side | undefined): number | null {
   const model = useModel('draft');
-  const p = useMemo(() => (model ? matchDraftChance(model, m) : null), [model, m]);
-  if (p === null) return null;
-  const mine = Math.round((side === 'hidden-king' ? p : 1 - p) * 100);
+  const p = useMemo(() => (model && m ? matchDraftChance(model, m) : null), [model, m]);
+  if (p === null || !side) return null;
+  return Math.round((side === 'hidden-king' ? p : 1 - p) * 100);
+}
+
+export function DraftChip({ m, side }: { m: MatchDetail; side: Side }) {
+  const mine = useDraftChance(m, side);
+  if (mine === null) return null;
   const tone = mine >= 55 ? 'up' : mine <= 45 ? 'down' : '';
   return <span className={`ml-chip ${tone}`} title="The chance the draft model gave this side before the game started, from the twelve heroes and ranks">Draft {mine}%</span>;
 }
