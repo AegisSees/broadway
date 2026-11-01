@@ -65,6 +65,10 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
   const splash = hero?.art ?? hero?.render ?? (top ? getGloat(top) : undefined);
   const steamHref = safeSteamHref(core.profileUrl);
   const r = shownRank(core, matches);
+  // the last word of the name stays on one line with the Steam orb, so the orb never wraps onto a line of its own
+  const cut = core.name.trimEnd().lastIndexOf(' ') + 1;
+  const nameHead = core.name.slice(0, cut);
+  const nameTail = core.name.slice(cut);
   return (
     <section className="phead ph2" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze'), ...(r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } : {}) } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
@@ -75,13 +79,18 @@ function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: 
           <span className="ph-refresh" aria-hidden="true">{'\u21bb'}</span>
         </button>
         <div className="ph-id">
-          <div className="ph-name">
-            <h1>{core.name}</h1>
-            {steamHref && (
-              <a className="ph-steam" href={steamHref} target="_blank" rel="noreferrer noopener" title="Steam profile" aria-label="Steam profile">
-                <img src={steamOrb} alt="" width={30} height={30} />
-              </a>
-            )}
+          <div className="ph-name" data-len={core.name.length > 22 ? "xl" : core.name.length > 14 ? "l" : undefined}>
+            <h1 title={core.name}>
+              {nameHead}
+              <span className={nameTail.length <= 14 ? 'ph-tail' : undefined}>
+                {nameTail}
+                {steamHref && (
+                  <a className="ph-steam" href={steamHref} target="_blank" rel="noreferrer noopener" title="Steam profile" aria-label="Steam profile">
+                    <img src={steamOrb} alt="" width={30} height={30} />
+                  </a>
+                )}
+              </span>
+            </h1>
           </div>
           <div className="ph-rank" aria-label={r ? `Rank: ${r.label}` : 'Unranked (Obscurus)'}>
             {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <RankBadge rank="Obscurus" size="lg" />}

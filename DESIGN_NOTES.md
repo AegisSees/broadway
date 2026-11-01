@@ -559,3 +559,10 @@ V found the live builds hard to take in: tall cream columns of small print with 
   Unranked players show it in the player banner and rank card, labelled "Obscurus", instead of a dotted "?" circle.
 - The same folder had the real Initiate (moth) and Acolyte (rat) badges, so the drawn stand-ins for tiers 1 and 3 are
   replaced too and `PLACEHOLDER_TIERS` is gone.
+
+## Round 63 — long player names (2026-11-01)
+
+- V: long names ran into the hero art and pushed the Steam orb over it. The name block now keeps to the dark left
+  ~60% of the banner, names over 14 characters step down a size (over 22, another), and the name wraps onto a second
+  line instead of overflowing. The orb rides at the end of the name, kept on one line with the last word, so it never
+  wraps onto a line by itself.
