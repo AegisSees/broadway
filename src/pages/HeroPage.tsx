@@ -88,7 +88,9 @@ export default function HeroPage() {
   const overview = state.status === 'ready' ? state.value : null;
   const isHaze = hero.slug === 'haze';
   const lore = getLore(hero.slug);
-  const newcomer = getNewcomer(hero.slug);
+  /* City Never Sleeps heroes only get the "new hero" plate, intro and FAQ until they unlock; once out they are
+     ordinary heroes (the patch after their release folded them into the regular roster) */
+  const newcomer = hero.unreleased ? getNewcomer(hero.slug) : undefined;
   const out = newcomer ? isOut(hero.slug) : true;
   const brawl = filters.mode === 'street_brawl';
   const tabs: { id: string; label: string }[] = [

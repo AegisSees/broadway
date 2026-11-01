@@ -268,9 +268,11 @@ body::before { mix-blend-mode: normal; background: var(--dust-map) 0 0 / 1100px 
    untouched. Nothing is hidden for reduced motion or without script. */
 /* cards waiting to rise in sit slightly turned; keep that from widening the page on phones */
 main { overflow-x: clip; }
-.rv-pre { opacity: 0; translate: 0 46px; rotate: -1.2deg; }
-.rv-pre:is(.mn-card, .tool-card, .tile, .lane-card) { translate: 0 70px; rotate: 3deg; scale: 0.96; }
-.rv-in { transition: opacity 0.6s ease-out, translate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), rotate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12), scale 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12) !important; transition-delay: var(--rv-d, 0s) !important; }
+.rv-pre { opacity: 0; translate: 0 46px; }
+/* Round 57: straight up from below only. The old turn (and the small scale on cards) swung the far edges of big
+   panels sideways as they settled, which read as sliding in from the side (V). The element's own rest angle is untouched. */
+.rv-pre:is(.mn-card, .tool-card, .tile, .lane-card) { translate: 0 64px; }
+.rv-in { transition: opacity 0.6s ease-out, translate 0.85s cubic-bezier(0.2, 0.9, 0.25, 1.12) !important; transition-delay: var(--rv-d, 0s) !important; }
 
 /* ---------- Round 35 · hero page numbers as printed cards ----------
    The second stat row repeated the win rate from the plates above and sat in a dark glass panel. It is now a row of
