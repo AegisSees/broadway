@@ -213,7 +213,6 @@ export default function LeaderboardPage() {
   return (
     <div className="wrap lb">
       <div className="dir-head"><div><Kicker>Leaderboard</Kicker><h1>The top <em>of the city</em></h1></div></div>
-      <p className="muted lb-lead">The best players on each side of the world right now. Start with the overall top 100, or pick a hero to see who plays it best. Pages two to five continue down to the top {MAX_ROWS}.</p>
 
       <div className="lb-controls">
         <div className="seg" role="group" aria-label="Leaderboard view">

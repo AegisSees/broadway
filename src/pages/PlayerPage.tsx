@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import PlayerMatchCard from '../components/PlayerMatchCard';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
-import { CopyCode } from '../components/BuildBoard';
 import { HeroFace } from '../components/HeroFace';
 import RankBadge from '../components/RankBadge';
 import { getGloat } from '../data/heroGloat';
@@ -11,7 +10,7 @@ import { getHeroColor } from '../data/heroColors';
 import { getHeroBg } from '../data/heroStats';
 import { badgeLabel, badgeParts } from '../data/leaderboard';
 import {
-  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, shownRank, streakOf, timeAgo, winPct,
+  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, shownRank, timeAgo, winPct,
   type PlayerCore, type PlayerHeroLine, type PlayerMate, type PlayerMatchLine, type PlayerMatches, type QueueKind,
 } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
@@ -24,6 +23,7 @@ import { fmtInt } from '../lib/stats';
 import { useTitle } from '../lib/useTitle';
 import PlayerLookup from './PlayerLookup';
 import Avatar from '../components/Avatar';
+import steamOrb from '../assets/ui/steam-orb.webp';
 import SectionHeading from '../components/SectionHeading';
 import { PlaysAtCard, PlaystyleCard } from '../components/PlayerModels';
 
@@ -52,59 +52,42 @@ function HeroLine({ slug }: { slug: string }) {
 // Header: the dossier
 // ---------------------------------------------------------------------------------------------------------
 
-function ShareChip() {
-  const [done, setDone] = useState(false);
-  return (
-    <button type="button" className="chip" onClick={() => { void navigator.clipboard?.writeText(window.location.href).then(() => { setDone(true); window.setTimeout(() => setDone(false), 1500); }); }}>
-      {done ? 'Link copied' : 'Share'}
-    </button>
-  );
-}
-
 /**
- * The top of a player page, as a case file: the Steam picture pinned on like a photo with a strip of tape, the
- * name, the rank on an orange label, the account number and the actions, with the hero they play most standing
- * behind. On the right, the current run of results on its own plate.
+ * The top of a player page (Round 59, per V): the Steam picture (click it to refresh the page's data), the name with a
+ * small Steam orb beside it linking to their profile, and under the name the rank as a plain medallion with its name.
+ * Behind it all, the hero they play most: that hero's own backdrop across the whole banner, and the hero on the right.
  */
 function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: PlayerMatchLine[] | null; onRefresh: () => void }) {
   const top = core.heroes[0]?.slug;
   const bg = getHeroBg(top);
   const hero = getHero(top);
-  // the cut-out bust first: the card art and renders carry their own painted backdrop, which fights the band behind it
-  const bust = top ? getGloat(top) : undefined;
-  const art = bust ?? (hero ? hero.render ?? hero.art ?? hero.portrait : undefined);
-  // Round 58: the hero's own promo art fills the right of the banner (V), in place of the colour band and the bust
-  const splash = hero?.render ?? hero?.art;
+  // the largest art there is for the hero: the painted splash where we have one, else the promo render
+  const splash = hero?.art ?? hero?.render ?? (top ? getGloat(top) : undefined);
   const steamHref = safeSteamHref(core.profileUrl);
   const r = shownRank(core, matches);
-  const streak = matches ? streakOf(matches) : null;
-  const last = matches?.[0];
   return (
-    <section className="phead" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
+    <section className="phead ph2" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze'), ...(r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } : {}) } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
-      {splash ? <img className="pl-splash" src={splash} alt="" loading="lazy" /> : art && <img className={`pl-art${bust ? ' bust' : ''}`} src={art} alt="" loading="lazy" />}
+      {splash && <img className="pl-splash" src={splash} alt="" loading="lazy" />}
       <div className="ph-card">
-        <figure className="ph-photo"><span className="ph-tape" aria-hidden="true" /><Avatar src={core.avatar} size={124} /></figure>
+        <button type="button" className="ph-photo" onClick={onRefresh} title="Refresh" aria-label="Refresh this player's data">
+          <Avatar src={core.avatar} size={124} />
+          <span className="ph-refresh" aria-hidden="true">{'\u21bb'}</span>
+        </button>
         <div className="ph-id">
-          <div className="ph-marquee"><h1>{core.name}</h1></div>
-          <div className="ph-tags">
-            <span className="ph-acct">#{core.accountId}</span>
-            {last ? <span className="ph-seen">Last game {timeAgo(last.start)}</span> : null}
-            {streak && streak.n >= 2
-              ? <span className={`ph-run ${streak.won ? 'w' : 'l'}`}>{streak.n}{streak.won ? 'W' : 'L'} streak</span>
-              : last ? <span className={`ph-run ${last.won ? 'w' : 'l'}`}>{last.won ? 'Won' : 'Lost'} last game</span> : null}
+          <div className="ph-name">
+            <h1>{core.name}</h1>
+            {steamHref && (
+              <a className="ph-steam" href={steamHref} target="_blank" rel="noreferrer noopener" title="Steam profile" aria-label="Steam profile">
+                <img src={steamOrb} alt="" width={30} height={30} />
+              </a>
+            )}
           </div>
-          <div className="ph-actions"><CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" /></div>
-          <div className="ph-actions sub">
-            {steamHref && <a className="chip" href={steamHref} target="_blank" rel="noreferrer noopener">Steam profile {'↗'}</a>}
-            <ShareChip />
-            <button type="button" className="chip" onClick={onRefresh}>Refresh</button>
+          <div className="ph-rank" aria-label={r ? `Rank: ${r.label}` : 'Unranked'}>
+            {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
+            <b>{r ? r.label : 'Unranked'}</b>
           </div>
         </div>
-      </div>
-      <div className="ph-rankbox" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined} aria-label={r ? `Rank: ${r.label}` : 'Unranked'}>
-        {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-        <b>{r ? r.label : 'Unranked'}</b>
       </div>
     </section>
   );

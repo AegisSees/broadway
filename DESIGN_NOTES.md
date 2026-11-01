@@ -521,3 +521,17 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Playing lately:** the three most played heroes of the last 30 days stand as busts with their win rate on a tab and games and KDA under them; they lift and glow on hover. Heroes four to eight follow as a ranked list (games · KDA, win rate on the right).
 - **Short names:** `shortName()` in `roster.ts` gives "Danny" for Deadman Danny in tight spaces (V).
 - **Panels in thin lines:** `.panel` loses the teal outline, inner line and glow for a faint hairline edge (#ffffff14), a 6px corner and a soft drop shadow, after the reference's borders V liked.
+
+## Round 59 — player banner rework, two-sided matchups graph (2026-11-01)
+
+- **Player banner (V).** The cream rank sticker, Copy Steam ID, Share, the account number, "last game" and the streak
+  are gone. The Steam picture is now the refresh button (a ↻ shows on hover). A small white Steam orb (V's logo, cut to
+  the orb, `assets/ui/steam-orb.webp`) sits beside the name and links to the profile; on hover it lifts 2px and glows.
+  The name is a size smaller, and under it the rank is a plain medallion with its name in the rank colour. The banner
+  background is the most-played hero: its in-game backdrop (1920px) across the width and the largest art we have for
+  the hero on the right. There is no 4K hero art in the game files we have; most renders are 540px.
+- **MMR left out.** The game does not show an MMR number. The Deadlock API only has its own estimate (`player_score`,
+  0–66 scale), so it is not shown as "in-game MMR".
+- **Leaderboard** intro paragraph removed.
+- **Top-bracket matchups** are one two-sided bar graph (zero in the middle, beats to the right in green, struggles
+  into to the left in red) instead of two lopsided columns.
