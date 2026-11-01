@@ -545,3 +545,10 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Lobby badge tooltip** on match cards shows just the rank name ("Ascendant III"), no "Lobby:".
 - Player page "Playing lately" is now **Most played**.
 - Hero page header: the "Read the lore ↓" line is gone; the Lore section further down stays.
+
+## Round 61 — matchup columns trimmed (2026-11-01)
+
+- V: the "{hero} at the top" bar graph is removed entirely (TopMatchups.tsx deleted).
+- Matchup columns lose the star/Haze badge and the small subtitle ("Opponent's match win rate"); the section lede
+  still explains what the numbers are. Titles are hero-specific: "Best picks vs Graves", "Worst picks vs Graves",
+  "Best lane partners for Graves", "Worst lanes for Graves".

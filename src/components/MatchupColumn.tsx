@@ -3,21 +3,12 @@ import { getHero } from '../data/roster';
 import type { MatchupGroup } from '../data/types';
 import { fmtInt } from '../lib/stats';
 import { HeroFace } from './HeroFace';
-import deflated from '../assets/art/haze-deflated.png';
-import gloat from '../assets/art/haze-gloat.png';
-
-const BADGES = { deflated, gloat };
-
-/** The two outcome badges are Haze artwork, so they only appear on Haze's page. */
-export default function MatchupColumn({ group, heroName, heroSlug }: { group: MatchupGroup; heroName: string; heroSlug: string }) {
+/** One matchup list: a hero-specific title over the ranked rows (Round 63, V: no badge, no subtitle). */
+export default function MatchupColumn({ group, heroName }: { group: MatchupGroup; heroName: string; heroSlug?: string }) {
   const fill = (s: string) => s.replace('{hero}', heroName);
-  const badge = group.badge && heroSlug === 'haze' ? BADGES[group.badge] : undefined;
   return (
     <section className="panel mu" aria-label={fill(group.title)}>
-      <header>
-        {badge ? <img className="badge" src={badge} alt="" /> : <span className="badge star" aria-hidden="true">{'✦'}</span>}
-        <div><h3>{fill(group.title)}</h3><small>{fill(group.subtitle)}</small></div>
-      </header>
+      <header><h3>{fill(group.title)}</h3></header>
       <ol>
         {group.entries.map((e) => {
           const hero = getHero(e.slug);

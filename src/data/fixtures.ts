@@ -66,14 +66,14 @@ const matchups: MatchupGroup[] = [
     ]),
   },
   {
-    key: 'synergy', title: 'Best lane synergy', subtitle: "{hero}'s match win rate", tone: 'good',
+    key: 'synergy', title: 'Best lane partners for {hero}', subtitle: "{hero}'s match win rate", tone: 'good',
     entries: col([
       ['ivy', 'Ivy', '57.8%', 820, 1], ['dynamo', 'Dynamo', '57.1%', 736, 0.89], ['kelvin', 'Kelvin', '56.4%', 652, 0.78],
       ['bebop', 'Bebop', '55.7%', 568, 0.67], ['viscous', 'Viscous', '55.0%', 484, 0.56], ['paradox', 'Paradox', '54.3%', 400, 0.45],
     ]),
   },
   {
-    key: 'lane', title: 'Worst lane matchups', subtitle: "{hero}'s soul deficit at 9:00", tone: 'bad',
+    key: 'lane', title: 'Worst lanes for {hero}', subtitle: "{hero}'s soul deficit at 9:00", tone: 'bad',
     entries: col([
       ['abrams', 'Abrams', '−980', 820, 1], ['lash', 'Lash', '−845', 736, 0.86], ['shiv', 'Shiv', '−710', 652, 0.72],
       ['pocket', 'Pocket', '−575', 568, 0.59], ['lady-geist', 'Lady Geist', '−440', 484, 0.45], ['infernus', 'Infernus', '−305', 400, 0.31],
