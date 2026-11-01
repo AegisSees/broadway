@@ -986,3 +986,9 @@ main { overflow-x: clip; }
   .pl-splash { width: 100%; opacity: 0.45; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent); mask-image: linear-gradient(180deg, #000 30%, transparent); }
 }
 
+/* ---------- Round 58 · BROADWAY as the home title ----------
+   The site's name is the big headline now; "Find your edge. Rule Manhattan." sits under it, smaller. */
+.hero h1.hero-brand { font-size: clamp(54px, 7.4vw, 104px); line-height: 0.92; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); margin: 0 0 10px; }
+.hero .hero-tag { margin: 0 0 6px; font: 700 clamp(22px, 2.5vw, 34px) / 1.05 var(--display); text-transform: uppercase; letter-spacing: 0.02em; color: var(--ink-2); filter: drop-shadow(2px 2px 0 var(--pop-shadow)); }
+.hero .hero-tag em { display: block; font-style: italic; color: var(--brass-2); }
+

@@ -155,7 +155,8 @@ export default function Home() {
         <div className="wrap">
           <div className="inner">
             <div>
-              <h1>Find your edge.<em>Rule Manhattan.</em></h1>
+              <h1 className="hero-brand">Broadway</h1>
+              <p className="hero-tag">Find your edge.<em>Rule Manhattan.</em></p>
               <div style={{ marginTop: 24 }}><SearchBox large /></div>
               <div className="quick">
                 {['haze', 'ivy', 'wraith'].map((s) => { const h = getHero(s); return h && (

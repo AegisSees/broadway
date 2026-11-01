@@ -515,3 +515,4 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Lobby column:** no "Lobby" label and no rank name on the card. The lobby's average rank badge is shown large (54px) with the player's change under it as "−300 MMR" / "+370 MMR"; the rank's name appears in a tooltip on hover or focus.
 - **Banner:** the hero's own painted art (the render, else the splash) fills the right ~60% of the player banner and fades into the dark under the name, replacing the colour band and the cut-out bust. On phones it sits behind the whole banner at 45%.
 
+- **Home title:** BROADWAY is the big headline on Home (up to 104px); "Find your edge. / Rule Manhattan." sits under it as a smaller two-line tagline.
