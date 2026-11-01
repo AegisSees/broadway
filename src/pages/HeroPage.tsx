@@ -125,8 +125,7 @@ export default function HeroPage() {
               {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
               {newcomer
-                ? <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>
-                : lore && <p className="intro">{lore.role ? `${lore.role}. ` : ''}<a href="#lore" onClick={(e) => { e.preventDefault(); jump('lore'); }}>Read the lore {'↓'}</a></p>}
+                && <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>}
               {abilities ? (
                 <div className="abil">
                   {abilities.map((a, i) => (

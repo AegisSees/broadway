@@ -75,7 +75,7 @@ function useNear(ref: React.RefObject<HTMLElement>, enabled: boolean): boolean {
 function LobbyStat({ badge, delta, mine }: { badge?: number; delta?: number; mine?: number }) {
   if (!badge && delta === undefined) return <div className="pc-stat pc-lob pc-none" aria-hidden="true" />;
   const p = badge ? badgeParts(badge) : null;
-  const name = badge ? `Lobby: ${badgeLabel(badge)}` : 'Lobby rank unknown';
+  const name = badge ? badgeLabel(badge) : 'Rank unknown';
   return (
     <div className="pc-stat pc-lob" style={p ? { ['--rc' as string]: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
       {p ? <Tip className="pc-lob-r" content={<span className="pc-lob-tip" style={p ? { color: RANK_COLOR[p.rank as keyof typeof RANK_COLOR] } : undefined}>{name}</span>}><span role="img" aria-label={name}><RankBadge rank={p.rank} sub={p.sub} size="md" /></span></Tip> : null}

@@ -190,7 +190,7 @@ function Recent30({ matches, now }: { matches: PlayerMatchLine[]; now: number })
   const rest = list.slice(3);
   return (
     <div className="panel pad pl-side pc-card pl-lately">
-      <div className="pc-card-h"><h3>Playing lately</h3><small>{n0(month.length)} games · 30 days</small></div>
+      <div className="pc-card-h"><h3>Most played</h3><small>{n0(month.length)} games · 30 days</small></div>
       <div className="pl-podium">
         {top.map((h) => {
           const hero = getHero(h.slug);
