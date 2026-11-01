@@ -536,3 +536,12 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Lobby badge tooltip** on match cards hugs its text (in the rank colour), and the MMR change sits 10px clear of the badge.
 - **Top-bracket matchups** are one two-sided bar graph (zero in the middle, beats to the right in green, struggles
   into to the left in red) instead of two lopsided columns.
+
+## Round 60 — minimap heads, Most played, no lore link (2026-11-01)
+
+- **Hero faces** (tables, matchup lists, leaderboard most-played, live matches, hero picker) are the game's own
+  minimap heads (`*_sm.png`, the 128px version of `*_mm.png`) standing free, with no brass ring or round crop, and a
+  small drop shadow. They lift a touch on hover. Large art (cards, busts, banners) is unchanged.
+- **Lobby badge tooltip** on match cards shows just the rank name ("Ascendant III"), no "Lobby:".
+- Player page "Playing lately" is now **Most played**.
+- Hero page header: the "Read the lore ↓" line is gone; the Lore section further down stays.

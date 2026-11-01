@@ -1110,3 +1110,16 @@ main { overflow-x: clip; }
   .ph-rank > b { font-size: 19px; }
 }
 @media (prefers-reduced-motion: reduce) { .ph-steam:hover, .ph-steam:focus-visible { transform: none; } }
+
+/* ---------- Round 60 · hero faces are the game's minimap heads, with no ring (V) ----------
+   The minimap icons already carry their own dark outline, so the brass ring and the round crop are dropped and the
+   head stands free, as it does on the in-game minimap. Faces without an icon keep the round frame. */
+.face:has(> img.icon) { border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.face img.icon { transform: none; filter: drop-shadow(0 2px 3px #0009); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+a:hover > .face img.icon, .face-link:hover .face img.icon, a:hover .face img.icon { transform: translateY(-1px) scale(1.08); }
+a:hover > .face:has(> img.icon), .face-link:hover .face:has(> img.icon) { box-shadow: none; }
+.df-faces .face:has(> img.icon) + .face { margin-left: -4px; }
+.lb-hero, .lm-face { border: 0; border-radius: 0; background: none; overflow: visible; }
+.lb-hero img, .lm-face img { object-fit: contain; filter: drop-shadow(0 2px 3px #0009); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lb-hero:hover img, .lm-face:hover img { transform: translateY(-1px) scale(1.08); }
+.hcombo .trigger img, .hcombo .pop li button img { border: 0; border-radius: 0; background: none; object-fit: contain; }
