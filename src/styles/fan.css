@@ -18,9 +18,13 @@
 .fan { position: relative; z-index: 1; width: 440px; height: 430px; }
 .fan-card { position: absolute; top: 40px; display: grid; justify-items: center; gap: 10px; width: 190px; color: var(--ink); text-decoration: none;
   transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); animation: fan-deal 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.08) both; }
-.fan-frame { position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 7px; background: #e9e1d2; border-radius: 4px; box-shadow: 6px 7px 0 #0009, 0 24px 40px -18px #000; overflow: hidden; }
+.fan-frame { position: relative; isolation: isolate; display: block; width: 100%; aspect-ratio: 3 / 4; padding: 8px; }
+/* the cream mount with a torn edge (components/RoughEdges.tsx), three kinds of tear so the three cards never match */
+.fan-frame::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #e9e1d2; filter: url(#rough-a) drop-shadow(6px 7px 0 #0009); }
+.fan-l .fan-frame::before { filter: url(#rough-b) drop-shadow(6px 7px 0 #0009); }
+.fan-r .fan-frame::before { filter: url(#rough-c) drop-shadow(6px 7px 0 #0009); }
 .fan-pic { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; background: color-mix(in srgb, var(--hc) 55%, #111); }
-.fan-frame::after { content: ''; position: absolute; inset: 7px; background: linear-gradient(0deg, #000c, transparent 45%); pointer-events: none; }
+.fan-frame::after { content: ''; position: absolute; inset: 8px; background: linear-gradient(0deg, #000c, transparent 45%); pointer-events: none; }
 .fan-wm { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 1; height: 54px; width: calc(100% - 24px); object-fit: contain; object-position: center bottom; filter: drop-shadow(0 3px 6px #000); }
 .fan-name { position: absolute; left: 12px; right: 12px; bottom: 16px; z-index: 1; text-align: center; font: 700 26px/1 var(--display); color: #fff; text-shadow: 0 3px 8px #000; }
 .fan-wr { font: 700 15px var(--ui); color: var(--ink-2); letter-spacing: 0.02em; padding: 0 6px; }
