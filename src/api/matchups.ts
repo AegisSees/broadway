@@ -39,11 +39,11 @@ export function buildPickColumns(heroId: number, rows: HeroCounterRow[], heroes:
 
   return [
     {
-      key: 'best', title: 'Best picks vs this hero', subtitle: "Opponent's match win rate", tone: 'bad', badge: 'deflated',
+      key: 'best', title: 'Best picks vs {hero}', subtitle: "Opponent's match win rate", tone: 'bad', badge: 'deflated',
       entries: best.map((e, i) => toEntry(e, 1 - i * 0.11)),
     },
     {
-      key: 'worst', title: 'Worst picks vs this hero', subtitle: "Opponent's match win rate", tone: 'good', badge: 'gloat',
+      key: 'worst', title: 'Worst picks vs {hero}', subtitle: "Opponent's match win rate", tone: 'good', badge: 'gloat',
       entries: worst.map((e, i) => toEntry(e, 1 - i * 0.11)),
     },
   ];
@@ -65,7 +65,7 @@ export function buildSynergyColumn(heroId: number, rows: HeroSynergyRow[], heroe
     .slice(0, GROUP_SIZE);
   if (!entries.length) return null;
   return {
-    key: 'synergy', title: 'Best lane synergy', subtitle: "{hero}'s match win rate", tone: 'good',
+    key: 'synergy', title: 'Best lane partners for {hero}', subtitle: "{hero}'s match win rate", tone: 'good',
     entries: entries.map((e, i) => ({ slug: e.who.slug, name: e.who.name, display: fmtPct(e.rate * 100), fill: Math.max(0.2, 1 - i * 0.11), matches: e.matches })),
   };
 }
