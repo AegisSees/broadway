@@ -45,7 +45,6 @@ export function metaPicks(rows: TierRow[]): Pick[] {
 export default function MetaNow({ list }: { list: TierList | null }) {
   const picks = list ? metaPicks(list.rows) : [];
   if (!list || !picks.length) return null;
-  const above = list.rows.filter((r) => r.winRate >= 52).length;
   const games = list.rows.reduce((n, r) => n + r.matches, 0);
   return (
     <section className="meta-now" aria-labelledby="meta-now-h">
@@ -68,7 +67,7 @@ export default function MetaNow({ list }: { list: TierList | null }) {
           );
         })}
       </div>
-      <p className="mn-foot"><b>{above} / {list.rows.length}</b> heroes at 52% or better {'·'} <b>{fmtInt(games)}</b> hero games counted</p>
+      <p className="mn-foot"><b>{fmtInt(games)}</b> hero games counted</p>
     </section>
   );
 }

@@ -516,3 +516,4 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - **Banner:** the hero's own painted art (the render, else the splash) fills the right ~60% of the player banner and fades into the dark under the name, replacing the colour band and the cut-out bust. On phones it sits behind the whole banner at 45%.
 
 - **Home title:** BROADWAY is the big headline on Home (up to 104px); "Find your edge. / Rule Manhattan." sits under it as a smaller two-line tagline.
+- **Meta foot line:** only the hero games counted; the "heroes at 52% or better" count is gone.
