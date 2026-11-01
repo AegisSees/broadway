@@ -43,20 +43,19 @@ function WinRate({ e }: { e: LeaderboardEntry }) {
 
 function Row({ e }: { e: LeaderboardEntry }) {
   const b = badgeParts(e.badge);
-  const medal = e.rank <= 3 ? ` m${e.rank}` : '';
   const href = playerHref(e);
   const name = href ? <Link to={href}>{e.name}</Link> : <span>{e.name}</span>;
   return (
-    <tr className={`lb-row${medal}`}>
+    <tr className="lb-row">
       <td className="n">{e.rank}</td>
       <td className="av"><Avatar src={e.avatar} size={36} lazy /></td>
       <td className="who">{name}</td>
+      <td className="hs"><div>{e.topHeroes.map((s) => <HeroDot key={s} slug={s} />)}</div></td>
       <td className="bd">
         {e.badge > 0 ? <><RankBadge rank={b.rank} size="xs" /><span style={{ color: RANK_COLOR[b.rank as keyof typeof RANK_COLOR] }}>{badgeLabel(e.badge)}</span></> : <span className="muted">–</span>}
       </td>
-      <td className="wl">{e.wins === undefined || e.losses === undefined ? <span className="muted">–</span> : <><b className="w">{n0(e.wins)}</b><i>/</i><b className="l">{n0(e.losses)}</b></>}</td>
       <td className="wrc"><WinRate e={e} /></td>
-      <td className="hs"><div>{e.topHeroes.map((s) => <HeroDot key={s} slug={s} />)}</div></td>
+      <td className="wl">{e.wins === undefined || e.losses === undefined ? <span className="muted">–</span> : <><b className="w">{n0(e.wins)}</b><i>/</i><b className="l">{n0(e.losses)}</b></>}</td>
     </tr>
   );
 }
@@ -66,55 +65,61 @@ function PlayerName({ e }: { e: LeaderboardEntry }) {
   return href ? <Link to={href}>{e.name}</Link> : <span>{e.name}</span>;
 }
 
-function Record({ e }: { e: LeaderboardEntry }) {
-  return e.wins === undefined || e.losses === undefined ? <span className="muted">–</span> : <><b className="w">{n0(e.wins)}</b><i>/</i><b className="l">{n0(e.losses)}</b></>;
+const games = (e: LeaderboardEntry) => (e.wins === undefined || e.losses === undefined ? undefined : e.wins + e.losses);
+
+function RankLine({ e, size }: { e: LeaderboardEntry; size: 'sm' | 'md' }) {
+  if (!(e.badge > 0)) return null;
+  const b = badgeParts(e.badge);
+  return <div className="lb5-rank"><RankBadge rank={b.rank} size={size} /><b style={{ color: RANK_COLOR[b.rank as keyof typeof RANK_COLOR] }}>{badgeLabel(e.badge)}</b></div>;
 }
 
+function Nums({ e }: { e: LeaderboardEntry }) {
+  const wr = winRate(e);
+  const g = games(e);
+  return (
+    <dl className="lb5-nums">
+      {wr !== null && <div><dd className={wr >= 50 ? 'up' : 'down'}>{wr.toFixed(1)}%</dd><dt>Win rate</dt></div>}
+      {g !== undefined && <div><dd>{n0(g)}</dd><dt>Games</dt></div>}
+    </dl>
+  );
+}
+
+/**
+ * The top five (Round 58, after a reference V liked): number one on a wide dark banner with their main hero's art on
+ * the right, then two to five as four identical dark cards. Every card reads the same way: place, avatar and name
+ * on one line, the rank under it, then win rate, games and most played heroes. Thin lines, no colour fills.
+ */
 function TopFive({ rows, label }: { rows: LeaderboardEntry[]; label: string }) {
   const [one, ...rest] = rows;
-  const art = (slug?: string) => { const h = getHero(slug); return h ? (h.art ?? h.render ?? h.portrait) : undefined; };
   const heroOf = one.topHeroes[0];
-  const bg = getHeroBg(heroOf);
-  const b1 = badgeParts(one.badge);
+  const h1 = getHero(heroOf);
+  const art = h1 ? (h1.render ?? h1.art ?? h1.portrait) : undefined;
   return (
-    <section className="top5" aria-label="The top five players" style={{ ['--hc' as string]: getHeroColor(heroOf ?? 'haze') } as React.CSSProperties}>
-      <article className="t1 panel paint">
-        {bg && <div className="t1-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
-        {art(heroOf) && <img className="t1-art" src={art(heroOf)} alt="" loading="lazy" />}
-        <span className="t1-frame" aria-hidden="true" />
-        <div className="t1-no" aria-hidden="true"><span>1</span></div>
-        <div className="t1-av"><Avatar src={one.avatar} size={96} /></div>
-        <div className="t1-info">
-          <span className="tape orange">{`Number one · ${label}`}</span>
-          <h2><PlayerName e={one} /></h2>
-          {one.badge > 0 && <div className="t1-rank"><RankBadge rank={b1.rank} size="md" /><b style={{ color: RANK_COLOR[b1.rank as keyof typeof RANK_COLOR] }}>{badgeLabel(one.badge)}</b></div>}
-          <dl className="t1-stats">
-            <div><dt>Record</dt><dd className="wl"><Record e={one} /></dd></div>
-            <div><dt>Win rate</dt><dd><WinRate e={one} /></dd></div>
-            <div><dt>Most played</dt><dd className="hs"><div>{one.topHeroes.map((s) => <HeroDot key={s} slug={s} />)}</div></dd></div>
-          </dl>
+    <section className="lb5" aria-label="The top five players" style={{ ['--hc' as string]: getHeroColor(heroOf ?? 'haze') } as React.CSSProperties}>
+      <article className="lb5-one">
+        {art && <img className="lb5-art" src={art} alt="" loading="lazy" />}
+        <div className="lb5-big" aria-hidden="true">1</div>
+        <div className="lb5-info">
+          <span className="lb5-kick">#1 in {label}</span>
+          <h2><Avatar src={one.avatar} size={44} /><PlayerName e={one} /></h2>
+          <RankLine e={one} size="sm" />
+          <div className="lb5-foot">
+            <Nums e={one} />
+            {one.topHeroes.length > 0 && <div className="lb5-heroes"><div className="hs"><div>{one.topHeroes.map((s) => <HeroDot key={s} slug={s} />)}</div></div><span>Most played</span></div>}
+          </div>
         </div>
       </article>
-      <div className="t-row">
-        {rest.map((e) => {
-          const b = badgeParts(e.badge);
-          const hero = e.topHeroes[0];
-          const hbg = getHeroBg(hero);
-          return (
-            <article key={e.rank} className="t-card panel paint">
-              {hbg && <div className="t-bg" style={{ backgroundImage: `url(${hbg})` }} aria-hidden="true" />}
-              <span className="t-no tape">{`#${e.rank}`}</span>
-              <div className="t-av"><Avatar src={e.avatar} size={64} /></div>
-              <h3><PlayerName e={e} /></h3>
-              {e.badge > 0 && <div className="t-rank"><RankBadge rank={b.rank} size="sm" /><span style={{ color: RANK_COLOR[b.rank as keyof typeof RANK_COLOR] }}>{badgeLabel(e.badge)}</span></div>}
-              <div className="t-meta">
-                <span className="wl"><Record e={e} /></span>
-                <WinRate e={e} />
-              </div>
+      <div className="lb5-row">
+        {rest.map((e) => (
+          <article key={e.rank} className={`lb5-card p${e.rank}`}>
+            <h3><span className="lb5-no">{e.rank}</span><Avatar src={e.avatar} size={32} /><PlayerName e={e} /></h3>
+            <RankLine e={e} size="sm" />
+            <div className="lb5-foot">
+              <Nums e={e} />
               <div className="hs"><div>{e.topHeroes.map((s) => <HeroDot key={s} slug={s} />)}</div></div>
-            </article>
-          );
-        })}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
@@ -140,18 +145,21 @@ function Board({ region, regionLabel, hero, label, page, onPage }: { region: Reg
     const ex = extras.status === 'ready' ? extras.value : null;
     return slice.map((e) => {
       const x = ex?.get(e.rank);
-      return x ? { ...e, accountId: e.accountId ?? x.accountId, alt: x.alt, avatar: e.avatar ?? x.avatar, badge: e.badge || x.badge || 0, wins: e.wins ?? x.wins, losses: e.losses ?? x.losses } : e;
+      return x ? { ...e, accountId: e.accountId ?? x.accountId, alt: x.alt, avatar: e.avatar ?? x.avatar, badge: e.badge || x.badge || 0, wins: e.wins ?? x.wins, losses: e.losses ?? x.losses, topHeroes: x.heroes?.length ? x.heroes : e.topHeroes } : e;
     });
   }, [slice, extras]);
 
-  const showTop = cur === 1 && !q.trim() && merged.length >= 5;
-  const tableRows = showTop ? merged.slice(5) : merged;
+  // players the lookups found nothing for (no rank, record or avatar) are left out once the lookups are done (V)
+  const known = extras.status !== 'ready' ? merged : merged.filter((e) => e.sample || e.badge > 0 || e.wins !== undefined);
+  const hidden = merged.length - known.length;
+  const showTop = cur === 1 && !q.trim() && known.length >= 5;
+  const tableRows = showTop ? known.slice(5) : known;
   const go = (n: number) => { onPage(n); window.setTimeout(() => top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); };
   const first = (cur - 1) * PAGE_SIZE + 1;
 
   return (
     <>
-    {showTop && <TopFive rows={merged.slice(0, 5)} label={regionLabel} />}
+    {showTop && <TopFive rows={known.slice(0, 5)} label={regionLabel} />}
     <div className="panel lb-board" ref={top}>
       <div className="lb-bar">
         <h3>{label}</h3>
@@ -168,13 +176,13 @@ function Board({ region, regionLabel, hero, label, page, onPage }: { region: Reg
         <>
           <div className="lb-tablewrap">
             <table className="lb-table">
-              <thead><tr><th className="n">#</th><th className="av"><span className="sr-only">Avatar</span></th><th>Player</th><th>Rank</th><th className="wl">W / L</th><th>Win rate</th><th>Most played</th></tr></thead>
+              <thead><tr><th className="n">#</th><th className="av"><span className="sr-only">Avatar</span></th><th>Player</th><th>Most played</th><th>Rank</th><th>Win rate</th><th className="wl">W / L</th></tr></thead>
               <tbody>{tableRows.map((e) => <Row key={e.rank} e={e} />)}</tbody>
             </table>
             {slice.length === 0 && <p className="muted lb-msg">Nobody in this list matches “{q}”.</p>}
           </div>
           <div className="lb-foot">
-            <span>{slice.length ? `Showing ${first} to ${first + slice.length - 1} of ${filtered.length}` : 'Showing 0'}</span>
+            <span>{slice.length ? `Showing ${first} to ${first + slice.length - 1} of ${filtered.length}` : 'Showing 0'}{hidden > 0 ? ` · ${hidden} without a public profile left out` : ''}</span>
             <Pager page={cur} pages={pages} onPage={go} label="Leaderboard pages" />
           </div>
         </>

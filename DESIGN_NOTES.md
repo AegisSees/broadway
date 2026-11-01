@@ -517,3 +517,7 @@ V found the live builds hard to take in: tall cream columns of small print with 
 
 - **Home title:** BROADWAY is the big headline on Home (up to 104px); "Find your edge. / Rule Manhattan." sits under it as a smaller two-line tagline.
 - **Meta foot line:** only the hero games counted; the "heroes at 52% or better" count is gone.
+- **Leaderboard top five** (after a reference V liked): number one on a wide dark banner (big gold "1", avatar and name on one line, rank, win rate, games, most played heroes) with their main hero's art on the right at its own proportions and a thin glow line along the bottom; two to five are four identical dark cards (place in a ring, avatar and name, rank, win rate, games, three heroes). No colour fills. Players the lookups found nothing for (no rank and no record) are left out, with a count in the footer. Most played heroes now come from the player's own hero stats when the ladder sends none. Table columns run #, player, most played, rank, win rate, W/L.
+- **Playing lately:** the three most played heroes of the last 30 days stand as busts with their win rate on a tab and games and KDA under them; they lift and glow on hover. Heroes four to eight follow as a ranked list (games · KDA, win rate on the right).
+- **Short names:** `shortName()` in `roster.ts` gives "Danny" for Deadman Danny in tight spaces (V).
+- **Panels in thin lines:** `.panel` loses the teal outline, inner line and glow for a faint hairline edge (#ffffff14), a 6px corner and a soft drop shadow, after the reference's borders V liked.
