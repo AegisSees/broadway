@@ -822,7 +822,7 @@ main { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { .opening { display: none; } }
 
 /* ---------- Round 45 · the ranks page goes dark ----------
-   V found the cream panels glaring on this page. The crowd card, the ladder strips and the rules card are now dark
+   The cream panels were glaring on this page. The crowd card, the ladder strips and the rules card are now dark
    printed cards (near-black paper, a faint cream edge, the same hard shadow); the bars and rank colours do the talking. */
 .ranks-page { --rx-paper: #120d09; --rx-ink: #f3e7d2; --rx-sub: #b9a78c; --rx-line: #f3e7d2cc; }
 .rx-stat.c-cream { --cb: #dfa125; }
@@ -903,7 +903,7 @@ main { overflow-x: clip; }
 .panel.empty::before { position: relative; inset: auto; border: 0; border-radius: 0; }
 
 /* ---------- Round 52 · builds as dark shelves (Round 55: sections as boxes, items as category cards) ----------
-   V found the cream columns glaring against the dark page and hard to read with long author notes. A build is now one
+   The cream columns were glaring against the dark page and hard to read with long author notes. A build is now one
    dark row per section: the section name on the left in its tape colour, the items as icons with their names in buy
    order. Notes wait in each item's tooltip (a dot marks the items that have one) and behind one toggle. Hub cards go
    dark too; the hero-colour band and bust stay. */

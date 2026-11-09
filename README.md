@@ -1,6 +1,13 @@
 # Broadway
 
-Ranked Deadlock hero stats, builds and matchups. Independent fan project, not endorsed by Valve.
+Ranked Deadlock hero stats, builds, matchups, player pages and a leaderboard, dressed in the 1940s occult New York
+look of the game's City Never Sleeps update. Live data comes from the community [Deadlock API](https://deadlock-api.com),
+and a small set of machine-learning models (`ml/`) adds win chances, draft odds and build suggestions.
+
+Designed and built by **Alp Kiziltas** ([@AegisSees](https://github.com/AegisSees)).
+
+> Broadway is an unofficial fan project. It is not affiliated with or endorsed by Valve. Deadlock, its heroes, art,
+> fonts and other game assets are trademarks and copyright of Valve Corporation and are used here for fan purposes only.
 
 React 18 + TypeScript + Vite. No UI framework; the design system is plain CSS in `src/styles/`.
 
@@ -48,7 +55,7 @@ npm run build      # typecheck + production build into dist/
 
 - `api-samples/` is tracked on purpose: the unit tests and the Sample-mode match page read it. `npm run probe:api` refreshes it.
 - Never commit `.env.local` (Twitch keys live there). `.env.example` is the template.
-- `src/assets/` holds Valve's hero art, fonts, rank badges, item icons and the City Never Sleeps page assets (`src/assets/city/`, `ui/grain-detail.webp`, `ui/film-dust.webp`), taken from a game install and the official update page. Keep the repository **private**, or check Valve's asset policy (and move those files out of git) before making it public.
+- `src/assets/` holds Valve's hero art, fonts, rank badges, item icons and the City Never Sleeps page assets (`src/assets/city/`, `ui/grain-detail.webp`, `ui/film-dust.webp`), taken from a game install and the official update page. They remain Valve's property (see the note at the top).
 - `dist/` and `dist-standalone/` are build output and are not tracked. `npm run build:standalone` rebuilds the single-file `index.html`.
 
 ## Data: read this before launch
@@ -77,8 +84,8 @@ It caches identical queries for 6 hours (the server does the same), de-duplicate
 3. **Check Street Brawl and Ranked coverage** per endpoint with real calls.
 4. **Credit and terms.** Keep the Deadlock API credit and the not-endorsed-by-Valve disclaimer. Ask the maintainers
    (Discord link is in the spec) about expected load and API keys.
-5. **Art and fonts.** The Valve artwork, hero cards, rank badges and fonts in `src/assets/` were supplied as
-   reference assets. Redistribution rights are not established. Keep them out of any public repository until settled.
+5. **Art and fonts.** The Valve artwork, hero cards, rank badges and fonts in `src/assets/` come from the game and the
+   official update page. They are Valve's; credit them and remove anything Valve asks to be taken down.
 6. **Item icons** are placeholder tiles; load them from the API's assets endpoints.
 
 ## Layout
@@ -114,7 +121,7 @@ See **API_GUIDE.md** for what is live, the verified facts about the API, and how
 `vercel.json` holds everything Vercel needs: it runs `npm run build`, serves `dist/`, sends every page route to
 `index.html` (the site uses normal browser routing) and caches the hashed files under `/assets` for a year.
 
-1. Push the repo to a **private** GitHub repository (it contains Valve art and fonts).
+1. Push the repo to GitHub (or fork it).
 2. On vercel.com, *Add New → Project*, import that repository, keep the detected settings and deploy.
 3. Leave `VITE_DATA_SOURCE` unset so visitors land on live Deadlock API data. Set `VITE_API_BASE` / `VITE_STREAMS_BASE`
    only if you also host `server/proxy.mjs` somewhere (see `.env.example`).

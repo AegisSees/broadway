@@ -65,7 +65,7 @@
   --panel: #102025; --panel-2: #15282e;
   --line: rgba(96, 205, 227, 0.26); --line-2: rgba(247, 233, 213, 0.08);
   --ink: #f7e9d5; --ink-2: #d9c6ae; --muted: #a39887; --dim: #6c665b;
-  /* City Never Sleeps accents are forest grey, after the update's own page (V asked to drop the orange tone) */
+  /* City Never Sleeps accents are forest grey, after the update's own page (the orange tone is dropped) */
   --brass: #9fb29a; --brass-2: #7fd6ea; --glow: #7d8f78; --glow-2: #a9bba3;
   --on-accent: #121d22;
   --good: #97da79; --bad: #ec8a76;

@@ -195,7 +195,7 @@ Feedback: the per-hero styles did not work well and undermined Deadlock (the her
 
 ## Round 18: the City Never Sleeps asset pack
 
-Alp supplied the pack extracted from the official update page (`deadlock_city_assets.zip`: backgrounds, artwork, SVG plates, fonts, videos, with `asset_sources.json` mapping each file to its Valve CDN URL) and asked for the page backgrounds to use the page's normal grain, with the lane grain mixed in somewhere.
+I pulled the pack extracted from the official update page (`deadlock_city_assets.zip`: backgrounds, artwork, SVG plates, fonts, videos, with `asset_sources.json` mapping each file to its Valve CDN URL) and wanted the page backgrounds to use the page's normal grain, with the lane grain mixed in somewhere.
 
 - **Normal grain** (`backgrounds/grain.jpg`): a dark mottled paint surface, only about 3 levels of contrast, so it cannot be shown raw on tinted themes. `src/assets/ui/grain-detail.webp` is its luminance stretched around mid-grey (x6) and made seamless (edge cross-fade), and it is blended into each theme's own colour: `overlay` on the page background (`body::after` in `base.css`), `soft-light` inside `.panel` and, through `textures.css`, on the plain-colour surfaces (tier rows, hero cards, ability rows, the rail). All three themes therefore share one surface.
 - **Lane grain** (`backgrounds/lane_grain.jpg`): film dust and scratches on black. `film-dust.webp` is that with the long vertical scratch and the scanner-edge brightening removed (it would have repeated as a visible line), made seamless. It is `screen`-blended at low strength in three places: a fixed layer over the whole page (`body::before`, opacity `--dust`), inside every panel background, and over the night-city art at the top of the page.
@@ -241,7 +241,7 @@ Alp supplied the pack extracted from the official update page (`deadlock_city_as
 
 ## Round 23: level labels, hero moods, pop-out portraits
 
-- **Selected tabs and pills are level by default** (`--plate-level`, an almost square cut, with only a hair of wobble), like the Street Brawl label Alp pointed to. When something new is picked, `lib/plateLean.ts` rolls a lean for that button: level half the time, slanted up or down a quarter each (`data-lean`, which swaps in `--plate` or `--plate-b`). The headline plates and tier labels keep their own angles.
+- **Selected tabs and pills are level by default** (`--plate-level`, an almost square cut, with only a hair of wobble), like the Street Brawl label in the game. When something new is picked, `lib/plateLean.ts` rolls a lean for that button: level half the time, slanted up or down a quarter each (`data-lean`, which swaps in `--plate` or `--plate-b`). The headline plates and tier labels keep their own angles.
 - **Hero moods on match cards** (`data/heroMoods.ts`): a loss shows the hero's critical (low-health) card, a win the normal card, a win in the game's top three the gloat card. Gloat cards ship with the site; critical cards are not in the game-file snapshot, so they load from the Deadlock API asset bucket (addresses saved in `heroMoods.json` from the API's hero list, refreshed from the live list for newer heroes). If one does not load, the normal card is shown washed red. The Victory label now also says MVP or #2 / #3.
 - **Pop-out on hover**: the portrait frame lifts and tilts in three held frames, and the hero leans out over the top of the frame (clipped at the sides and bottom only), as on the reference site's cards.
 - The critical cards are in the game too (`*_card_critical_psd` in pak01 chunks 005, 077, 083, 227, 271, 280, 283, 288, 292, 302 and 316); with those chunks uploaded they can be bundled locally like the gloat cards.
@@ -276,9 +276,9 @@ Feedback: the headline stat plates moved too much, and the corners of the number
 - **Title pattern**: "The meta *right now*", cream with the second half in the accent colour, as on the reference site's section titles.
 - Checked: tsc, 163 tests, 390 px (no sideways scroll on six pages), reduced motion, standalone build opened with no errors.
 
-## Round 27: Deadlock Labs cues from Alp's screen recording
+## Round 27: Deadlock Labs cues from my screen recording
 
-Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sleeps update page, the item shop). Taken from it, in Broadway's own drawing:
+I recorded Deadlock Labs (home, the Violet page, the City Never Sleeps update page, the item shop). Taken from it, in Broadway's own drawing:
 
 - **The meta right now as solid colour cards.** Orange, blue, cream and gold printed cards (the same in every theme). The hero's gloat bust (`assets/gloat`) rises out over the top edge, clipped at the sides and bottom only; a black tape label, one big black number, the name on a black tag and one line saying why. Under the row: how many heroes are at 52% or better and how many hero games were counted, both straight from the tier list.
 - **New-hero banner** (`NewHeroStrip.tsx`) over the home header: the newest City Never Sleeps hero with her card and name lettering, "Meet the hero", and the next unlock date. Driven by `newHeroes.ts`, so it moves on by itself on Oct 20.
@@ -293,7 +293,7 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 - **The six newcomers** row at the foot of the new heroes' pages is removed (`Newcomers.tsx` deleted). Its now unused `.pols` styles remain in `vitals.css`/`tilt.css`.
 - **Home:** the new-hero banner from Round 27 is gone. Instead the spotlight opens on the newest City Never Sleeps hero that is out (Violet now, Nurse Harrow from Oct 20), holds her for 9 seconds, then rotates through everyone every 5.5 s in a shuffled order. The progress bar under the card shows the longer first hold.
 - **Tools of the trade** are printed colour cards (red, cream, purple) with black name tags, matching the meta cards.
-- The official City Never Sleeps page renders with script, so its layout could not be read from here; the colour cards and paper fixes follow Alp's screenshots and the asset pack from Round 18.
+- The official City Never Sleeps page renders with script, so its layout could not be read from here; the colour cards and paper fixes follow my screenshots and the asset pack from Round 18.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion, standalone build opened with no errors.
 
 ## Round 29: placeholder bug
@@ -303,7 +303,7 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 ## Round 30: All ranks star, the spotlight as a deck
 
 - **Rank menu:** "All ranks" shows a plain brass star, without the dashed ring the rank placeholders use (`.all-star`).
-- **Spotlight deck** (`Spotlight.tsx`, `pop.css`). Alp wanted one big card rather than Deadlock Labs' three-card fan, but with a feeling of cards rotating. The big card is now more square, and the next two heroes wait behind it as cream-framed prints with their name lettering, fanned up and to the right (about 4.5 and 9 degrees). When the spotlight moves on, the new front card is dealt off the pile (from the first back card's angle, in four held frames) and the pile shuffles forward. Clicking a back card jumps to that hero. Under reduced motion the deck is still. On phones the fan is smaller.
+- **Spotlight deck** (`Spotlight.tsx`, `pop.css`). I wanted one big card rather than Deadlock Labs' three-card fan, but with a feeling of cards rotating. The big card is now more square, and the next two heroes wait behind it as cream-framed prints with their name lettering, fanned up and to the right (about 4.5 and 9 degrees). When the spotlight moves on, the new front card is dealt off the pile (from the first back card's angle, in four held frames) and the pile shuffles forward. Clicking a back card jumps to that hero. Under reduced motion the deck is still. On phones the fan is smaller.
 - Checked: tsc, 165 tests, 390 px, standalone build opened with no errors.
 
 ## Round 31: the front card is a card
@@ -313,7 +313,7 @@ Alp sent a recording of Deadlock Labs (home, the Violet page, the City Never Sle
 
 ## Round 32: smooth motion, whole-card deck, scroll reveal
 
-Alp found the stepped motion read as a low frame rate, and that the spotlight photo moved separately from its card. The reference is his own personal page, where everything glides.
+I found the stepped motion read as a low frame rate, and that the spotlight photo moved separately from its card. The reference is my own personal page, where everything glides.
 - **Smooth easing everywhere I added motion.** Every `steps(n)` hover and pop-in in `pop.css` now uses one eased curve, `cubic-bezier(.2,.8,.2,1)`, with a small overshoot (`cubic-bezier(.2,.9,.25,1.12)`) for things that land. The original label-plate wobble from earlier rounds is left as it was.
 - **The deck moves as whole cards.** The art fills the frame and is part of the card, never animated on its own. Moving on throws the old front card off to the left with its caption on it (`.spot-gone`, `deck-throw`); going back tucks it under the pile instead. The new front card is dealt from where the first back card sat (`deal-in`), and the back cards are keyed by hero so they slide forward rather than redraw. Animations use the separate `translate`/`rotate`/`scale` properties so they never fight the hover lift.
 - **Scroll reveal** (`lib/reveal.ts`, called from `Shell`). Panels, cards, tiles and section titles wait slightly below and turned, then rise into place with the overshoot as they scroll into view; what is on the first screen arrives in a short stagger. A MutationObserver picks up content that loads later. Nothing is hidden under reduced motion or without script. `main` clips horizontal overflow so a turned card waiting below the fold can't widen the page on phones.
@@ -322,20 +322,20 @@ Alp found the stepped motion read as a low frame rate, and that the spotlight ph
 
 ## Round 33: no title plate on the spotlight, the flick goes up and right
 
-- **No lore title plate on the spotlight card.** Alp felt the orange title above each hero's name ("The Rising Artist" and so on) covered the art. The card keeps the hero's own name lettering and tags; only the title plate is gone. (A first pass removed the whole caption; Alp wanted the lettering and tags kept, so they are back.)
+- **No lore title plate on the spotlight card.** I felt the orange title above each hero's name ("The Rising Artist" and so on) covered the art. The card keeps the hero's own name lettering and tags; only the title plate is gone. (A first pass removed the whole caption; I wanted the lettering and tags kept, so they are back.)
 - **The flick goes up and to the right.** In a full-size window the deck sits on the right, so Round 32's throw to the left crossed the headline, the search and the buttons. The leaving card now flicks up and off the right side (a fast start that eases out, 15 degrees, fading after the first third). `.spot-hold` clips anything above its own top edge, so the card never passes over the search or the top bar, and `.hero` already clips sideways so it can't widen the page. Checked at 390, 1100, 1440, 1920 and 2560 px.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion (no flick), Archmother theme, standalone build opened with no errors.
 
 ## Round 34: a sharp card under the pointer
 
-- Alp saw the spotlight card go blurry on hover. Two causes: the card had its own compositor layer (`will-change: transform`, added in Round 32 for frame rate), which the browser draws once at normal size and then stretches when the hover scales and turns it; and the hover zoomed the card 3% and the art another 4%, while the hero renders are only about 540 px wide, so any zoom enlarges a small picture.
+- I saw the spotlight card go blurry on hover. Two causes: the card had its own compositor layer (`will-change: transform`, added in Round 32 for frame rate), which the browser draws once at normal size and then stretches when the hover scales and turns it; and the hover zoomed the card 3% and the art another 4%, while the hero renders are only about 540 px wide, so any zoom enlarges a small picture.
 - The hover now lifts the card and turns it about 1.4 degrees with the coloured glow, but does not zoom. Only the back cards and the leaving card keep their own layers, since they never grow under the pointer. The meta, tool and directory cards lost theirs too, so their hovers redraw sharp.
 - Frame time is unchanged: 16.7 to 17 ms idle and while scrolling (60 fps).
 - Checked: tsc, 165 tests, standalone build opened with no errors.
 
 ## Round 35: hero page numbers and builds as printed cards
 
-Alp asked to keep going with the UI. Home now speaks in solid colour printed cards; the inner pages were still dark glass panels. The hero page goes first.
+I kept going with the UI. Home now speaks in solid colour printed cards; the inner pages were still dark glass panels. The hero page goes first.
 - **One set of numbers.** The second stat row repeated the win rate that already leads the stat plates. It now shows tier, overall rank, pick rate, ban rate and matches only, each on its own solid card (tier on black, then orange, blue, cream, gold) with the label on a black tape and a hard shadow, like the meta cards on Home. Level at rest, a small lift under the pointer. Three across under 1000 px, two on phones with the last card spanning the row.
 - **Build phases** (Laning, Mid game, Late game, everywhere `BuildPhases` is used) are cream printed cards with dark ink; each phase is named on its own coloured tape (orange, blue, gold), which also colours its bars. Win-rate green and red are darkened to read on cream.
 - Checked: tsc, 165 tests, 390 px on six pages, City and Archmother themes, Hidden King on the stat cards.
@@ -362,24 +362,24 @@ Alp asked to keep going with the UI. Home now speaks in solid colour printed car
 
 ## Round 39: the shop in level rows
 
-- Alp found the items page out of balance: each category column broke its price headings at its own height, so 3,200 in one column sat beside 1,600 in the next. The shop is now one section per price running across all three columns, with a single full-width line above it, so 800, 1,600, 3,200, 6,400 and the Legendary row start level everywhere. The Weapon, Spirit and Vitality headers sit once at the top. On phones the columns stack inside each price row and each category gets a small coloured tag.
+- I found the items page out of balance: each category column broke its price headings at its own height, so 3,200 in one column sat beside 1,600 in the next. The shop is now one section per price running across all three columns, with a single full-width line above it, so 800, 1,600, 3,200, 6,400 and the Legendary row start level everywhere. The Weapon, Spirit and Vitality headers sit once at the top. On phones the columns stack inside each price row and each category gets a small coloured tag.
 
 ## Round 40: the side rail is a subway line
 
-- Alp found the rail generic ("very AI": stock symbols that widened into a panel) and it stayed open after a click, because the clicked link kept keyboard focus and the rail opened on any focus inside it.
+- I found the rail generic ("very AI": stock symbols that widened into a panel) and it stayed open after a click, because the clicked link kept keyboard focus and the rail opened on any focus inside it.
 - Broadway is a subway line, so the rail is drawn as one: a cream track down the middle and a stop for each page with its own coloured bullet and letter (H Heroes, T Tier list, I Items, B Builds, L Leaderboard, P Players, M Live matches, S Livestreams, the star for Home). Compare, Planner and Ranks are cream diamonds below a short gap, like express service. The current page's bullet wears a cream ring.
 - The rail never widens. Under the pointer the stop's name slides out beside its bullet on a black tape edged in the stop's colour, and it goes away when the pointer leaves, clicked or not. Keyboard focus shows it too, but only for keyboard focus (`:focus-visible`), so a mouse click leaves nothing open. The "Keep menu open" button is gone with the wide panel.
 - Checked: tsc, 165 tests, 390 px on six pages, City, Archmother and Hidden King; a scripted click on a stop followed by moving away leaves no label showing.
 
 ## Round 41: the rail opens as a line map; explore tiles rebalanced
 
-- **Rail.** Alp liked the subway stops but wanted to read every option at once. Hovering anywhere on the rail now opens it into a 228 px panel with each stop's name printed beside its bullet, like the station list on a subway map; the stop under the pointer gets the black tape and the current page's name is lit. It closes the moment the pointer leaves, clicked or not (checked by script: after a click and moving away the rail is back to 56 px with no names showing). Keyboard focus opens it too, through `:focus-visible` only.
+- **Rail.** I liked the subway stops but wanted to read every option at once. Hovering anywhere on the rail now opens it into a 228 px panel with each stop's name printed beside its bullet, like the station list on a subway map; the stop under the pointer gets the black tape and the current page's name is lit. It closes the moment the pointer leaves, clicked or not (checked by script: after a click and moving away the rail is back to 56 px with no names showing). Keyboard focus opens it too, through `:focus-visible` only.
 - **Explore the city.** Ranked is now the Eternus plaque alone, large, on a dark field lit in its teal; it rises a little under the pointer. Livestreams is gone from the row: next to Live matches it made two hero pictures side by side. Its slot goes to the shop (Items), drawn as a shelf of four item cards on a purple mat. The order alternates pictures with emblems and icons: Heroes, Ranked, Items, Live matches, Builds. Livestreams stays in the top bar and the rail.
 - Checked: tsc, 165 tests, 390 px on six pages, reduced motion.
 
 ## Round 42 · the ranks page, reworked (2026-10-18)
 
-V found the rank distribution ugly and asked for a complete rework. The dark glass chart with 66 thin bars and the eleven dark tier cards are gone.
+I found the rank distribution ugly and gave it a complete rework. The dark glass chart with 66 thin bars and the eleven dark tier cards are gone.
 
 - **Stat cards** across the top in the printed-card colours: ranked players (orange), median rank with its badge (cream), still in placements (blue), and a black "find your rank" card whose answer reads "Top X% of players".
 - **The crowd**: one cream card with a solid column per rank, as tall as that rank's share. Each column is cut into its six levels (I at the bottom), so the levels still show without 66 bars. The badge stands on top with a black percentage tape. The median rank and your rank get a hatched lane and a flag, and their level is outlined in the column. Pointing at a column opens a small card with the six levels.
@@ -390,17 +390,17 @@ V found the rank distribution ugly and asked for a complete rework. The dark gla
 ## Round 43 · explore tiles and an opening title card (2026-10-18)
 
 - **Ranked** now stands the Eternus plaque in the patron's hall (archmother-tall), tinted teal so the emblem still reads.
-- **Items** shows one item, Mystic Conduit, as a printed card over the neon Chinatown street, tinted violet (V's pick).
-- **Builds** drops the three icons on the floor (V: they didn't read as builds) for a cream build sheet pinned over hero art, with Early, Mid and Late rows ticked off like a planner page.
+- **Items** shows one item, Mystic Conduit, as a printed card over the neon Chinatown street, tinted violet (my pick).
+- **Builds** drops the three icons on the floor (they didn't read as builds) for a cream build sheet pinned over hero art, with Early, Mid and Late rows ticked off like a planner page.
 - **Intro**: a title card plays once per browser session on the home page. Gold rules draw out, BROADWAY fades up letter by letter (letters fade, they never move), the kicker and tape plates slide in over the skyline, then the card lifts away like a shutter after about two seconds. Any click, key, wheel or swipe skips it. It never plays under reduced motion.
 
 ## Round 44 · the crowd chart, one bar per level (2026-10-18)
 
-V liked a reference chart with a bar for each of the 66 levels coloured by rank, and wanted the median on it. The crowd card now draws every level as its own bar, six to a rank, in the rank's colour with a dark outline. Roman numerals sit under each bar. Under each group of six are a rank-coloured rule, the badge, the rank name and its share. The median level gets an orange dashed lane and a "Median" flag. Your level, once picked, gets a black lane, a hatched bar and a "You" flag. Pointing at a bar shows its badge, its share, its count and its top-percent. On phones the chart scrolls sideways (min 860px) and the group labels stack.
+I liked a reference chart with a bar for each of the 66 levels coloured by rank, and wanted the median on it. The crowd card now draws every level as its own bar, six to a rank, in the rank's colour with a dark outline. Roman numerals sit under each bar. Under each group of six are a rank-coloured rule, the badge, the rank name and its share. The median level gets an orange dashed lane and a "Median" flag. Your level, once picked, gets a black lane, a hatched bar and a "You" flag. Pointing at a bar shows its badge, its share, its count and its top-percent. On phones the chart scrolls sideways (min 860px) and the group labels stack.
 
 ## Round 45 · badges that fit, a dark ranks page, the player banner, and a marquee intro (2026-10-18)
 
-V's notes: half the rank badges spilled out of their boxes, the cream panels on the ranks page were glaring, the intro needed a rework, and the player banner's rank and backdrop looked off.
+My notes: half the rank badges spilled out of their boxes, the cream panels on the ranks page were glaring, the intro needed a rework, and the player banner's rank and backdrop looked off.
 
 - **Badges:** the rank art comes in portrait (Initiate to Sentinel, Emissary) and landscape (the rest). `.rbadge` sized the image by height alone, so portrait badges grew past their box. The badge is now a fixed one-cell grid and the image is contained inside it, so every badge fits on every page (checked on /ranks, /leaderboard and home: 0 overflowing).
 - **Ranks page:** the crowd card, ladder strips and rules card are now dark printed cards (near-black paper, a faint cream edge, the hard shadow). The median stat card is gold, the crowd tape is orange, and the median and "You" lanes are orange and gold. Group labels under the chart stack the badge over the name so long names never cut off.
@@ -414,7 +414,7 @@ V's notes: half the rank badges spilled out of their boxes, the cream panels on 
 
 ## Round 47 · City Never Sleeps without the Hidden King, in forest grey (2026-10-18)
 
-V asked for two things on the default theme: drop the Hidden King background, and change the bold orange to the forest grey of the update's own page (playdeadlock.com/cityneversleeps). That page couldn't be reached from the build machine, so the grey is chosen by eye: #7d8f78 for accents, #9fb29a and #a9bba3 for lighter text.
+Two changes to the default theme: drop the Hidden King background, and change the bold orange to the forest grey of the update's own page (playdeadlock.com/cityneversleeps). That page couldn't be reached from the build machine, so the grey is chosen by eye: #7d8f78 for accents, #9fb29a and #a9bba3 for lighter text.
 
 - **Backdrop:** the home hero's backdrop in City Never Sleeps is now uptown's theatre row (`HALL_CITY`). The Hidden King hall shows only in the Hidden King theme, and the Archmother hall only in hers.
 - **Accent:** the city theme's `--glow`, `--label`, `--brass` and the warm halo are forest grey. The printed-card orange in pop.css is now `--pop-orange`: forest grey in City Never Sleeps, still #ec7a2e in Hidden King and Archmother. That covers the stat cards, the tapes, the kicker plates, the median flag, the "Right now" heading word and the brand's offset shadow.
@@ -422,7 +422,7 @@ V asked for two things on the default theme: drop the Hidden King background, an
 
 ## Round 48 · art from the game's own files (2026-10-19)
 
-V gave access to their Deadlock install, so the missing art now comes straight from the game (tools/game-files/ has the scripts).
+With my own Deadlock install at hand, the missing art now comes straight from the game (tools/game-files/ has the scripts).
 
 - **New heroes:** Violet, Deadman Danny and Solomon have their real ability icons, matched to each ability through the game's ability data rather than by eye, plus short descriptions written from the game's own ability text. Their round icons and portraits are now the game's cut-out art, the same style as every other hero, and they have gloat busts for the portrait hover. Nurse Harrow's kit isn't in the files yet.
 - **Cooldowns:** the three new kits have no cooldown numbers yet, so their cards say "Cooldown soon" instead of wrongly saying "Passive".
@@ -433,14 +433,14 @@ V gave access to their Deadlock install, so the missing art now comes straight f
 ## Round 49 · Lore card, the eye opening, and a build without the author's name (2026-10-19)
 
 - **Lore:** the hero page's paper card is labelled "Lore" (it said "Dossier"), its anchor is `#lore`, and the intro line under a hero's name says "Read the lore". The "Case file" tape on the photo beside it is gone; the pinned photo stays.
-- **Paper slant:** V found the lore text sat level while the paper rose, unlike the patch notes. The slant is now measured corner to corner on the paper art (35 px over 440 px, `lib/paperTilt.ts`), because the torn left corner dips below the straight run of the edge and the eye reads the corners. Every paper note uses it, so the patch notes are a touch steeper too.
-- **Opening:** the marquee and doors are replaced by an opening after the game's matchmaking eye, from a fan animation V sent (seconds 1.5 to 4.5, redrawn here rather than copied). The emblem is the game's own ring and spokes (main_menu/deadlock_logo_*.svg, now in assets/logo) with an almond eye drawn over the hub. On a dark screen with the name under it, it blinks; each time it opens it pops and throws something out behind it: a green starburst that turns the screen forest green, then the city's towers standing outward all round it, then a teal summoning circle (two triangles, three orbit rings) that draws itself and turns while the pupil becomes a star. Then the emblem rushes forward and the page fades through. 2.9 s plus a half-second exit, once per session, skippable, never under reduced motion.
+- **Paper slant:** I found the lore text sat level while the paper rose, unlike the patch notes. The slant is now measured corner to corner on the paper art (35 px over 440 px, `lib/paperTilt.ts`), because the torn left corner dips below the straight run of the edge and the eye reads the corners. Every paper note uses it, so the patch notes are a touch steeper too.
+- **Opening:** the marquee and doors are replaced by an opening after the game's matchmaking eye, from a fan animation I liked (seconds 1.5 to 4.5, redrawn here rather than copied). The emblem is the game's own ring and spokes (main_menu/deadlock_logo_*.svg, now in assets/logo) with an almond eye drawn over the hub. On a dark screen with the name under it, it blinks; each time it opens it pops and throws something out behind it: a green starburst that turns the screen forest green, then the city's towers standing outward all round it, then a teal summoning circle (two triangles, three orbit rings) that draws itself and turns while the pupil becomes a star. Then the emblem rushes forward and the page fades through. 2.9 s plus a half-second exit, once per session, skippable, never under reduced motion.
 - **Two versions:** `npm run build:anon` and `npm run build:standalone:anon` build the site without the author's name (footer and About page), into dist-anon and dist-standalone-anon. The normal builds keep the name. `lib/credit.ts` holds it; `__ANON__` is set by the build mode.
 
 ## Round 50 · The opening, darker and finer, ending in a dive into the eye (2026-10-20)
 
-- **Background:** V wanted it darker, forest grey to black. It is now a forest-black vignette (#18221c in the middle to #090c0a at the edges) with the site's film dust over it, and it no longer flips to bright green at the first opening; a soft green light swells behind the eye at each opening instead, turning teal for the last.
-- **The spikes are gone:** V found the starburst crude. The first opening throws out a fine sage sigil instead: eight diamond blades, sixteen hairline rays, a dotted ring, a rim of 120 ticks and a double hub ring, with a far ring of ticks turning the other way behind it.
+- **Background:** I wanted it darker, forest grey to black. It is now a forest-black vignette (#18221c in the middle to #090c0a at the edges) with the site's film dust over it, and it no longer flips to bright green at the first opening; a soft green light swells behind the eye at each opening instead, turning teal for the last.
+- **The spikes are gone:** I found the starburst crude. The first opening throws out a fine sage sigil instead: eight diamond blades, sixteen hairline rays, a dotted ring, a rim of 120 ticks and a double hub ring, with a far ring of ticks turning the other way behind it.
 - **More detail:** the towers are darker with a lit edge and scattered warm windows, and a ground ring. The summoning circle has a tick ring, two hairline rings, lettering running round it ("The city never sleeps · The patrons are watching · Broadway · A Deadlock companion"), studs, a dashed inner ring and three orbit rings with a dot in each. Its lines are drawn twice, wide and faint under sharp, which gives the glow without a blur filter on a spinning layer. A thin ring ripples out of the emblem at each opening.
 - **Spin:** the circle turns 150° over its last 0.9 s (it turned 24°), with the hexagram turning the other way inside it, and it keeps the same speed through the exit.
 - **Exit, a dive into the pupil:** the star in the pupil shrinks away and the emblem zooms 1.16× to 60× in even steps on a log scale that speed up, so it feels like falling in; the dark almond fills the screen by about 0.6 s and then the dark fades to the page. The circle, city and sigil fly past and fade. A skip mid-run dives the emblem and fades everything else where it stands. Exit animations are keyframes with explicit starting values rather than transitions, which Chrome started from the wrong value when the running animation was swapped out.
@@ -456,7 +456,7 @@ V gave access to their Deadlock install, so the missing art now comes straight f
 
 ## Round 52 · The build area, reworked (2026-10-24)
 
-V found the live builds hard to take in: tall cream columns of small print with long author notes, raw `#Citadel_HeroBuilds_EarlyGame` section names, cream glaring against the dark page, and slow to load.
+I found the live builds hard to take in: tall cream columns of small print with long author notes, raw `#Citadel_HeroBuilds_EarlyGame` section names, cream glaring against the dark page, and slow to load.
 
 - **Shelves, not columns:** a build is one dark row per section, its name on the left in the section's colour (grey/orange, blue, gold, repeating) and its items as icons with their names under them in buy order. A whole 30-item build fits in one screen.
 - **Notes:** the author's notes no longer fill the rows. A dot on an item says it has one; hovering the item shows the note above the item card, and "Show the author's notes" lists them all under their rows.
@@ -480,7 +480,7 @@ V found the live builds hard to take in: tall cream columns of small print with 
 
 ## Round 54 · Placing players by their lobbies (2026-10-26)
 
-- **Stats-only rank estimate removed.** V saw top players placed at Phantom/Ritualist and their own ex-Eternus account at Emissary. The ridge model only beat guessing the median by about 2 levels of 72: per-minute stats are measured against opponents of the same rank, so everyone looks average and the guess regresses to the middle.
+- **Stats-only rank estimate removed.** I saw top players placed at Phantom/Ritualist and my own ex-Eternus account at Emissary. The ridge model only beat guessing the median by about 2 levels of 72: per-minute stats are measured against opponents of the same rank, so everyone looks average and the guess regresses to the middle.
 - **Plays in card** replaces it: the median of the average lobby rank over the last 20 ranked games (topped up with standard games when there are fewer than 10 ranked), with the 25th–75th range and a note comparing it with the player's badge. Uses the API's `average_badge` first, else the other players' badges (6+ known). Hidden on error or with fewer than 3 lobbies.
 - **Lobby chip** on player match cards: the game's average rank badge, next to the draft chip.
 - Match and team averages fall back to the players' own badges when the API sends 0 (team averages always do).
@@ -488,11 +488,11 @@ V found the live builds hard to take in: tall cream columns of small print with 
 
 ## Round 55 · Build sections as boxes, items as cards (2026-10-28)
 
-- V wanted the build area closer to a reference (Deadlock-Labs-style "The build" board) and found the coloured strip down the left of each section distracting. The strip is gone.
+- I wanted the build area closer to a reference (Deadlock-Labs-style "The build" board) and found the coloured strip down the left of each section distracting. The strip is gone.
 - Each section is a dark box with its name in capitals and, on the right, its item count and soul cost. Two short sections in a row (6 items or fewer each) share a line half and half, in buy order (`phaseWidths` in data/builds.ts); everything else is full width. Below 1100px every section is full width.
 - Items are 78px cards tinted by category (weapon, vitality, spirit mixed into cream), art on top, name below, tier as a roman numeral in a corner triangle. The buy-order number is dropped (the order reads left to right); the note dot sits top left; the sampled win rate is a dark strip under the card. Cards lift 2px on hover, off under reduced motion.
 
 ## Round 56 · Best results leads the hero build tabs (2026-10-28)
 
-- V found the Most favorited tab misleading as the first thing on a hero page (new heroes' most favorited build can have ~50 games) and asked for Best results first, with play count in mind.
+- I found the Most favorited tab misleading as the first thing on a hero page (new heroes' most favorited build can have ~50 games) and wanted Best results first, with play count in mind.
 - Tab order is now Best results, Most played, Most favorited, Hot this week. Best results needs 50+ games and ranks by `buildResultScore`: the win rate pulled toward 50% by 250 imaginary even games, so a 54% build over 52 games scores below a 51% build over 6,000. A build shows once, under the first tab it earns; with no played builds the most favorited leads.
