@@ -14,7 +14,7 @@ import {
 } from './leaderboard';
 import { normalizePlayerDistribution, sampleDistribution, type RankDistribution } from './rankDistribution';
 import { allSampleBuilds, sampleHeroBuilds, type HeroBuild } from './builds';
-import { heroBuildTabs, normalizeBuild } from './communityBuilds';
+import { BEST_MIN_GAMES, buildResultScore, heroBuildTabs, normalizeBuild } from './communityBuilds';
 import { normalizeTrend, patchMarks, sampleTrend, todayUtc, DAY, type HeroTrend } from './trend';
 import { normalizeMatches, sampleMatches, type LiveMatch } from './matches';
 import { normalizeStreams, sampleStreams, type LiveStream } from './streams';
@@ -333,7 +333,7 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       // the most played and best performing builds may not be among the most favorited: fetch those few by id
       const have = new Set([...top, ...(weekly ?? [])].map((b) => b.hero_build.hero_build_id));
       const played = [...byId.values()].sort((a, b) => b.matches - a.matches);
-      const best = played.filter((r) => r.matches >= 50).sort((a, b) => b.wins / b.matches - a.wins / a.matches);
+      const best = played.filter((r) => r.matches >= BEST_MIN_GAMES).sort((a, b) => buildResultScore(b.wins, b.matches) - buildResultScore(a.wins, a.matches));
       const extraIds = [...new Set([played[0], best[0]].filter((r) => r && !have.has(r.hero_build_id)).map((r) => r!.hero_build_id))];
       const [extra, authors] = await Promise.all([
         Promise.all(extraIds.map((bid) => soft(api.builds({ build_id: bid, limit: 1 }, signal), signal))).then((x) => x.flatMap((l) => l ?? [])),

@@ -491,3 +491,8 @@ V found the live builds hard to take in: tall cream columns of small print with 
 - V wanted the build area closer to a reference (Deadlock-Labs-style "The build" board) and found the coloured strip down the left of each section distracting. The strip is gone.
 - Each section is a dark box with its name in capitals and, on the right, its item count and soul cost. Two short sections in a row (6 items or fewer each) share a line half and half, in buy order (`phaseWidths` in data/builds.ts); everything else is full width. Below 1100px every section is full width.
 - Items are 78px cards tinted by category (weapon, vitality, spirit mixed into cream), art on top, name below, tier as a roman numeral in a corner triangle. The buy-order number is dropped (the order reads left to right); the note dot sits top left; the sampled win rate is a dark strip under the card. Cards lift 2px on hover, off under reduced motion.
+
+## Round 56 · Best results leads the hero build tabs (2026-10-28)
+
+- V found the Most favorited tab misleading as the first thing on a hero page (new heroes' most favorited build can have ~50 games) and asked for Best results first, with play count in mind.
+- Tab order is now Best results, Most played, Most favorited, Hot this week. Best results needs 50+ games and ranks by `buildResultScore`: the win rate pulled toward 50% by 250 imaginary even games, so a 54% build over 52 games scores below a 51% build over 6,000. A build shows once, under the first tab it earns; with no played builds the most favorited leads.
