@@ -292,15 +292,19 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       // Record: on a hero board the record on that hero, otherwise all heroes together.
       const records = await soft(api.playerHeroStats([...new Set(chosen.values())], { heroId }, signal), signal);
       if (records) {
-        const by = new Map<number, { m: number; w: number }>();
+        const by = new Map<number, { m: number; w: number; per: Map<number, number> }>();
         for (const r of records) {
-          const a = by.get(r.account_id) ?? { m: 0, w: 0 };
+          const a = by.get(r.account_id) ?? { m: 0, w: 0, per: new Map<number, number>() };
           a.m += r.matches_played; a.w += r.wins;
+          a.per.set(r.hero_id, (a.per.get(r.hero_id) ?? 0) + r.matches_played);
           by.set(r.account_id, a);
         }
         for (const [rowRank, id] of chosen) {
           const a = by.get(id);
-          if (a && a.m > 0) out.set(rowRank, { ...out.get(rowRank), wins: a.w, losses: a.m - a.w });
+          if (!a || a.m <= 0) continue;
+          // most played heroes from the same rows, for boards where the ladder sends none (Round 58)
+          const heroes = heroSlug ? undefined : [...a.per].sort((x, y) => y[1] - x[1]).map(([h]) => ids.slugById(h)).filter((x): x is string => !!x).slice(0, 3);
+          out.set(rowRank, { ...out.get(rowRank), wins: a.w, losses: a.m - a.w, heroes });
         }
       }
       return out;

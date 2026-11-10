@@ -13,13 +13,12 @@ export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'] as const;
 
 /**
  * Badge art for a rank (the animal plaque from the Deadlock Wiki's Ranked Mode page).
- * Initiate, Acolyte and Obscurus are drawn stand-ins until the real files are added: see PLACEHOLDER_TIERS.
+ * Obscurus (unranked), Initiate and Acolyte come from the game's own files (ranked/badges/rankNN_lg).
  */
 export function rankBadge(rank: string): string | undefined {
   const t = TIER_NUMBER[rank as Rank | 'Obscurus'];
   return t === undefined ? undefined : u(t);
 }
-export const PLACEHOLDER_TIERS: readonly number[] = [0, 1, 3];
 
 /** What the wiki says each tier is made of (its badge material). */
 export const RANK_MATERIAL: Record<Rank | 'Obscurus', string> = {

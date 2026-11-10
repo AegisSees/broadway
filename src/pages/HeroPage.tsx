@@ -10,7 +10,6 @@ import LaneBackdrop from '../components/LaneBackdrop';
 import Tip from '../components/Tip';
 import AbilityTip from '../components/AbilityTip';
 import MatchupColumn from '../components/MatchupColumn';
-import TopMatchups from '../components/TopMatchups';
 import { SiteFooter } from '../components/Shell';
 import { abilitySource, getAbilities } from '../data/abilities';
 import { getGloat } from '../data/heroGloat';
@@ -88,7 +87,9 @@ export default function HeroPage() {
   const overview = state.status === 'ready' ? state.value : null;
   const isHaze = hero.slug === 'haze';
   const lore = getLore(hero.slug);
-  const newcomer = getNewcomer(hero.slug);
+  /* City Never Sleeps heroes only get the "new hero" plate, intro and FAQ until they unlock; once out they are
+     ordinary heroes (the patch after their release folded them into the regular roster) */
+  const newcomer = hero.unreleased ? getNewcomer(hero.slug) : undefined;
   const out = newcomer ? isOut(hero.slug) : true;
   const brawl = filters.mode === 'street_brawl';
   const tabs: { id: string; label: string }[] = [
@@ -123,8 +124,7 @@ export default function HeroPage() {
               {wordmark ? <h1><img className="wordmark" src={wordmark} alt={hero.name} /></h1> : <h1 className="text-name">{hero.name}</h1>}
               <HeroTags slug={hero.slug} />
               {newcomer
-                ? <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>
-                : lore && <p className="intro">{lore.role ? `${lore.role}. ` : ''}<a href="#lore" onClick={(e) => { e.preventDefault(); jump('lore'); }}>Read the lore {'↓'}</a></p>}
+                && <p className="intro">{hero.name} is one of the six heroes of the City Never Sleeps update, {out ? 'out since' : 'unlocking on'} {releaseWeekday(newcomer)}. Kit, base stats and live win rate below.</p>}
               {abilities ? (
                 <div className="abil">
                   {abilities.map((a, i) => (
@@ -222,7 +222,6 @@ export default function HeroPage() {
                 {overview.matchups.length > 0
                   ? <div className="mugrid" data-n={overview.matchups.length}>{overview.matchups.map((g) => <MatchupColumn key={g.key} group={g} heroName={hero.name} heroSlug={hero.slug} />)}</div>
                   : <div className="panel empty"><h3>No matchup data yet</h3><p>Matchups need enough head-to-head matches before they are listed.</p></div>}
-                <TopMatchups slug={hero.slug} name={hero.name} />
               </>
             )}
           </>

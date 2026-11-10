@@ -4,20 +4,15 @@ import { HEROES, type Hero } from '../data/roster';
 import HeroTags from './HeroTags';
 import { getWordmark } from '../data/names';
 import { getHeroColor, useHeroColor } from '../data/heroColors';
-import { NEWCOMERS, isOut } from '../data/newHeroes';
 
 const CYCLE_MS = 5500;
-/** The newest hero opens the spotlight and stays a little longer before the rotation starts. */
+/** The first card stays a little longer before the rotation starts. */
 const FIRST_MS = 9000;
 const POOL: Hero[] = HEROES.filter((h) => h.art || h.render);
 
-/** The newest City Never Sleeps hero that is out leads, then everyone else in an order shuffled once per visit. */
+/** Every visit deals the whole roster in a fresh random order; no hero is pinned to the front any more. */
 function openingOrder(): Hero[] {
-  const now = Date.now();
-  const newest = [...NEWCOMERS].reverse().find((n) => isOut(n.slug, now));
-  const lead = POOL.find((h) => h.slug === newest?.slug);
-  const rest = shuffled(POOL.filter((h) => h !== lead));
-  return lead ? [lead, ...rest] : rest;
+  return shuffled(POOL);
 }
 
 /** Shuffle once per visit, then step through everyone in that order. */

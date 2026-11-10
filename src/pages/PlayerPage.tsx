@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import PlayerMatchCard from '../components/PlayerMatchCard';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
-import { CopyCode } from '../components/BuildBoard';
 import { HeroFace } from '../components/HeroFace';
 import RankBadge from '../components/RankBadge';
 import { getGloat } from '../data/heroGloat';
@@ -11,11 +10,11 @@ import { getHeroColor } from '../data/heroColors';
 import { getHeroBg } from '../data/heroStats';
 import { badgeLabel, badgeParts } from '../data/leaderboard';
 import {
-  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, shownRank, streakOf, timeAgo, winPct,
+  fmtDuration, fmtHours, formSummary, heroesIn, kdaRatio, QUEUE_LABEL, shownRank, timeAgo, winPct,
   type PlayerCore, type PlayerHeroLine, type PlayerMate, type PlayerMatchLine, type PlayerMatches, type QueueKind,
 } from '../data/player';
 import { RANK_COLOR } from '../data/ranks';
-import { getHero } from '../data/roster';
+import { getHero, shortName } from '../data/roster';
 import { dataSource } from '../data/source';
 import { useAsync } from '../data/useAsync';
 import { rememberPlayer } from '../lib/recentPlayers';
@@ -24,6 +23,7 @@ import { fmtInt } from '../lib/stats';
 import { useTitle } from '../lib/useTitle';
 import PlayerLookup from './PlayerLookup';
 import Avatar from '../components/Avatar';
+import steamOrb from '../assets/ui/steam-orb.webp';
 import SectionHeading from '../components/SectionHeading';
 import { PlaysAtCard, PlaystyleCard } from '../components/PlayerModels';
 
@@ -52,57 +52,51 @@ function HeroLine({ slug }: { slug: string }) {
 // Header: the dossier
 // ---------------------------------------------------------------------------------------------------------
 
-function ShareChip() {
-  const [done, setDone] = useState(false);
-  return (
-    <button type="button" className="chip" onClick={() => { void navigator.clipboard?.writeText(window.location.href).then(() => { setDone(true); window.setTimeout(() => setDone(false), 1500); }); }}>
-      {done ? 'Link copied' : 'Share'}
-    </button>
-  );
-}
-
 /**
- * The top of a player page, as a case file: the Steam picture pinned on like a photo with a strip of tape, the
- * name, the rank on an orange label, the account number and the actions, with the hero they play most standing
- * behind. On the right, the current run of results on its own plate.
+ * The top of a player page (Round 59, per V): the Steam picture (click it to refresh the page's data), the name with a
+ * small Steam orb beside it linking to their profile, and under the name the rank as a plain medallion with its name.
+ * Behind it all, the hero they play most: that hero's own backdrop across the whole banner, and the hero on the right.
  */
 function ProfileHead({ core, matches, onRefresh }: { core: PlayerCore; matches: PlayerMatchLine[] | null; onRefresh: () => void }) {
   const top = core.heroes[0]?.slug;
   const bg = getHeroBg(top);
   const hero = getHero(top);
-  // the cut-out bust first: the card art and renders carry their own painted backdrop, which fights the band behind it
-  const bust = top ? getGloat(top) : undefined;
-  const art = bust ?? (hero ? hero.render ?? hero.art ?? hero.portrait : undefined);
+  // the largest art there is for the hero: the painted splash where we have one, else the promo render
+  const splash = hero?.art ?? hero?.render ?? (top ? getGloat(top) : undefined);
   const steamHref = safeSteamHref(core.profileUrl);
   const r = shownRank(core, matches);
-  const streak = matches ? streakOf(matches) : null;
-  const last = matches?.[0];
+  // the last word of the name stays on one line with the Steam orb, so the orb never wraps onto a line of its own
+  const cut = core.name.trimEnd().lastIndexOf(' ') + 1;
+  const nameHead = core.name.slice(0, cut);
+  const nameTail = core.name.slice(cut);
   return (
-    <section className="phead" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze') } as React.CSSProperties} aria-label="Player summary">
+    <section className="phead ph2" style={{ ['--hc' as string]: getHeroColor(top ?? 'haze'), ...(r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } : {}) } as React.CSSProperties} aria-label="Player summary">
       {bg && <div className="pl-bg" style={{ backgroundImage: `url(${bg})` }} aria-hidden="true" />}
-      {art && <img className={`pl-art${bust ? ' bust' : ''}`} src={art} alt="" loading="lazy" />}
+      {splash && <img className="pl-splash" src={splash} alt="" loading="lazy" />}
       <div className="ph-card">
-        <figure className="ph-photo"><span className="ph-tape" aria-hidden="true" /><Avatar src={core.avatar} size={124} /></figure>
+        <button type="button" className="ph-photo" onClick={onRefresh} title="Refresh" aria-label="Refresh this player's data">
+          <Avatar src={core.avatar} size={124} />
+          <span className="ph-refresh" aria-hidden="true">{'\u21bb'}</span>
+        </button>
         <div className="ph-id">
-          <div className="ph-marquee"><h1>{core.name}</h1></div>
-          <div className="ph-tags">
-            <span className="ph-acct">#{core.accountId}</span>
-            {last ? <span className="ph-seen">Last game {timeAgo(last.start)}</span> : null}
-            {streak && streak.n >= 2
-              ? <span className={`ph-run ${streak.won ? 'w' : 'l'}`}>{streak.n}{streak.won ? 'W' : 'L'} streak</span>
-              : last ? <span className={`ph-run ${last.won ? 'w' : 'l'}`}>{last.won ? 'Won' : 'Lost'} last game</span> : null}
+          <div className="ph-name" data-len={core.name.length > 22 ? "xl" : core.name.length > 14 ? "l" : undefined}>
+            <h1 title={core.name}>
+              {nameHead}
+              <span className={nameTail.length <= 14 ? 'ph-tail' : undefined}>
+                {nameTail}
+                {steamHref && (
+                  <a className="ph-steam" href={steamHref} target="_blank" rel="noreferrer noopener" title="Steam profile" aria-label="Steam profile">
+                    <img src={steamOrb} alt="" width={30} height={30} />
+                  </a>
+                )}
+              </span>
+            </h1>
           </div>
-          <div className="ph-actions"><CopyCode code={toSteam64(core.accountId)} label="Copy Steam ID" /></div>
-          <div className="ph-actions sub">
-            {steamHref && <a className="chip" href={steamHref} target="_blank" rel="noreferrer noopener">Steam profile {'↗'}</a>}
-            <ShareChip />
-            <button type="button" className="chip" onClick={onRefresh}>Refresh</button>
+          <div className="ph-rank" aria-label={r ? `Rank: ${r.label}` : 'Unranked (Obscurus)'}>
+            {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <RankBadge rank="Obscurus" size="lg" />}
+            <b>{r ? r.label : 'Obscurus'}</b>
           </div>
         </div>
-      </div>
-      <div className="ph-rankbox" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined} aria-label={r ? `Rank: ${r.label}` : 'Unranked'}>
-        {r ? <RankBadge rank={r.name} sub={r.sub} size="lg" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-        <b>{r ? r.label : 'Unranked'}</b>
       </div>
     </section>
   );
@@ -120,8 +114,8 @@ function RankCard({ core, matches }: { core: PlayerCore; matches: PlayerMatchLin
     <div className="panel pad pc-card ph-rankcard" style={r ? { ['--rc' as string]: RANK_COLOR[r.name as keyof typeof RANK_COLOR] } as React.CSSProperties : undefined}>
       <div className="pc-card-h"><h3>Rank</h3><h3>Record</h3></div>
       <div className="ph-rc">
-        {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <span className="pl-unranked" aria-hidden="true">?</span>}
-        <span className="ph-rc-n"><b>{r ? r.label : 'Unranked'}</b><small>{r?.fromHistory ? `Going into their last ranked game, ${timeAgo(r.fromHistory)}` : r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
+        {r ? <RankBadge rank={r.name} sub={r.sub} size="md" /> : <RankBadge rank="Obscurus" size="md" />}
+        <span className="ph-rc-n"><b>{r ? r.label : 'Obscurus'}</b><small>{r?.fromHistory ? `Going into their last ranked game, ${timeAgo(r.fromHistory)}` : r?.streak && r.streak >= 3 ? `${r.streak} ranked wins in a row` : r ? 'Current rank' : 'No ranked rating yet'}</small></span>
         {t && <span className="ph-rc-wl"><b><span className="w">{n0(t.wins)}</span>{' / '}<span className="l">{n0(t.matches - t.wins)}</span></b>{wr !== null && <small className={wr >= 50 ? 'good' : 'bad'}>{wr.toFixed(1)}%</small>}</span>}
       </div>
     </div>
@@ -153,13 +147,6 @@ function Trajectory({ matches }: { matches: PlayerMatchLine[] }) {
   );
 }
 
-/** A hand-drawn ring, as if someone circled the number in pen. */
-const Ring = () => (
-  <svg className="ph-ring" viewBox="0 0 120 60" aria-hidden="true" preserveAspectRatio="none">
-    <path d="M14 34c-4-14 22-25 50-25 30 0 52 9 50 22-2 15-33 23-60 21C27 50 8 42 12 30 15 20 38 12 66 12" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-  </svg>
-);
-
 function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatchLine[] | null }) {
   const t = core.totals;
   if (!t) return null;
@@ -178,7 +165,7 @@ function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatch
         <div><dt>Avg assists</dt><dd className="a">{(t.assists / g).toFixed(1)}</dd></div>
         <div><dt>KDA</dt><dd>{kdaRatio(t.kills, t.deaths, t.assists).toFixed(2)}</dd></div>
         {avgSouls !== null && <div><dt>Avg souls <i>last {recent.length}</i></dt><dd className="souls">{souls(avgSouls)}</dd></div>}
-        {wr !== null && <div className="ringed"><dt>Win rate</dt><dd className={wr >= 50 ? 'good' : 'bad'}>{Math.round(wr)}%<Ring /></dd></div>}
+        {wr !== null && <div><dt>Win rate</dt><dd className={wr >= 50 ? 'good' : 'bad'}>{Math.round(wr)}%</dd></div>}
         {avgCs !== null && <div><dt>Avg CS <i>last {recent.length}</i></dt><dd>{Math.round(avgCs)}</dd></div>}
         {core.matches30d !== undefined && <div><dt>Last 30 days</dt><dd>{n0(core.matches30d)}</dd></div>}
       </dl>
@@ -195,23 +182,55 @@ function Performance({ core, matches }: { core: PlayerCore; matches: PlayerMatch
   );
 }
 
+/**
+ * Heroes over the last 30 days (Round 58, after a reference V liked): the three most played stand as busts with their
+ * win rate on a tab, games and KDA under them, and lift out of the card on hover; the next five follow as a ranked list.
+ */
 function Recent30({ matches, now }: { matches: PlayerMatchLine[]; now: number }) {
   const month = matches.filter((m) => m.start >= now - 30 * DAY_S);
-  const list = heroesIn(month).slice(0, 4);
+  const list = heroesIn(month).slice(0, 8).map((h) => {
+    const mine = month.filter((m) => m.heroSlug === h.slug);
+    const k = mine.reduce((a, m) => a + m.kills, 0), d = mine.reduce((a, m) => a + m.deaths, 0), as = mine.reduce((a, m) => a + m.assists, 0);
+    return { ...h, kda: kdaRatio(k, d, as) };
+  });
   if (!list.length) return null;
+  const wr = (h: { wins: number; matches: number }) => Math.round((h.wins / h.matches) * 100);
+  const top = list.slice(0, 3);
+  const rest = list.slice(3);
   return (
-    <div className="panel pad pl-side pc-card">
-      <h3>Playing lately</h3>
-      <small>Last 30 days · {n0(month.length)} games</small>
-      <ul>
-        {list.map((h) => (
-          <li key={h.slug}>
-            <HeroLine slug={h.slug} />
-            <span className="pl-n">{h.matches} <small>games</small></span>
-            <WinRate wins={h.wins} matches={h.matches} />
-          </li>
-        ))}
-      </ul>
+    <div className="panel pad pl-side pc-card pl-lately">
+      <div className="pc-card-h"><h3>Most played</h3><small>{n0(month.length)} games · 30 days</small></div>
+      <div className="pl-podium">
+        {top.map((h) => {
+          const hero = getHero(h.slug);
+          const pic = getGloat(h.slug) ?? hero?.portrait;
+          const w = wr(h);
+          return (
+            <Link key={h.slug} to={`/hero/${h.slug}`} className="pl-pod" style={{ ['--hc' as string]: getHeroColor(h.slug) } as React.CSSProperties}>
+              <span className="pl-pod-pic">{pic && <img src={pic} alt="" loading="lazy" />}<b className={w >= 50 ? 'up' : 'down'}>{w}%</b></span>
+              <strong>{hero ? shortName(hero) : h.slug}</strong>
+              <small>{h.matches} games</small>
+              <small>{h.kda.toFixed(2)} KDA</small>
+            </Link>
+          );
+        })}
+      </div>
+      {rest.length > 0 && (
+        <ol className="pl-rest" start={4}>
+          {rest.map((h, i) => {
+            const hero = getHero(h.slug);
+            const w = wr(h);
+            return (
+              <li key={h.slug}>
+                <span className="n">{i + 4}</span>
+                {hero ? <HeroFace hero={hero} size="sm" /> : <span />}
+                <span className="nm"><Link to={`/hero/${h.slug}`}>{hero ? shortName(hero) : h.slug}</Link><small>{h.matches} games · {h.kda.toFixed(2)} KDA</small></span>
+                <b className={w >= 50 ? 'up' : 'down'}>{w}%</b>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </div>
   );
 }

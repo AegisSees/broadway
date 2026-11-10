@@ -3,7 +3,7 @@
    The Steam player page, reworked with the stats sites' structure in mind (a strong header, a rank column on the
    left, match history as cards that open in place) but in Broadway's own look: a photo pinned on a torn black slab
    with a strip of tape, orange label plates, the rank and results on paper-like cards, and a pen ring around the
-   win rate. Loaded after player.css and before tilt.css.
+   win rate (the ring was removed in Round 57). Loaded after player.css and before tilt.css.
    ========================================================================================================== */
 
 .pl { --hk: #e0a03a; --am: #4f9fe3; --hk-t: #f2b862; --am-t: #86c2f6; --kc: #8fd47a; --dth: #ef7d6c; --as: #7bb6f4; --souls: #f0a35a; }
@@ -98,8 +98,6 @@
 .ph-perf dd { margin: 3px 0 0; font: 700 22px / 1 var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
 .ph-perf dd.k { color: var(--kc); } .ph-perf dd.d { color: var(--dth); } .ph-perf dd.a { color: var(--as); } .ph-perf dd.souls { color: var(--souls); }
 .ph-perf dd.good { color: var(--good); } .ph-perf dd.bad { color: var(--bad); }
-.ph-perf .ringed dd { position: relative; display: inline-block; padding: 0 4px; }
-.ph-ring { position: absolute; left: -10px; right: -12px; top: -9px; bottom: -8px; width: calc(100% + 22px); height: calc(100% + 17px); color: var(--label); pointer-events: none; }
 .ph-len { margin: 8px 0 0; font-size: 12px; }
 
 /* ---------- match history filters ---------- */
@@ -119,22 +117,53 @@
 .pc.win { border-left-color: var(--good); background: linear-gradient(90deg, color-mix(in srgb, var(--good) 8%, transparent), transparent 38%), var(--panel); }
 .pc.open { border-color: color-mix(in srgb, var(--label) 50%, var(--line-2)); border-left-color: inherit; }
 .pc.win.open { border-left-color: var(--good); } .pc.loss.open { border-left-color: var(--bad); }
+/* Round 57: the lobby names moved into the opened card (Scoreboard), so the row has room for its numbers. Each number
+   gets its own labelled column; the layout follows the card's own width (container query), not the window's. */
+.pc { container-type: inline-size; }
 .pc-row {
-  display: grid; grid-template-columns: 86px minmax(120px, 1fr) minmax(118px, auto) auto minmax(214px, 250px) 34px; align-items: center; gap: 12px 14px;
-  padding: 12px 12px 12px 12px;
+  display: grid; align-items: center; gap: 12px 14px; padding: 12px 12px 14px;
+  grid-template-columns: 86px minmax(108px, 1.2fr) minmax(128px, 1fr) minmax(106px, 0.9fr) minmax(80px, 0.7fr) auto 34px;
+  grid-template-areas: 'face main kda lob draft items tog';
+}
+.pc-face { grid-area: face; } .pc-main { grid-area: main; } .pc-kda { grid-area: kda; } .pc-lob { grid-area: lob; } .pc-draft { grid-area: draft; }
+.pc-items { grid-area: items; } .pc-toggle { grid-area: tog; }
+.pc-stat { display: grid; gap: 4px; align-content: center; min-width: 0; }
+.pc-lab { font: 700 10px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pc-lob { justify-items: center; text-align: center; }
+.pc-lob-r { display: block; line-height: 0; }
+.pc-lob-r .rbadge { width: 54px; height: 54px; filter: drop-shadow(0 3px 0 #0006); }
+.pc-lob-tip { font: 700 12px var(--ui); letter-spacing: 0.06em; color: var(--rc, var(--ink)); white-space: nowrap; }
+.pc-lob em { font: 700 13px var(--ui); font-style: normal; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+.pc-lob em.up { color: var(--good); } .pc-lob em.down { color: var(--bad); }
+.pc-draft b { font: 400 24px / 1 var(--display); color: var(--ink); }
+.pc-draft.up b { color: var(--good); } .pc-draft.down b { color: var(--bad); }
+.pc-bar { display: block; width: 100%; max-width: 110px; height: 4px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.pc-bar > i { display: block; height: 100%; background: currentColor; color: var(--muted); }
+.pc-draft.up .pc-bar > i { color: var(--good); } .pc-draft.down .pc-bar > i { color: var(--bad); }
+@container (max-width: 800px) {
+  .pc-row { grid-template-columns: 86px minmax(110px, 1.2fr) minmax(130px, 1fr) minmax(112px, 0.9fr) minmax(84px, 0.7fr) 34px;
+    grid-template-areas: 'face main kda lob draft tog' 'face items items items items tog'; }
+}
+@container (max-width: 640px) {
+  .pc-row { grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 34px; gap: 10px 14px;
+    grid-template-areas: 'face main main tog' 'face kda kda tog' 'lob lob draft tog' 'items items items tog'; }
+  .pc-face { width: 70px; height: 92px; }
+  .pc-items { grid-template-columns: repeat(6, 28px); grid-auto-rows: 28px; }
+  .pc-items .mt-it.sm { width: 28px; height: 28px; }
+  .pc-stat.pc-none { display: none; }
 }
 .pc-face {
   position: relative; z-index: 1; display: block; width: 86px; height: 112px; overflow: visible; background: color-mix(in srgb, var(--hc) 55%, #120e0b);
-  border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); transition: transform 0.32s steps(8, end), box-shadow 0.32s steps(8, end);
+  border: 2px solid color-mix(in srgb, var(--hc) 70%, #000); transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .pc-face img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; display: block; }
 /* the hero's card sits in the frame; it may break out of the top of the frame (never the sides or bottom) */
 .pc-mood { position: absolute; inset: 0; display: block; clip-path: inset(-60% 0 0 0); }
-.pc-mood img { transform-origin: 50% 100%; transition: transform 0.32s steps(8, end), filter 0.32s steps(8, end); }
+.pc-mood img { transform-origin: 50% 100%; transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .pc-mood.critical.tinted img { filter: grayscale(0.55) sepia(0.5) saturate(2.2) hue-rotate(-28deg) brightness(0.78) contrast(1.1); }
 .pc-mood.critical.tinted::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(160, 20, 12, 0.45)); mix-blend-mode: multiply; }
 .pc-mood.proud img { filter: drop-shadow(0 0 5px color-mix(in srgb, #f1c232 70%, transparent)); }
-/* hover: like a print lifted off the board, in eight quick held frames (still a touch of stop-motion), and the hero leans out over the top of the frame */
+/* hover: like a print lifted off the board, and the hero leans out over the top of the frame (smooth since Round 57; it was eight held frames) */
 .pc-face:hover, .pc-face:focus-visible { transform: translateY(-7px) rotate(-3deg) scale(1.06); box-shadow: 6px 9px 0 rgba(0, 0, 0, 0.45); z-index: 3; outline: none; }
 .pc.win .pc-face:hover, .pc.win .pc-face:focus-visible { transform: translateY(-7px) rotate(2.6deg) scale(1.06); }
 .pc-face:hover .pc-mood img, .pc-face:focus-visible .pc-mood img { transform: scale(1.22) translateY(-3%); }
@@ -164,18 +193,11 @@
 .pc-items { display: grid; grid-template-columns: repeat(6, 25px); grid-auto-rows: 25px; gap: 3px; }
 .pc-items .mt-it.sm { width: 25px; height: 25px; }
 .pc-items .pc-slot { display: block; border: 1px dashed color-mix(in srgb, var(--ink) 16%, transparent); }
+.ph-photo .ph { display: block; width: 124px; height: 124px; background: linear-gradient(135deg, #3a332b, #1d1915); }
 .pc-items .pc-slot.busy { animation: pc-busy 1.2s steps(3, end) infinite; }
 @keyframes pc-busy { 50% { background: color-mix(in srgb, var(--ink) 7%, transparent); } }
-.pc-lobby { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; min-width: 0; }
-.pc-lobby.pending { min-height: 20px; color: var(--dim); font-size: 12px; }
-.pc-lobby ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; min-width: 0; }
-.pc-lobby li { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12px; color: var(--muted); }
-.pc-lobby li img, .pc-lobby li > i { width: 17px; height: 17px; flex: none; object-fit: contain; border-radius: 2px; background: var(--s3); }
-.pc-lobby li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pc-lobby li.me { color: var(--ink); font-weight: 700; }
-.pc-lobby ul.hidden-king li img { box-shadow: 0 0 0 1px var(--hk); } .pc-lobby ul.archmother li img { box-shadow: 0 0 0 1px var(--am); }
 .pc-toggle { align-self: stretch; display: grid; place-items: center; width: 34px; padding: 0; border: 0; background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--muted); cursor: var(--cur-hand, pointer); }
-.pc-toggle svg { width: 20px; height: 20px; transition: transform 0.24s steps(3, end); }
+.pc-toggle svg { width: 20px; height: 20px; transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .pc-toggle:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 10%, transparent); }
 .pc-toggle[aria-expanded='true'] { color: var(--label); }
 .pc-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
@@ -240,11 +262,6 @@
 .pc-path-row[data-g='4'] { --g: #8fd47a; } .pc-path-row[data-g='5'] { --g: #ef7d6c; }
 
 /* ---------- smaller screens ---------- */
-@media (max-width: 1280px) {
-  .pc-row { grid-template-columns: 86px minmax(130px, 1fr) auto auto 34px; }
-  .pc-lobby { grid-column: 2 / 5; grid-row: 2; }
-  .pc-toggle { grid-row: 1 / 3; grid-column: 5; }
-}
 @media (max-width: 1100px) {
   .ph-grid { grid-template-columns: 1fr; }
   .ph-grid .pl-aside { margin-top: 18px; order: 2; }
@@ -256,12 +273,6 @@
   .ph-card { flex-direction: column; align-items: flex-start; padding: 0; }
   .ph-marquee { padding: 10px 14px 8px; }
   .ph-id h1 { white-space: normal; overflow-wrap: anywhere; font-size: 30px; }
-  .pc-row { grid-template-columns: 70px minmax(0, 1fr) 34px; gap: 10px 12px; }
-  .pc-face { width: 70px; height: 92px; }
-  .pc-kda { grid-column: 2; grid-row: 2; }
-  .pc-items { grid-column: 1 / 3; grid-row: 3; grid-template-columns: repeat(6, 28px); grid-auto-rows: 28px; }
-  .pc-lobby { grid-column: 1 / 3; grid-row: 4; }
-  .pc-toggle { grid-column: 3; grid-row: 1 / 5; }
   .pc-mine { grid-template-columns: 1fr; }
   .pc-team .pc-opt { display: none; }
   .pc-full { margin-left: 0; width: 100%; }
@@ -272,3 +283,8 @@
   .pc-face, .pc-mood img { transition: none; }
   .ph-marquee::before { animation: none; }
 }
+
+/* Round 60 (V): the lobby tooltip hugs its text, and the MMR change sits clear of the badge's numeral */
+.tip:has(> .pc-lob-tip) { width: max-content; padding: 6px 11px 5px; border-radius: 6px; }
+.pc-lob { gap: 10px; }
+.pc-lob em { margin-top: 2px; }

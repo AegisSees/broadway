@@ -53,6 +53,8 @@ export interface PlayerExtras {
   badge?: number;
   wins?: number;
   losses?: number;
+  /** Their three most played heroes (all heroes boards only), most games first. */
+  heroes?: string[];
 }
 
 /** A name shared by more accounts than this is not worth resolving: the lookup would cost hundreds of calls for one row. */

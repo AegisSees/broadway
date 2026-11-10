@@ -172,3 +172,4 @@
   .ml-odds-bar i, .df-bar i, .df-heroes button { transition: none; }
   .df-heroes button:hover:not(:disabled) { transform: none; }
 }
+

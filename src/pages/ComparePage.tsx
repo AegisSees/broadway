@@ -63,7 +63,7 @@ function Head({ slug, side }: { slug: string; side: 'a' | 'b' }) {
       <Link to={`/hero/${slug}`} className="pic">{h.portrait ? <img src={h.portrait} alt="" /> : h.icon ? <img className="icon-pic" src={h.icon} alt="" /> : <span>{initials(h.name)}</span>}</Link>
       <div className="nm">
         {wm ? <img className="wm" src={wm} alt={h.name} /> : <b>{h.name}</b>}
-        <small>{s.type || 'New hero'}{s.complexity ? <> · <Complexity n={s.complexity} /></> : null}</small>
+        <small>{s.type || 'Hero'}{s.complexity ? <> · <Complexity n={s.complexity} /></> : null}</small>
         <small>{s.weapon.attrs.map(attrLabel).join(' · ')}</small>
       </div>
     </div>

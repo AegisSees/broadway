@@ -197,7 +197,7 @@ Feedback: the per-hero styles did not work well and undermined Deadlock (the her
 
 I pulled the pack extracted from the official update page (`deadlock_city_assets.zip`: backgrounds, artwork, SVG plates, fonts, videos, with `asset_sources.json` mapping each file to its Valve CDN URL) and wanted the page backgrounds to use the page's normal grain, with the lane grain mixed in somewhere.
 
-- **Normal grain** (`backgrounds/grain.jpg`): a dark mottled paint surface, only about 3 levels of contrast, so it cannot be shown raw on tinted themes. `src/assets/ui/grain-detail.webp` is its luminance stretched around mid-grey (x6) and made seamless (edge cross-fade), and it is blended into each theme's own colour: `overlay` on the page background (`body::after` in `base.css`), `soft-light` inside `.panel` and, through `textures.css`, on the plain-colour surfaces (tier rows, hero cards, ability rows, the rail). All three themes therefore share one surface.
+- **Normal grain** (`backgrounds/grain.jpg`): a dark mottled paint surface, only about 3 levels of contrast, so it cannot be shown raw on tinted themes. `src/assets/ui/grain-detail.webp` is its luminance stretched around mid-grey (x6) and made seamless (edge cross-fade), and it is blended into each theme's own colour: `overlay` on the page background (`body::after` in `base.css`), `soft-light` inside `.panel` and, through `textures.css`, on the plain-colour surfaces (tier rows, hero cards, ability rows, the rail). All three themes therefore share one surface. *(Replaced in Round 57, see there.)*
 - **Lane grain** (`backgrounds/lane_grain.jpg`): film dust and scratches on black. `film-dust.webp` is that with the long vertical scratch and the scanner-edge brightening removed (it would have repeated as a visible line), made seamless. It is `screen`-blended at low strength in three places: a fixed layer over the whole page (`body::before`, opacity `--dust`), inside every panel background, and over the night-city art at the top of the page.
 - **Page pictures**: the district photos in the pack hang, tinted by the theme and faded out downward, at the top of each page (`lib/pageArt.ts` maps route to picture, `Shell` writes `html[data-art]`, `city-assets.css` maps that to the file): Times Square for Heroes, Stock Exchange for the tier list, Factory for Builds/Items/Planner, Theater for the leaderboard, Chinatown for live matches, Seaport for a match, Uptown for ranks and a player, Campus for player search and Compare, Fairfax Plaza for Streams, Central Park for About, the pack's new city header for Home. Hero pages keep their own lane art.
 - **Plates**: the pack's yellow, green and blue plate SVGs are the card bodies of the three lanes on Home (with the real YORK / BROADWAY / GREENWICH title art, the lane maps and the lane-coloured kicker plates as "Lane 1/2/3" tags) and the backgrounds of the two sides on match pages: Hidden King on yellow, Archmother on blue, on both the live-match cards and the match report score. The SVGs were given `preserveAspectRatio="none"` so they stretch to any box (otherwise a background SVG letterboxes).
@@ -496,3 +496,77 @@ I found the live builds hard to take in: tall cream columns of small print with 
 
 - I found the Most favorited tab misleading as the first thing on a hero page (new heroes' most favorited build can have ~50 games) and wanted Best results first, with play count in mind.
 - Tab order is now Best results, Most played, Most favorited, Hot this week. Best results needs 50+ games and ranks by `buildResultScore`: the win rate pulled toward 50% by 250 imaginary even games, so a 54% build over 52 games scores below a 51% build over 6,000. A build shows once, under the first tab it earns; with no played builds the most favorited leads.
+## Round 57 · V's charcoal texture, straight-up reveals, new heroes made ordinary (2026-11-01)
+
+- **Texture.** V supplied a dark charcoal grunge texture (`grain.jpg`) to replace every grainy look. `src/assets/ui/grain.webp` is that image as given (1920 wide) and is now the page background (`body::after`): it sets the light and dark of the page itself, and the theme gradient only lends a 45% `color` wash of its hue, so the page reads as V's charcoal in all three themes. `grain-soft.webp` (`--grain-map`) is its luminance at x4 around mid-grey (the old map was x6 and speckled), made seamless, still `soft-light` in `.panel` and on the plain surfaces in `textures.css`. The old `grain-detail.webp` is deleted.
+- **Film dust off.** The page-wide film dust layer (`body::before`) and the dust inside panels and cards read as extra grain over the new texture, so they are gone (`content: none`, `--dust: 0`). The dust over the night-city art at the top of the page and in the opening are kept; they age the art rather than the surface.
+- **Scroll reveal.** Cards and panels now rise straight up from below and fade in. The old start pose turned them (-1.2deg, 3deg on cards) and shrank cards to 0.96, so on big panels the far edges swung sideways as they settled, which V saw as sliding in from the side. Same easing and overshoot; still nothing under reduced motion.
+- **New heroes are ordinary heroes.** The patch after their release folded the six City Never Sleeps heroes into the roster, so the hero page only gives them the "New hero · Out" plate, the update intro and the FAQ band while still unreleased; once out they get the normal lore intro and Lore band. The directory "New" flag shows only for unreleased heroes. Compare falls back to "Hero" when a kit has no type.
+- **Spotlight order.** The home deck no longer opens on the newest hero; every visit deals the whole roster in a fresh random order.
+
+
+### Round 57, second pass · player page and torn edges (2026-11-01)
+
+- **Match cards:** the two lobby name lists are gone from the closed card (the opened card's Scoreboard lists both teams with links). Their room goes to labelled columns: K/D/A, **Lobby** (the average rank badge at 30px with the rank in words, and the game's rank change under it) and **Draft odds** (big number plus a small bar), then the twelve items. The layout follows the card's own width through a container query: one row above 800px, items on a second row below that, and a stacked phone layout under 640px. Standard games simply leave the lobby column empty.
+- **Win rate:** the pen ring around it is removed.
+- **Banner:** the dashed marching border round the name is replaced by a thick bar in the hero's colour under the name. The colour band behind the hero fades in from the left instead of cutting in on a diagonal, and the hero bust stands whole inside the banner. A missing Steam avatar now shows an empty print instead of collapsing.
+- **Hover:** the hero card on each match lifts with the site's smooth easing instead of eight held frames; the open/close arrow too.
+- **Home copy:** the "The city has its secrets" tape, the lede under the headline and the line under "The meta right now" are removed.
+
+## Round 58 · Lobby badge, hero art banner (2026-11-01)
+
+- **Torn edges removed.** The Round 57 SVG tear on the meta cards, explore tiles and fan cards was not what V meant; it is gone (and `RoughEdges.tsx` with it).
+- **Lobby column:** no "Lobby" label and no rank name on the card. The lobby's average rank badge is shown large (54px) with the player's change under it as "−300 MMR" / "+370 MMR"; the rank's name appears in a tooltip on hover or focus.
+- **Banner:** the hero's own painted art (the render, else the splash) fills the right ~60% of the player banner and fades into the dark under the name, replacing the colour band and the cut-out bust. On phones it sits behind the whole banner at 45%.
+
+- **Home title:** BROADWAY is the big headline on Home (up to 104px); "Find your edge. / Rule Manhattan." sits under it as a smaller two-line tagline.
+- **Meta foot line:** only the hero games counted; the "heroes at 52% or better" count is gone.
+- **Leaderboard top five** (after a reference V liked): number one on a wide dark banner (big gold "1", avatar and name on one line, rank, win rate, games, most played heroes) with their main hero's art on the right at its own proportions and a thin glow line along the bottom; two to five are four identical dark cards (place in a ring, avatar and name, rank, win rate, games, three heroes). No colour fills. Players the lookups found nothing for (no rank and no record) are left out, with a count in the footer. Most played heroes now come from the player's own hero stats when the ladder sends none. Table columns run #, player, most played, rank, win rate, W/L.
+- **Playing lately:** the three most played heroes of the last 30 days stand as busts with their win rate on a tab and games and KDA under them; they lift and glow on hover. Heroes four to eight follow as a ranked list (games · KDA, win rate on the right).
+- **Short names:** `shortName()` in `roster.ts` gives "Danny" for Deadman Danny in tight spaces (V).
+- **Panels in thin lines:** `.panel` loses the teal outline, inner line and glow for a faint hairline edge (#ffffff14), a 6px corner and a soft drop shadow, after the reference's borders V liked.
+
+## Round 59 — player banner rework, two-sided matchups graph (2026-11-01)
+
+- **Player banner (V).** The cream rank sticker, Copy Steam ID, Share, the account number, "last game" and the streak
+  are gone. The Steam picture is now the refresh button (a ↻ shows on hover). A small white Steam orb (V's logo, cut to
+  the orb, `assets/ui/steam-orb.webp`) sits beside the name and links to the profile; on hover it lifts 2px and glows.
+  The name is a size smaller, and under it the rank is a plain medallion with its name in the rank colour. The banner
+  background is the most-played hero: its in-game backdrop (1920px) across the width and the largest art we have for
+  the hero on the right. There is no 4K hero art in the game files we have; most renders are 540px.
+- **MMR left out.** The game does not show an MMR number. The Deadlock API only has its own estimate (`player_score`,
+  0–66 scale), so it is not shown as "in-game MMR".
+- **Leaderboard** intro paragraph removed.
+- **Lobby badge tooltip** on match cards hugs its text (in the rank colour), and the MMR change sits 10px clear of the badge.
+- **Top-bracket matchups** are one two-sided bar graph (zero in the middle, beats to the right in green, struggles
+  into to the left in red) instead of two lopsided columns.
+
+## Round 60 — minimap heads, Most played, no lore link (2026-11-01)
+
+- **Hero faces** (tables, matchup lists, leaderboard most-played, live matches, hero picker) are the game's own
+  minimap heads (`*_sm.png`, the 128px version of `*_mm.png`) standing free, with no brass ring or round crop, and a
+  small drop shadow. They lift a touch on hover. Large art (cards, busts, banners) is unchanged.
+- **Lobby badge tooltip** on match cards shows just the rank name ("Ascendant III"), no "Lobby:".
+- Player page "Playing lately" is now **Most played**.
+- Hero page header: the "Read the lore ↓" line is gone; the Lore section further down stays.
+
+## Round 61 — matchup columns trimmed (2026-11-01)
+
+- V: the "{hero} at the top" bar graph is removed entirely (TopMatchups.tsx deleted).
+- Matchup columns lose the star/Haze badge and the small subtitle ("Opponent's match win rate"); the section lede
+  still explains what the numbers are. Titles are hero-specific: "Best picks vs Graves", "Worst picks vs Graves",
+  "Best lane partners for Graves", "Worst lanes for Graves".
+
+## Round 62 — Obscurus badge, real Initiate and Acolyte badges (2026-11-01)
+
+- V supplied the Obscurus (unranked) badge; it is the game's own `ranked/badges/rank00_lg.png`, now `rank/rank0.webp`.
+  Unranked players show it in the player banner and rank card, labelled "Obscurus", instead of a dotted "?" circle.
+- The same folder had the real Initiate (moth) and Acolyte (rat) badges, so the drawn stand-ins for tiers 1 and 3 are
+  replaced too and `PLACEHOLDER_TIERS` is gone.
+
+## Round 63 — long player names (2026-11-01)
+
+- V: long names ran into the hero art and pushed the Steam orb over it. The name block now keeps to the dark left
+  ~60% of the banner, names over 14 characters step down a size (over 22, another), and the name wraps onto a second
+  line instead of overflowing. The orb rides at the end of the name, kept on one line with the last word, so it never
+  wraps onto a line by itself.
