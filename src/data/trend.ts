@@ -54,7 +54,8 @@ export function patchMarks(raw: unknown): PatchMark[] {
   for (const p of list as Record<string, unknown>[]) {
     const v = p?.pub_date ?? p?.published_at ?? p?.date ?? p?.release_date ?? p?.created_at;
     const ms = typeof v === 'number' ? (v > 1e12 ? v : v * 1000) : typeof v === 'string' ? Date.parse(v) : NaN;
-    if (Number.isFinite(ms)) { const t = todayUtc(ms); out.push({ t, label: fmtDay(t) }); }
+    // two posts on the same day are one mark
+    if (Number.isFinite(ms)) { const t = todayUtc(ms); if (!out.some((m) => m.t === t)) out.push({ t, label: fmtDay(t) }); }
   }
   return out.sort((a, b) => a.t - b.t);
 }

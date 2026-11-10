@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { RANKS, type Filters, type RankKey } from '../data/types';
+import { WINDOW_KEYS, WINDOW_LABEL, type WindowKey } from '../data/patchWindow';
+import { BRACKETS, RANKS, type Filters, type RankKey } from '../data/types';
 
 import { rankBadge } from '../data/ranks';
 export const badge = (rank: string): string | undefined => rankBadge(rank);
@@ -16,6 +17,9 @@ function Segmented<T extends string>({ label, value, options, onChange }: {
   );
 }
 
+/** The words shown for a rank filter value. */
+const rankLabel = (r: RankKey): string => (r === 'all' ? 'All ranks' : BRACKETS.find((b) => b.key === r)?.label ?? r);
+
 function RankSelect({ value, onChange }: { value: RankKey; onChange: (r: RankKey) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -31,18 +35,18 @@ function RankSelect({ value, onChange }: { value: RankKey; onChange: (r: RankKey
   const pick = (r: RankKey) => { onChange(r); setOpen(false); };
   return (
     <div className="rank-select" ref={ref}>
-      <button type="button" className="rank-trigger" aria-haspopup="listbox" aria-expanded={open} aria-label={`Average match rank: ${value === 'all' ? 'All ranks' : value}`} onClick={() => setOpen((o) => !o)}>
+      <button type="button" className="rank-trigger" aria-haspopup="listbox" aria-expanded={open} aria-label={`Average match rank: ${rankLabel(value)}`} onClick={() => setOpen((o) => !o)}>
         {value !== 'all' && badge(value) && <img src={badge(value)} alt="" />}
-        <span>{value === 'all' ? 'All ranks' : value}</span>
+        <span>{rankLabel(value)}</span>
         <span className="chev" aria-hidden="true">{'▾'}</span>
       </button>
       {open && (
         <ul className="rank-menu" role="listbox" aria-label="Average match rank">
-          {(['all', ...RANKS] as RankKey[]).map((r) => (
+          {(['all', ...BRACKETS.map((b) => b.key), ...RANKS] as RankKey[]).map((r) => (
             <li key={r} role="presentation">
               <button type="button" role="option" aria-selected={r === value} onClick={() => pick(r)}>
                 {r === 'all' ? <span className="all-star" aria-hidden="true">{'✦'}</span> : badge(r) ? <img src={badge(r)} alt="" /> : <span className="ph" aria-hidden="true">{r[0]}</span>}
-                {r === 'all' ? 'All ranks' : r}
+                {rankLabel(r)}
               </button>
             </li>
           ))}
@@ -60,6 +64,13 @@ export default function Controls({ filters, onChange }: { filters: Filters; onCh
       <Segmented label="Queue" value={filters.queue} onChange={(queue) => onChange({ queue })}
         options={[{ value: 'ranked', label: 'Ranked' }, { value: 'unranked', label: 'Unranked' }]} />
       <RankSelect value={filters.rank} onChange={(rank) => onChange({ rank })} />
+      {/* Which stretch of time the numbers cover. Every choice stays inside one patch. */}
+      <label className="window-select">
+        <span className="sr-only">Time window</span>
+        <select value={filters.window} onChange={(e) => onChange({ window: e.target.value as WindowKey })}>
+          {WINDOW_KEYS.map((w) => <option key={w} value={w}>{WINDOW_LABEL[w]}</option>)}
+        </select>
+      </label>
     </div>
   );
 }

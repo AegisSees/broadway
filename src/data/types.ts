@@ -1,3 +1,7 @@
+import type { RateView } from '../lib/stats';
+import type { WindowKey } from './patchWindow';
+import type { DataMeta } from './tiers';
+
 export type Mode = 'standard' | 'street_brawl';
 export type Queue = 'ranked' | 'unranked';
 
@@ -5,15 +9,30 @@ export const RANKS = [
   'Eternus', 'Ascendant', 'Phantom', 'Oracle', 'Emissary', 'Ritualist', 'Mystic', 'Sentinel', 'Acolyte', 'Seeker', 'Initiate',
 ] as const;
 export type Rank = (typeof RANKS)[number];
-export type RankKey = 'all' | Rank;
+
+/**
+ * Rank brackets: a few neighbouring ranks taken together. One rank on its own often has too few games for a hero's win
+ * rate to mean much, so the filter offers these wider groups first. `low` and `high` are rank tiers (Initiate = 1,
+ * Eternus = 11).
+ */
+export const BRACKETS = [
+  { key: 'bracket-1', label: 'Initiate to Acolyte', low: 1, high: 3 },
+  { key: 'bracket-2', label: 'Sentinel to Ritualist', low: 4, high: 6 },
+  { key: 'bracket-3', label: 'Emissary and Oracle', low: 7, high: 8 },
+  { key: 'bracket-4', label: 'Phantom and above', low: 9, high: 11 },
+] as const;
+export type BracketKey = (typeof BRACKETS)[number]['key'];
+export type RankKey = 'all' | BracketKey | Rank;
 
 export interface Filters {
   mode: Mode;
   queue: Queue;
   rank: RankKey;
+  /** Which stretch of time the numbers cover. See data/patchWindow.ts. */
+  window: WindowKey;
 }
 
-export const DEFAULT_FILTERS: Filters = { mode: 'standard', queue: 'ranked', rank: 'all' };
+export const DEFAULT_FILTERS: Filters = { mode: 'standard', queue: 'ranked', rank: 'all', window: 'patch' };
 
 export type ItemCategory = 'weapon' | 'vitality' | 'spirit';
 export interface ItemRef {
@@ -65,6 +84,10 @@ export interface MatchupEntry {
   name: string;
   /** Value used for the bar and label. */
   display: string;
+  /** Hover text with the full working: raw rate, range and games. */
+  detail?: string;
+  /** True when the range still includes "no difference": drawn greyed out. */
+  unsure?: boolean;
   /** 0..1 bar fill relative to the group. */
   fill: number;
   matches: number;
@@ -110,6 +133,14 @@ export interface HeroOverview {
   banRate?: number;
   overallRank?: { rank: number; of: number };
   matches: number;
+  /** Win rate with its range and sample label. */
+  rate?: RateView;
+  /** Tier score in win-rate points, and its two parts. */
+  score?: number;
+  strength?: number;
+  presence?: number;
+  /** What the numbers cover. */
+  meta?: DataMeta;
   builds: BuildPath[];
   skill?: SkillPath;
   matchups: MatchupGroup[];
