@@ -8,17 +8,17 @@ export default function MatchupColumn({ group, heroName }: { group: MatchupGroup
   const fill = (s: string) => s.replace('{hero}', heroName);
   return (
     <section className="panel mu" aria-label={fill(group.title)}>
-      <header><h3>{fill(group.title)}</h3></header>
+      <header><h3>{fill(group.title)}</h3><p className="mu-sub">{fill(group.subtitle)}, in points</p></header>
       <ol>
         {group.entries.map((e) => {
           const hero = getHero(e.slug);
           return (
-            <li key={e.slug}>
+            <li key={e.slug} className={e.unsure ? 'unsure' : undefined} title={e.detail}>
               {hero ? <Link to={`/hero/${e.slug}`} aria-label={e.name}><HeroFace hero={hero} /></Link> : <span className="face" aria-hidden="true">{e.name[0]}</span>}
               <div className="main">
                 <div className="top"><Link to={`/hero/${e.slug}`}>{e.name}</Link><em className={group.tone}>{e.display}</em></div>
                 <div className="bar" aria-hidden="true"><i className={group.tone} style={{ width: `${Math.round(e.fill * 100)}%` }} /></div>
-                <small>{fmtInt(e.matches)} matches</small>
+                <small>{fmtInt(e.matches)} matches{e.unsure ? ' · could be chance' : ''}</small>
               </div>
             </li>
           );
