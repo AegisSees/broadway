@@ -19,6 +19,8 @@ export function liveOverview(slug: string, tiers: readonly TierRow[], matchups: 
     // tiers are sorted by score, best first, so position is the overall rank
     overallRank: { rank: idx + 1, of: tiers.length },
     matches: r.matches,
+    rate: r.rate,
+    score: r.score, strength: r.strength, presence: r.presence,
     builds: [],
     matchups,
     guides: [],

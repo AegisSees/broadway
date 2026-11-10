@@ -30,6 +30,8 @@ export interface HeroStatsRow {
   total_kills: number;
   total_deaths: number;
   total_assists: number;
+  /** Picks by ALL heroes in this row's bucket (12 per game), repeated on every row of the bucket. */
+  matches_per_bucket?: number;
   total_net_worth?: number;
   total_last_hits?: number;
   total_player_damage?: number;
@@ -56,6 +58,8 @@ export interface HeroBanRow {
   hero_id: number;
   bucket: number;
   bans: number;
+  /** Games the API counted bans over (only games with a ban phase). */
+  matches?: number;
 }
 
 export interface AbilityOrderRow {

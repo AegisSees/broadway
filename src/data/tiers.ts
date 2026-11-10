@@ -1,109 +1,209 @@
 import type { HeroStatsRow, HeroBanRow } from '../api/types';
+import { MIN_GAMES, fitPrior, rateView, shrink, shrunkSd, type Prior, type RateView } from '../lib/stats';
 import type { HeroIdMap } from './heroIds';
+import type { PatchWindow } from './patchWindow';
 import type { Tier } from './types';
 
 export interface TierRow {
   slug: string;
   tier: Tier;
+  /** Shrunk win rate in percent. This is the number the site leads with; `rate.raw` is wins over games untouched. */
   winRate: number;
-  /** Share of games the hero appears in. */
+  /** Win rate with its 95% range and sample label. */
+  rate: RateView;
+  /** Share of games the hero appears in, counted only over days the hero was in the game. */
   pickRate: number;
   banRate?: number;
   matches: number;
-  /** Win rate change over the last 7 days, in percentage points. Absent when there is not enough recent data. */
+  /** Win rate of the last 7 days minus the 7 days before, in points. Absent unless both weeks have 1,000 games. */
   delta?: number;
-  /** Broadway score, 0 to 100: mostly win rate, with pick rate as the second signal. Tiers are cut from this. */
+  /** True when that change is bigger than luck alone would explain (about 2 standard errors). */
+  deltaSure?: boolean;
+  /** Tier score in win-rate points above or below an average hero. Tiers are cut from this. */
   score: number;
+  /** The two parts of the score, so the page can show its working. */
+  strength: number;
+  presence: number;
 }
 
-export interface TierList { rows: TierRow[]; note?: string }
+/** What a set of numbers covers: how many games, from when to when, and when the site fetched them. */
+export interface DataMeta {
+  /** Games (not picks) in the sample. */
+  matches: number;
+  window: PatchWindow;
+  /** Start of the newest day that has games, unix seconds. */
+  latestDay?: number;
+  /** When this browser fetched the numbers, in milliseconds. */
+  fetchedAt: number;
+}
 
-const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
-const sd = (xs: number[]) => Math.sqrt(mean(xs.map((x) => (x - mean(xs)) ** 2))) || 1;
-
-/** Share of heroes in each tier, best to worst (S+ first). The cut is on the composite score, not on win rate alone. */
-const SHARE: [Tier, number][] = [['S+', 0.15], ['S', 0.22], ['A', 0.25], ['B', 0.2], ['C', 0.11], ['D', 0.07]];
+export interface TierList {
+  rows: TierRow[];
+  /** Heroes left out for having too few games, with their game counts. */
+  hidden: { slug: string; matches: number }[];
+  prior: Prior;
+  meta?: DataMeta;
+  note?: string;
+}
 
 export const TIER_NOTES: Record<Tier, string> = {
   'S+': 'Defining the meta', S: 'Strong picks', A: 'Solid', B: 'Playable', C: 'Struggling', D: 'Needs a patch',
 };
 
 /**
- * Scores every hero (80% win rate, 20% pick rate, both as distance from the average in standard deviations) and cuts the
- * tiers by share.
+ * Score needed for each tier, in win-rate points, best first. These are fixed lines, not shares: if a patch is well
+ * balanced, S+ can be empty and most heroes land in B. Anything below the last line is D.
  */
-export function scoreAndTier(rows: TierRow[]): TierRow[] {
-  const wm = mean(rows.map((r) => r.winRate)), ws = sd(rows.map((r) => r.winRate));
-  const pm = mean(rows.map((r) => r.pickRate)), ps = sd(rows.map((r) => r.pickRate));
-  const scored = rows.map((r) => {
-    const c = 0.8 * ((r.winRate - wm) / ws) + 0.2 * ((r.pickRate - pm) / ps);
-    return { ...r, score: Math.max(0, Math.min(100, Math.round((50 + c * 17) * 10) / 10)) };
-  });
-  const ranked = [...scored].sort((a, b) => b.score - a.score).map((r) => r.slug);
-  const cut: Record<string, Tier> = {};
-  let at = 0;
-  for (const [tier, share] of SHARE) {
-    const n = Math.round(share * rows.length);
-    for (const slug of ranked.slice(at, at + n)) cut[slug] = tier;
-    at += n;
-  }
-  for (const slug of ranked.slice(at)) cut[slug] = 'D';
-  return scored.map((r) => ({ ...r, tier: cut[r.slug] ?? 'B' }));
+export const TIER_CUTS: [Tier, number][] = [['S+', 4], ['S', 2.5], ['A', 1], ['B', -2], ['C', -4]];
+
+export function tierOfScore(score: number): Tier {
+  for (const [tier, min] of TIER_CUTS) if (score >= min) return tier;
+  return 'D';
+}
+
+const round1 = (x: number) => Math.round(x * 10) / 10;
+const median = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : 0;
+};
+
+/**
+ * The tier score of one hero, in win-rate points.
+ *
+ *   strength = how far the shrunk win rate is from 50%, moved one "standard deviation" back toward 50%.
+ *              The standard deviation is how unsure we still are. A hero with few games is very unsure, so it is moved
+ *              back a lot; a hero with 100,000 games barely moves. This is the "confidence" part: a hero has to be
+ *              good AND proven to score high.
+ *   presence = a small bonus or penalty for how often the hero is picked compared with the typical hero:
+ *              half a point for every doubling, never more than three quarters of a point either way.
+ *              A hero that wins in everyone's hands matters more than one that wins only for its few specialists.
+ *   score    = strength + presence
+ */
+export function tierScore(wins: number, matches: number, pickRate: number, medianPickRate: number, prior: Prior) {
+  const centre = (shrink(wins, matches, prior) - 0.5) * 100;
+  const unsure = shrunkSd(wins, matches, prior) * 100;
+  const strength = Math.sign(centre) * Math.max(0, Math.abs(centre) - unsure);
+  const ratio = medianPickRate > 0 && pickRate > 0 ? pickRate / medianPickRate : 1;
+  const presence = Math.max(-0.75, Math.min(0.75, 0.5 * Math.log2(ratio)));
+  return { strength, presence, score: strength + presence };
 }
 
 const DAY = 86400;
+/** Both weeks need this many games before a 7-day change is reported at all. */
+export const MIN_WEEK_GAMES = 1000;
 
-/** Win rate of the last 7 days against the 7 before, per hero id, from daily rows. Needs 100 games in each window. */
-export function weeklyDeltas(daily: readonly HeroStatsRow[]): Map<number, number> {
-  const out = new Map<number, number>();
+/**
+ * Win rate of the last 7 days against the 7 before, per hero id, from daily rows.
+ * `sure` says whether the change is larger than about two standard errors, i.e. unlikely to be luck.
+ */
+export function weeklyDeltas(daily: readonly HeroStatsRow[]): Map<number, { delta: number; sure: boolean }> {
+  const out = new Map<number, { delta: number; sure: boolean }>();
   if (!daily.length) return out;
   const end = Math.max(...daily.map((r) => r.bucket));
-  const win = (id: number, from: number, to: number) => {
+  const sum = (id: number, from: number, to: number) => {
     let m = 0, w = 0;
     for (const r of daily) if (r.hero_id === id && r.bucket > from && r.bucket <= to) { m += r.matches; w += r.wins; }
-    return { m, wr: m ? (w / m) * 100 : null };
+    return { m, w };
   };
   for (const id of new Set(daily.map((r) => r.hero_id))) {
-    const cur = win(id, end - 7 * DAY, end), prev = win(id, end - 14 * DAY, end - 7 * DAY);
-    if (cur.m >= 100 && prev.m >= 100 && cur.wr !== null && prev.wr !== null) out.set(id, Math.round((cur.wr - prev.wr) * 10) / 10);
+    const cur = sum(id, end - 7 * DAY, end), prev = sum(id, end - 14 * DAY, end - 7 * DAY);
+    if (cur.m < MIN_WEEK_GAMES || prev.m < MIN_WEEK_GAMES) continue;
+    const a = cur.w / cur.m, b = prev.w / prev.m;
+    const se = Math.sqrt((a * (1 - a)) / cur.m + (b * (1 - b)) / prev.m);
+    out.set(id, { delta: round1((a - b) * 100), sure: Math.abs(a - b) > 1.96 * se });
   }
   return out;
 }
 
 export interface TierInputs {
-  stats: readonly HeroStatsRow[];
+  /** One row per hero per day (bucket=start_time_day), already cut to the time window. */
+  daily: readonly HeroStatsRow[];
   bans?: readonly HeroBanRow[] | null;
-  daily?: readonly HeroStatsRow[] | null;
   ids: HeroIdMap;
 }
 
+export interface TierResult {
+  rows: TierRow[];
+  hidden: { slug: string; matches: number }[];
+  /** API hero ids that Broadway has no page for. */
+  unknownIds: number[];
+  prior: Prior;
+  /** Games in the sample (picks / 12). */
+  games: number;
+  latestDay?: number;
+}
+
 /**
- * Tier rows from the API's hero totals.
- * - Win rate is wins over matches.
- * - Pick rate is the share of games a hero appears in: each game has twelve player slots, so games = total picks / 12
- *   and a hero's pick rate = its picks / games. Twelve heroes per game means the rates add up to 1,200%.
- * - Ban rate is bans over games, the same way.
- * Heroes the API lists but Broadway has no page for are skipped, as are heroes with fewer than 100 games.
+ * Tier rows from the API's per-day hero rows.
+ *
+ * - Wins and games are added up over the days in the window.
+ * - Pick rate is the share of games a hero appears in. A game has twelve heroes, so pick rates add up to 1,200%.
+ *   It is counted only over days on which the hero had at least one game, so a hero released halfway through the patch
+ *   is not marked down for the weeks it did not exist.
+ * - Ban rate is bans over the games the API counted bans for.
+ * - The win rate is shrunk toward the average hero (see lib/stats.ts), with the prior learned from this same sample.
+ * - Heroes with fewer than MIN_GAMES.hero games are not ranked; they are returned in `hidden` so the page can say so.
  */
-export function buildTierRows({ stats, bans, daily, ids }: TierInputs): TierRow[] {
-  const totalPicks = stats.reduce((n, r) => n + r.matches, 0);
-  const games = totalPicks / 12;
-  if (!(games > 0)) return [];
-  const banById = new Map<number, number>();
-  for (const b of bans ?? []) banById.set(b.hero_id, (banById.get(b.hero_id) ?? 0) + b.bans);
-  const deltas = daily ? weeklyDeltas(daily) : new Map<number, number>();
-  const rows: TierRow[] = [];
-  for (const r of stats) {
-    const slug = ids.slugById(r.hero_id);
-    if (!slug || r.matches < 100) continue;
-    rows.push({
-      slug, tier: 'B', score: 0,
-      winRate: Math.round((r.wins / r.matches) * 1000) / 10,
-      pickRate: Math.round((r.matches / games) * 1000) / 10,
-      banRate: bans ? Math.round(((banById.get(r.hero_id) ?? 0) / games) * 1000) / 10 : undefined,
-      matches: r.matches,
-      delta: deltas.get(r.hero_id),
-    });
+export function buildTierRows({ daily, bans, ids }: TierInputs): TierResult {
+  // picks per day across all heroes: the API repeats it on every row of that day
+  const picksOfDay = new Map<number, number>();
+  const perHero = new Map<number, { wins: number; matches: number; days: Set<number> }>();
+  for (const r of daily) {
+    if (!(r.matches > 0)) continue;
+    picksOfDay.set(r.bucket, r.matches_per_bucket ?? (picksOfDay.get(r.bucket) ?? 0));
+    const h = perHero.get(r.hero_id) ?? { wins: 0, matches: 0, days: new Set<number>() };
+    h.wins += r.wins; h.matches += r.matches; h.days.add(r.bucket);
+    perHero.set(r.hero_id, h);
   }
-  return scoreAndTier(rows).sort((a, b) => b.score - a.score);
+  // older API versions had no matches_per_bucket: fall back to adding the heroes up
+  if (daily.some((r) => r.matches_per_bucket === undefined)) {
+    picksOfDay.clear();
+    for (const r of daily) picksOfDay.set(r.bucket, (picksOfDay.get(r.bucket) ?? 0) + r.matches);
+  }
+  const totalPicks = [...picksOfDay.values()].reduce((a, b) => a + b, 0);
+  const games = totalPicks / 12;
+  const prior = fitPrior([...perHero.values()]);
+  const empty: TierResult = { rows: [], hidden: [], unknownIds: [], prior, games: 0 };
+  if (!(games > 0)) return empty;
+
+  const banById = new Map<number, { bans: number; matches: number }>();
+  for (const b of bans ?? []) {
+    const a = banById.get(b.hero_id) ?? { bans: 0, matches: 0 };
+    a.bans += b.bans; a.matches += b.matches ?? 0;
+    banById.set(b.hero_id, a);
+  }
+  const deltas = weeklyDeltas(daily);
+
+  const known: { id: number; slug: string; wins: number; matches: number; pick: number }[] = [];
+  const hidden: TierResult['hidden'] = [];
+  const unknownIds: number[] = [];
+  for (const [id, h] of perHero) {
+    const slug = ids.slugById(id);
+    if (!slug) { unknownIds.push(id); continue; }
+    if (h.matches < MIN_GAMES.hero) { hidden.push({ slug, matches: h.matches }); continue; }
+    const gamesWhileAvailable = [...h.days].reduce((n, d) => n + (picksOfDay.get(d) ?? 0), 0) / 12;
+    known.push({ id, slug, wins: h.wins, matches: h.matches, pick: gamesWhileAvailable > 0 ? (h.matches / gamesWhileAvailable) * 100 : 0 });
+  }
+  const medianPick = median(known.map((k) => k.pick));
+
+  const rows: TierRow[] = known.map((k) => {
+    const rate = rateView(k.wins, k.matches, prior);
+    const s = tierScore(k.wins, k.matches, k.pick, medianPick, prior);
+    const ban = banById.get(k.id);
+    const d = deltas.get(k.id);
+    return {
+      slug: k.slug,
+      // the tier is cut from the rounded score, so the number on the page always agrees with the tier beside it
+      tier: tierOfScore(round1(s.score)),
+      score: round1(s.score), strength: round1(s.strength), presence: round1(s.presence),
+      winRate: rate.shrunk, rate,
+      pickRate: round1(k.pick),
+      banRate: bans && ban && ban.matches > 0 ? round1((ban.bans / ban.matches) * 100) : undefined,
+      matches: k.matches,
+      delta: d?.delta, deltaSure: d?.sure,
+    };
+  });
+  rows.sort((a, b) => b.score - a.score || b.winRate - a.winRate);
+  const latestDay = picksOfDay.size ? Math.max(...picksOfDay.keys()) : undefined;
+  return { rows, hidden, unknownIds, prior, games: Math.round(games), latestDay };
 }

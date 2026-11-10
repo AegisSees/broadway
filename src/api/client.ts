@@ -17,6 +17,8 @@ import type {
  */
 
 const SIX_HOURS = 6 * 60 * 60 * 1000;
+/** Statistics are cached for one hour, the same as the API's own cache, so "fetched X ago" on the page stays honest. */
+const ONE_HOUR = 60 * 60 * 1000;
 const FIVE_MIN = 5 * 60 * 1000;
 const DAY = 24 * 60 * 60 * 1000;
 const TIMEOUT_MS = 30_000;
@@ -139,40 +141,45 @@ export class DeadlockApi {
 
   /** Wins and games for each published build of a hero, from matches where the build was in use. */
   heroBuildStats(heroId: number, f: AnalyticsFilters = {}, signal?: AbortSignal) {
-    return this.request<HeroBuildStatsRow[]>(`/v1/analytics/hero-build-stats/${heroId}`, { ...f }, SIX_HOURS, signal);
+    return this.request<HeroBuildStatsRow[]>(`/v1/analytics/hero-build-stats/${heroId}`, { ...f }, ONE_HOUR, signal);
   }
 
   // ---- Analytics --------------------------------------------------------------------------------------------
 
   heroStats(f: AnalyticsFilters & { bucket?: 'no_bucket' | 'start_time_day' | 'avg_badge'; account_id?: number } = {}, signal?: AbortSignal) {
-    return this.request<HeroStatsRow[]>('/v1/analytics/hero-stats', { bucket: 'no_bucket', ...f }, SIX_HOURS, signal);
+    return this.request<HeroStatsRow[]>('/v1/analytics/hero-stats', { bucket: 'no_bucket', ...f }, ONE_HOUR, signal);
   }
 
   /** Hero-versus-hero results. `same_lane_filter` defaults to true on the server: lane opponents only. */
   heroCounterStats(f: AnalyticsFilters & { same_lane_filter?: boolean } = {}, signal?: AbortSignal) {
-    return this.request<HeroCounterRow[]>('/v1/analytics/hero-counter-stats', { ...f }, SIX_HOURS, signal);
+    return this.request<HeroCounterRow[]>('/v1/analytics/hero-counter-stats', { ...f }, ONE_HOUR, signal);
   }
 
   heroSynergyStats(f: AnalyticsFilters & { same_lane_filter?: boolean } = {}, signal?: AbortSignal) {
-    return this.request<HeroSynergyRow[]>('/v1/analytics/hero-synergy-stats', { ...f }, SIX_HOURS, signal);
+    return this.request<HeroSynergyRow[]>('/v1/analytics/hero-synergy-stats', { ...f }, ONE_HOUR, signal);
   }
 
   /** Ban counts per hero. Only `match_mode` and the rank/time filters apply. */
   heroBanStats(f: Pick<AnalyticsFilters, 'match_mode' | 'min_average_badge' | 'max_average_badge' | 'min_unix_timestamp' | 'max_unix_timestamp'> = {}, signal?: AbortSignal) {
-    return this.request<HeroBanRow[]>('/v1/analytics/hero-ban-stats', { bucket: 'no_bucket', ...f }, SIX_HOURS, signal);
+    return this.request<HeroBanRow[]>('/v1/analytics/hero-ban-stats', { bucket: 'no_bucket', ...f }, ONE_HOUR, signal);
   }
 
   abilityOrderStats(heroId: number, f: AnalyticsFilters = {}, signal?: AbortSignal) {
-    return this.request<AbilityOrderRow[]>('/v1/analytics/ability-order-stats', { hero_id: heroId, ...f }, SIX_HOURS, signal);
+    return this.request<AbilityOrderRow[]>('/v1/analytics/ability-order-stats', { hero_id: heroId, ...f }, ONE_HOUR, signal);
   }
 
-  itemStats(f: AnalyticsFilters & { hero_id?: number; bucket?: string } = {}, signal?: AbortSignal) {
-    return this.request<ItemStatsRow[]>('/v1/analytics/item-stats', { bucket: 'no_bucket', ...f }, SIX_HOURS, signal);
+  /**
+   * Wins and games per item. `bucket` splits the rows, for example `net_worth_by_2000` = the buyer's net worth at the
+   * moment of purchase in steps of 2,000 souls. `min/max_bought_at_s` keep only purchases made in that part of the game.
+   * Corrupted Items are a separate set and are left out unless asked for.
+   */
+  itemStats(f: AnalyticsFilters & { hero_id?: number; bucket?: string; min_bought_at_s?: number; max_bought_at_s?: number; corrupted_items?: 'exclude' | 'include' | 'only' } = {}, signal?: AbortSignal) {
+    return this.request<ItemStatsRow[]>('/v1/analytics/item-stats', { bucket: 'no_bucket', ...f }, ONE_HOUR, signal);
   }
 
   /** How many games were played at each of the 66 levels. */
   badgeDistribution(f: AnalyticsFilters = {}, signal?: AbortSignal) {
-    return this.request<BadgeDistributionRow[]>('/v1/analytics/badge-distribution', { ...f }, SIX_HOURS, signal);
+    return this.request<BadgeDistributionRow[]>('/v1/analytics/badge-distribution', { ...f }, ONE_HOUR, signal);
   }
 
   // ---- Players ----------------------------------------------------------------------------------------------
@@ -269,6 +276,11 @@ export class DeadlockApi {
   /** Matches in progress right now (about 150). Short cache because the list changes by the minute. */
   activeMatches(signal?: AbortSignal) {
     return this.request<ActiveMatchRaw[]>('/v1/matches/active', {}, 15_000, signal);
+  }
+
+  /** Dates of the big patches, newest first, as ISO strings. Used to cut every statistic to one patch. */
+  bigPatchDays(signal?: AbortSignal) {
+    return this.request<string[]>('/v1/patches/big-days', {}, SIX_HOURS, signal);
   }
 
   patches(signal?: AbortSignal) {
