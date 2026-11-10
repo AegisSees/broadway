@@ -18,7 +18,10 @@ import { getHero, initials } from '../data/roster';
 import { dataSource } from '../data/source';
 import { useAsync } from '../data/useAsync';
 import type { HeroOverview } from '../data/types';
-import { confidence, confidenceLabel, fmtInt, fmtPct, tierFromWinRate } from '../lib/stats';
+import { confidenceLabel, fmtDelta, fmtInt, fmtPct } from '../lib/stats';
+import DataStamp from '../components/DataStamp';
+import RankStrip from '../components/RankStrip';
+import ItemEffects from '../components/ItemEffects';
 import { useFilters } from '../lib/useFilters';
 import { useTitle } from '../lib/useTitle';
 import NotFound from './NotFound';
@@ -34,14 +37,16 @@ import { getNewcomer, isOut, releaseDay, releaseWeekday } from '../data/newHeroe
 import { getLore } from '../data/heroLore';
 
 function Stats({ o }: { o: HeroOverview }) {
-  const tier = o.tier ?? tierFromWinRate(o.winRate);
+  const tier = o.tier ?? 'B';
   const items: { label: string; value?: string; hi?: boolean; note?: string; lead?: React.ReactNode; tier?: boolean }[] = [
-    { label: 'Tier', tier: true, note: o.tier ? undefined : 'By win rate' },
+    { label: 'Tier', tier: true, note: o.score !== undefined ? `Score ${fmtDelta(o.score)}` : undefined },
+    // the range says how far off the win rate could reasonably be, given the number of games
+    ...(o.rate ? [{ label: 'Win rate range', value: `${o.rate.low.toFixed(1)} to ${o.rate.high.toFixed(1)}%`, note: `Raw ${fmtPct(o.rate.raw)}` }] : []),
     // the win rate already leads the stat plates above, so it is not repeated here
     ...(o.overallRank ? [{ label: 'Overall rank', value: `${o.overallRank.rank} / ${o.overallRank.of}` }] : []),
     { label: 'Pick rate', value: fmtPct(o.pickRate) },
     ...(o.banRate !== undefined ? [{ label: 'Ban rate', value: fmtPct(o.banRate) }] : []),
-    { label: 'Matches', value: fmtInt(o.matches), note: confidenceLabel[confidence(o.matches)] },
+    { label: 'Matches', value: fmtInt(o.matches), note: o.rate ? confidenceLabel[o.rate.confidence] : undefined },
   ];
   return (
     <div className="panel stats hero-stats" data-n={items.length} style={{ ['--n' as string]: items.length } as React.CSSProperties}>
@@ -63,9 +68,12 @@ export default function HeroPage() {
   const { slug } = useParams();
   const hero = getHero(slug);
   const [filters, setFilters] = useFilters();
-  const state = useAsync((signal) => (hero ? dataSource.heroOverview(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank]);
-  const trend = useAsync((signal) => (hero ? dataSource.heroTrend(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank]);
-  const builds = useAsync((signal) => (hero ? dataSource.heroBuilds(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank]);
+  const state = useAsync((signal) => (hero ? dataSource.heroOverview(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank, filters.window]);
+  const trend = useAsync((signal) => (hero ? dataSource.heroTrend(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank, filters.window]);
+  const builds = useAsync((signal) => (hero ? dataSource.heroBuilds(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank, filters.window]);
+  // the by-rank strip always covers every rank, so the rank filter is not one of its inputs
+  const byRank = useAsync((signal) => (hero ? dataSource.heroByRank(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.window]);
+  const items = useAsync((signal) => (hero ? dataSource.heroItems(hero.slug, filters, signal) : Promise.resolve(null)), [hero?.slug, filters.mode, filters.queue, filters.rank, filters.window]);
   const [tab, setTab] = useState('overview');
   useTitle(hero?.name ?? 'Hero');
   if (!hero) return <NotFound />;
@@ -136,12 +144,13 @@ export default function HeroPage() {
           <div className="notice hero-note">
             <b>Headline numbers and matchups</b>
             <span>
-              need more matches for {hero.name} with these filters. Try All ranks or another queue.
-              {' '}<button type="button" className="chip" onClick={() => setFilters({ mode: 'standard', queue: 'ranked', rank: 'all' })}>Reset filters</button>
+              need at least 200 matches for {hero.name} with these filters. Try All ranks, This patch or another queue.
+              {' '}<button type="button" className="chip" onClick={() => setFilters({ mode: 'standard', queue: 'ranked', rank: 'all', window: 'patch' })}>Reset filters</button>
             </span>
           </div>
         )}
         {overview && <Stats o={overview} />}
+        {overview?.meta && <DataStamp meta={overview.meta} />}
 
         <nav className="tabs" aria-label="Page sections">
           {tabs.map((t) => (
@@ -154,8 +163,15 @@ export default function HeroPage() {
         {trend.status === 'loading' && <p className="muted" role="status">Loading the trend…</p>}
         {trend.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load the trend</h3><p>{trend.message}.</p></div>}
         {trend.status === 'ready' && (trend.value
-          ? <WinTrend key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}`} heroName={hero.name} trend={trend.value} />
+          ? <WinTrend key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}${filters.window}`} heroName={hero.name} trend={trend.value} />
           : <div className="panel empty"><h3>No history yet</h3><p>Daily win rate for {hero.name} isn't available from this data source yet.</p></div>)}
+
+        {byRank.status === 'ready' && byRank.value && byRank.value.slices.length > 0 && (
+          <>
+            <SectionHeading title="Win rate by rank" />
+            <RankStrip data={byRank.value} heroName={hero.name} />
+          </>
+        )}
 
         {!brawl && (
           <>
@@ -163,15 +179,22 @@ export default function HeroPage() {
             {builds.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
             {builds.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load builds</h3><p>{builds.message}.</p></div>}
             {builds.status === 'ready' && (builds.value
-              ? <BuildBoard key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}`} builds={builds.value} heroName={hero.name} />
+              ? <BuildBoard key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}${filters.window}`} builds={builds.value} heroName={hero.name} />
               : <div className="panel empty"><h3>No published builds yet</h3><p>Nobody has published a {hero.name} build in the game’s build browser yet. Check back soon, or plan your own.</p></div>)}
             <p className="bb-more"><Link className="chip" to={`/builds?hero=${hero.slug}`}>Browse every {hero.name} build {'→'}</Link><Link className="chip" to={`/planner?hero=${hero.slug}`}>Plan your own {'→'}</Link></p>
+
+            {items.status === 'ready' && items.value && (
+              <>
+                <SectionHeading title="Items that win" />
+                <ItemEffects data={items.value} heroName={hero.name} />
+              </>
+            )}
 
             {overview && (
               <>
                 <SectionHeading id="matchups" title="Know your matchups" />
                 <p className="muted" style={{ marginTop: -6, marginBottom: 14, fontSize: 13 }}>
-                  Pick columns show the opponent's win rate over whole matches, not lane results. Lane synergy and lane deficit use the first nine minutes.
+                  Each number is how many points {hero.name}{'’'}s win rate moves against that hero, compared with {hero.name}{'’'}s usual win rate over whole matches. Lane partners are counted the same way. Greyed rows could be chance.
                 </p>
                 {overview.matchups.length > 0
                   ? <div className="mugrid" data-n={overview.matchups.length}>{overview.matchups.map((g) => <MatchupColumn key={g.key} group={g} heroName={hero.name} heroSlug={hero.slug} />)}</div>

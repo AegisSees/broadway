@@ -4,7 +4,6 @@ import assetsHeroes from '../../api-samples/assets-heroes.json';
 import banRaw from '../../api-samples/hero-ban.json';
 import counterRaw from '../../api-samples/hero-counter.json';
 import dailyRaw from '../../api-samples/hero-stats-daily.json';
-import statsRaw from '../../api-samples/hero-stats.json';
 import synergyRaw from '../../api-samples/hero-synergy.json';
 import historyRaw from '../../api-samples/match-history.json';
 import patchesRaw from '../../api-samples/patches.json';
@@ -21,12 +20,11 @@ import { normalizePatches, plainExcerpt } from './patches';
 import { badgeLevel, buildCore, formSummary, heroesIn, normalizeHistory, normalizeRank, queueKind } from './player';
 import { ALL_LEVELS, distributionStats, normalizePlayerDistribution } from './rankDistribution';
 import { normalizeLeaderboard, playerHref, resolveCandidates } from './leaderboard';
-import { buildTierRows, weeklyDeltas } from './tiers';
+import { buildTierRows, tierOfScore, weeklyDeltas } from './tiers';
 import { getHero } from './roster';
 
 const assets = assetsHeroes as unknown as AssetHero[];
 const ids = buildHeroIdMap(assets);
-const stats = statsRaw as unknown as HeroStatsRow[];
 
 describe('hero ids', () => {
   it('maps every active hero in the API to a Broadway hero page', () => {
@@ -39,56 +37,56 @@ describe('hero ids', () => {
   });
 });
 
-describe('tier rows from hero-stats', () => {
-  const rows = buildTierRows({ stats, bans: banRaw as unknown as HeroBanRow[], daily: dailyRaw as unknown as HeroStatsRow[], ids });
-  it('lists each hero once with sensible rates', () => {
+describe('tier rows from daily hero-stats', () => {
+  const daily = dailyRaw as unknown as HeroStatsRow[];
+  const result = buildTierRows({ daily, bans: banRaw as unknown as HeroBanRow[], ids });
+  const rows = result.rows;
+  it('lists each hero once with sensible rates and a range around each', () => {
     expect(rows.length).toBeGreaterThan(30);
     expect(new Set(rows.map((r) => r.slug)).size).toBe(rows.length);
-    for (const r of rows) { expect(r.winRate).toBeGreaterThan(30); expect(r.winRate).toBeLessThan(70); expect(r.pickRate).toBeGreaterThan(0); }
+    for (const r of rows) {
+      expect(r.winRate).toBeGreaterThan(30); expect(r.winRate).toBeLessThan(70); expect(r.pickRate).toBeGreaterThan(0);
+      expect(r.rate.low).toBeLessThanOrEqual(r.rate.raw); expect(r.rate.high).toBeGreaterThanOrEqual(r.rate.raw);
+      expect(r.matches).toBeGreaterThanOrEqual(200);
+    }
   });
-  it('defines pick rate as the share of games a hero is in (twelve slots per game, so rates add up to about 1200%)', () => {
-    const total = stats.reduce((n, r) => n + r.matches, 0);
-    const sum = buildTierRows({ stats, ids }).reduce((n, r) => n + r.pickRate, 0);
-    expect(sum).toBeGreaterThan(1150);
-    expect(sum).toBeLessThanOrEqual(1200.5);
-    const top = [...stats].sort((a, b) => b.matches - a.matches)[0];
-    const row = rows.find((r) => r.slug === ids.slugById(top.hero_id));
-    expect(row?.pickRate).toBeCloseTo((top.matches / (total / 12)) * 100, 0);
+  it('counts games as picks over twelve, so pick rates add up to about 1200%', () => {
+    const picks = daily.reduce((n, r) => n + r.matches, 0);
+    expect(result.games).toBe(Math.round(picks / 12));
+    const sum = rows.reduce((n, r) => n + r.pickRate, 0);
+    // the saved hero list is older than the saved games, so a few newer heroes are unknown here and the sum falls short of 1200
+    expect(sum).toBeGreaterThan(1000);
+    expect(sum).toBeLessThanOrEqual(1260); // a little over 1200 is possible: late-released heroes are measured over fewer days
+    expect(result.unknownIds.length).toBeLessThan(6);
   });
-  it('derives ban rate from bans over games and cuts tiers by score', () => {
-    expect(rows.every((r) => r.banRate !== undefined && r.banRate >= 0)).toBe(true);
+  it('cuts tiers from the score and sorts best first', () => {
     expect(rows.map((r) => r.score)).toEqual([...rows.map((r) => r.score)].sort((a, b) => b - a));
-    expect(rows[0].tier).toBe('S+');
-    expect(new Set(rows.map((r) => r.tier)).size).toBeGreaterThanOrEqual(5);
-    expect(buildTierRows({ stats, ids }).every((r) => r.banRate === undefined)).toBe(true);
+    for (const r of rows) expect(r.tier).toBe(tierOfScore(r.score));
+    expect(buildTierRows({ daily, ids }).rows.every((r) => r.banRate === undefined)).toBe(true);
   });
   it('computes the 7-day change only with enough games in both weeks', () => {
-    const d = weeklyDeltas(dailyRaw as unknown as HeroStatsRow[]);
-    for (const v of d.values()) expect(Math.abs(v)).toBeLessThan(15);
+    for (const v of weeklyDeltas(daily).values()) expect(Math.abs(v.delta)).toBeLessThan(15);
     expect(weeklyDeltas([])).toEqual(new Map());
     const thin = [{ bucket: 86400 * 20, hero_id: 1, matches: 5, wins: 5 }, { bucket: 86400 * 10, hero_id: 1, matches: 5, wins: 0 }] as HeroStatsRow[];
     expect(weeklyDeltas(thin).size).toBe(0);
   });
-  it('returns nothing when there are no games', () => expect(buildTierRows({ stats: [], ids })).toEqual([]));
+  it('returns nothing when there are no games', () => expect(buildTierRows({ daily: [], ids }).rows).toEqual([]));
 });
 
 describe('matchup columns from the API', () => {
   const lookup = { byId: (id: number) => { const s = ids.slugById(id); const h = s ? getHero(s) : undefined; return h ? { slug: h.slug, name: h.name } : undefined; } };
   it('builds best and worst picks against a hero from real counter rows', () => {
     const rows = counterRaw as unknown as HeroCounterRow[];
-    const hero = rows[0].hero_id;
-    const [best, worst] = buildPickColumns(hero, rows, lookup);
-    expect(best.entries.length).toBeGreaterThan(0);
-    const num = (s: string) => parseFloat(s);
-    expect(num(best.entries[0].display)).toBeGreaterThanOrEqual(num(worst.entries[0].display));
+    const { groups: [best, worst] } = buildPickColumns(rows[0].hero_id, rows, lookup);
+    // "best picks vs hero" are the hero's negative matchups, "worst picks" its positive ones
+    for (const e of best.entries) expect(e.display.startsWith('\u2212')).toBe(true);
+    for (const e of worst.entries) expect(e.display.startsWith('+')).toBe(true);
   });
   it('builds lane synergy from pairs listed once, whichever side the hero is on', () => {
     const rows = synergyRaw as unknown as HeroSynergyRow[];
-    const g = buildSynergyColumn(rows[0].hero_id1, rows, lookup);
-    expect(g?.key).toBe('synergy');
-    const other = rows.find((r) => r.hero_id2 === rows[0].hero_id1);
-    if (other) expect(buildSynergyColumn(rows[0].hero_id1, [other], lookup)?.entries[0].slug).toBe(ids.slugById(other.hero_id1));
-    expect(buildSynergyColumn(999999, rows, lookup)).toBeNull();
+    const { group } = buildSynergyColumn(rows[0].hero_id1, rows, lookup);
+    if (group) { expect(group.key).toBe('synergy'); for (const e of group.entries) expect(e.display.startsWith('+')).toBe(true); }
+    expect(buildSynergyColumn(999999, rows, lookup).group).toBeNull();
   });
 });
 

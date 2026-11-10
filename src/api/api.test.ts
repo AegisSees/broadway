@@ -74,28 +74,44 @@ describe('batched player calls', () => {
 });
 
 describe('filters', () => {
-  it('maps modes, queues and ranks to API params', () => {
-    expect(toApiFilters({ mode: 'standard', queue: 'ranked', rank: 'all' })).toEqual({ game_mode: 'normal', match_mode: 'ranked' });
-    const f = toApiFilters({ mode: 'street_brawl', queue: 'unranked', rank: 'Eternus' });
+  it('maps modes, queues, ranks, brackets and the time window to API params', () => {
+    expect(toApiFilters({ mode: 'standard', queue: 'ranked', rank: 'all', window: 'patch' })).toEqual({ game_mode: 'normal', match_mode: 'ranked' });
+    const f = toApiFilters({ mode: 'street_brawl', queue: 'unranked', rank: 'Eternus', window: 'patch' });
     expect(f.game_mode).toBe('street_brawl');
     expect(f.min_average_badge).toBe(111);
     expect(f.max_average_badge).toBe(116);
+    const b = toApiFilters({ mode: 'standard', queue: 'ranked', rank: 'bracket-4', window: 'patch' }, { key: 'patch', from: 1000, patchStart: 1000 });
+    expect([b.min_average_badge, b.max_average_badge]).toEqual([91, 116]);
+    expect(b.min_unix_timestamp).toBe(1000);
+    expect(b.max_unix_timestamp).toBeUndefined();
   });
 });
 
 describe('buildPickColumns', () => {
   const heroes = { byId: (id: number) => ({ slug: `h${id}`, name: `Hero ${id}` }) };
-  it('orders by shrunk opponent win rate, drops tiny samples, shows raw rates', () => {
-    const rows = [
-      { hero_id: 1, enemy_hero_id: 2, matches_played: 1000, wins: 400 }, // enemy wins 60%
-      { hero_id: 1, enemy_hero_id: 3, matches_played: 60, wins: 20 }, // enemy wins 66.7% but small
-      { hero_id: 1, enemy_hero_id: 4, matches_played: 10, wins: 0 }, // dropped (<50)
-      { hero_id: 9, enemy_hero_id: 2, matches_played: 500, wins: 100 }, // other hero
-    ];
-    const [best, worst] = buildPickColumns(1, rows, heroes);
-    expect(best.entries.map((e) => e.slug)).toEqual(['h2', 'h3']);
-    expect(best.entries[0].display).toBe('60.0%');
+  // Hero 1 wins 50% overall: 5,000 games against each of nine opponents, one clearly bad matchup, one clearly good.
+  const rows = [
+    { hero_id: 1, enemy_hero_id: 2, matches_played: 5000, wins: 2200 }, // 44%: bad for hero 1
+    { hero_id: 1, enemy_hero_id: 3, matches_played: 5000, wins: 2800 }, // 56%: good for hero 1
+    ...[4, 5, 6, 7, 8, 9, 10].map((e) => ({ hero_id: 1, enemy_hero_id: e, matches_played: 5000, wins: 2500 })),
+    { hero_id: 1, enemy_hero_id: 11, matches_played: 20, wins: 0 }, // too few games: hidden and counted
+    { hero_id: 9, enemy_hero_id: 2, matches_played: 500, wins: 100 }, // another hero's row
+  ];
+  it('shows each matchup as points against the hero\u2019s own baseline and hides thin ones', () => {
+    const { groups: [best, worst], hidden } = buildPickColumns(1, rows, heroes);
+    expect(hidden).toBe(1);
+    expect(best.entries[0].slug).toBe('h2');
+    expect(best.entries[0].display.startsWith('\u2212')).toBe(true);
+    expect(parseFloat(best.entries[0].display.slice(1))).toBeGreaterThan(4);
+    expect(parseFloat(best.entries[0].display.slice(1))).toBeLessThan(6); // shrunk, so a little under the raw 6 points
+    expect(best.entries[0].unsure).toBe(false);
     expect(worst.entries[0].slug).toBe('h3');
-    expect(best.entries.some((e) => e.slug === 'h4')).toBe(false);
+    expect(worst.entries[0].display.startsWith('+')).toBe(true);
+    expect([...best.entries, ...worst.entries].some((e) => e.slug === 'h11')).toBe(false);
+  });
+  it('flags a difference that could be chance', () => {
+    const noisy = [...rows.slice(2, 9), { hero_id: 1, enemy_hero_id: 2, matches_played: 200, wins: 96 }]; // 48% of 200
+    const { groups: [best] } = buildPickColumns(1, noisy, heroes);
+    expect(best.entries.find((e) => e.slug === 'h2')?.unsure ?? true).toBe(true);
   });
 });

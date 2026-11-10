@@ -11,7 +11,8 @@ import { dataSource } from '../data/source';
 import { TIER_NOTES, type TierRow } from '../data/tiers';
 import { useAsync } from '../data/useAsync';
 import type { Tier } from '../data/types';
-import { fmtInt, fmtPct } from '../lib/stats';
+import { MIN_GAMES, confidenceLabel, fmtDelta, fmtInt, fmtPct } from '../lib/stats';
+import DataStamp from '../components/DataStamp';
 import { useFavorites } from '../lib/favorites';
 import { useFilters } from '../lib/useFilters';
 import { useTitle } from '../lib/useTitle';
@@ -29,7 +30,7 @@ function HeroCard({ r, query }: { r: TierRow; query: string }) {
       {/* under the pointer the hero's gloat bust rises out of the top of the frame, as on the meta cards */}
       {bust && <span className="bust" aria-hidden="true"><img src={bust} alt="" loading="lazy" /></span>}
       <b>{h.name}</b>
-      <small>{fmtPct(r.winRate)}</small><small className="pr">{fmtPct(r.pickRate)} pick</small>
+      <small className={`conf-${r.rate.confidence}`} title={`${confidenceLabel[r.rate.confidence]}: ${fmtInt(r.matches)} games, range ${fmtPct(r.rate.low)} to ${fmtPct(r.rate.high)}`}>{fmtPct(r.winRate)}</small><small className="pr">{fmtPct(r.pickRate)} pick</small>
     </Link>
   );
 }
@@ -43,7 +44,7 @@ export default function TierListPage() {
   const { favs } = useFavorites();
   const [onlyFavs, setOnlyFavs] = useState(false);
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'score', dir: -1 });
-  const state = useAsync((signal) => dataSource.tierList(filters, signal), [filters.mode, filters.queue, filters.rank]);
+  const state = useAsync((signal) => dataSource.tierList(filters, signal), [filters.mode, filters.queue, filters.rank, filters.window]);
   const list = state.status === 'ready' ? state.value : null;
   const rows = useMemo(() => list?.rows ?? [], [list]);
   const shown = rows.filter((r) => (!onlyFavs || favs.includes(r.slug)) && (!q.trim() || (getHero(r.slug)?.name ?? r.slug).toLowerCase().includes(q.trim().toLowerCase())));
@@ -77,9 +78,13 @@ export default function TierListPage() {
       <Controls filters={filters} onChange={setFilters} />
       {state.status === 'loading' && <p className="muted" role="status">Reading the standings…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load the tier list</h3><p>{state.message}. Try again in a moment.</p></div>}
+      {list?.meta && <DataStamp meta={list.meta} />}
       {list && (
         <p className="muted tl-how">
-          Live from the Deadlock API. Tiers weigh win rate most (80%), then pick rate (20%), so a hero nobody plays cannot sit at the top on a lucky streak. Pick and ban rate are the share of games a hero is in or banned from; a game has twelve heroes, so pick rates add up to 1,200%.{brawl ? ' Street Brawl is scored on its own, separate from Standard.' : ''}
+          Each hero{'’'}s score is its win rate above or below 50%, pulled toward 50% when the sample is small, plus up to three quarters of a point for being picked often. Tiers are fixed score lines (S+ from +4, S from +2.5, A from +1, B from −2, C from −4), so a balanced patch can leave S+ empty.
+          {list.hidden.length > 0 ? ` ${list.hidden.length} ${list.hidden.length === 1 ? 'hero is' : 'heroes are'} not ranked for having under ${MIN_GAMES.hero} games with these filters.` : ''}
+          {brawl ? ' Street Brawl is scored on its own, separate from Standard.' : ''}
+          {' '}<Link to="/about#method">How the numbers work</Link>
         </p>
       )}
       {list && rows.length === 0 && <div className="panel empty"><h3>Nothing to rank yet</h3><p>{list.note ?? 'No hero has enough games with these filters.'}</p></div>}
@@ -107,9 +112,9 @@ export default function TierListPage() {
                 <tr key={r.slug}>
                   <td><span className="hn">{h && <HeroFace hero={h} />}<Link to={`/hero/${r.slug}${query}`}>{h?.name ?? r.slug}</Link></span></td>
                   <td className="tiercell"><TierTag tier={r.tier} size="sm" /></td>
-                  <td><span className="score">{r.score.toFixed(1)}</span></td>
-                  <td className="good">{fmtPct(r.winRate)}</td>
-                  {r.delta === undefined ? <td className="muted">–</td> : <td className={r.delta > 0 ? 'good' : r.delta < 0 ? 'bad' : 'muted'}>{r.delta > 0 ? '+' : r.delta < 0 ? '−' : ''}{Math.abs(r.delta).toFixed(1)}</td>}
+                  <td title={`Strength ${fmtDelta(r.strength)}, presence ${fmtDelta(r.presence)}`}><span className="score">{fmtDelta(r.score)}</span></td>
+                  <td className={`conf-${r.rate.confidence}`} title={`Raw ${fmtPct(r.rate.raw)}. ${confidenceLabel[r.rate.confidence]}.`}><b>{fmtPct(r.winRate)}</b> <span className="range">{r.rate.low.toFixed(1)} to {r.rate.high.toFixed(1)}</span></td>
+                  {r.delta === undefined ? <td className="muted">–</td> : <td title={r.deltaSure ? undefined : 'Could be chance'} className={!r.deltaSure ? 'muted' : r.delta > 0 ? 'good' : r.delta < 0 ? 'bad' : 'muted'}>{r.delta > 0 ? '+' : r.delta < 0 ? '−' : ''}{Math.abs(r.delta).toFixed(1)}</td>}
                   <td>{fmtPct(r.pickRate)}</td>
                   <td>{r.banRate !== undefined ? fmtPct(r.banRate) : ''}</td>
                   <td className="muted">{fmtInt(r.matches)}</td>

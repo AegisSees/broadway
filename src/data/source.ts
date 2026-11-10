@@ -7,21 +7,40 @@ import { buildHeroIdMap, type HeroIdMap } from './heroIds';
 import { liveOverview } from './liveHero';
 import { normalizePatches, type PatchNote } from './patches';
 import { getHero } from './roster';
-import type { Filters, HeroOverview, MatchupGroup } from './types';
+import { RANKS, type Filters, type HeroOverview, type MatchupGroup, type Rank } from './types';
 import {
   MAX_CANDIDATES, normalizeLeaderboard, resolveCandidates, type CandidateInfo, type LeaderboardEntry, type PlayerExtras, type Region,
 } from './leaderboard';
 import { normalizePlayerDistribution, type RankDistribution } from './rankDistribution';
 import { type HeroBuild } from './builds';
 import { BEST_MIN_GAMES, buildResultScore, heroBuildTabs, normalizeBuild } from './communityBuilds';
-import { normalizeTrend, patchMarks, todayUtc, DAY, type HeroTrend } from './trend';
+import { normalizeTrend, patchMarks, type HeroTrend } from './trend';
 import { normalizeMatches, type LiveMatch } from './matches';
 import { normalizeStreams, type LiveStream } from './streams';
 import {
   buildCore, hitFromProfile, normalizeHistory, normalizeRank, type PlayerCore, type PlayerHit, type PlayerMate, type PlayerMatches,
 } from './player';
 import { avgBadgeOf, normalizeMatch, type MatchDetail } from './matchDetail';
-import { buildTierRows, type TierList } from './tiers';
+import { buildTierRows, type DataMeta, type TierList } from './tiers';
+import { bigDaysToUnix, resolveWindow, type PatchWindow } from './patchWindow';
+import { noteDropped } from './dataNotes';
+import { itemEffects, TIME_BANDS, NET_WORTH_STEP, type ItemEffect } from './heroItems';
+import { MIN_GAMES, rateView, type RateView } from '../lib/stats';
+import itemNames from './itemIds.json';
+
+/** One hero's record inside one rank, for the "where is this hero strong" strip. */
+export interface RankSlice {
+  rank: Rank;
+  /** Shrunk toward the hero's own overall win rate, so a thin rank stays near the hero's average. */
+  rate: RateView;
+  /** Shrunk win rate minus the hero's overall win rate, in points. */
+  delta: number;
+}
+export interface HeroByRank { overall: number; slices: RankSlice[]; hidden: number; meta: DataMeta }
+
+/** One item's effect on a hero's win rate (see data/heroItems.ts), with its name. */
+export interface HeroItemRow extends ItemEffect { name: string }
+export interface HeroItems { items: HeroItemRow[]; hidden: number; purchases: number; meta: DataMeta }
 
 /** Head-to-head record between two heroes: wins for `a` over `b`. */
 export interface HeadToHead { matches: number; winsA: number }
@@ -38,6 +57,10 @@ export interface DataSource {
   /** Avatar, rank and record for the players on screen, keyed by the row's rank. Empty when the rows already carry them. */
   playerExtras(entries: LeaderboardEntry[], heroSlug: string | null, signal?: AbortSignal): Promise<Map<number, PlayerExtras>>;
   rankDistribution(filters: Filters, signal?: AbortSignal): Promise<RankDistribution>;
+  /** A hero's win rate rank by rank, against its own average. Null when there is nothing to show. */
+  heroByRank(slug: string, filters: Filters, signal?: AbortSignal): Promise<HeroByRank | null>;
+  /** Items ranked by how much more often their buyers win, corrected for purchase timing. Standard mode only. */
+  heroItems(slug: string, filters: Filters, signal?: AbortSignal): Promise<HeroItems | null>;
   /** Null when the source has no head-to-head data. */
   headToHead(a: string, b: string, filters: Filters, signal?: AbortSignal): Promise<HeadToHead | null>;
   /** Daily win rate for a hero with patch dates. Null when the source has no history for it. */
@@ -85,9 +108,9 @@ async function soft<T>(p: Promise<T>, signal?: AbortSignal): Promise<T | null> {
 }
 
 /** Ban filters: the endpoint only understands the queue and the rank and time ranges. */
-const banFilters = (f: Filters) => {
-  const { match_mode, min_average_badge, max_average_badge } = toApiFilters(f);
-  return { match_mode, min_average_badge, max_average_badge };
+const banFilters = (f: Filters, window: PatchWindow) => {
+  const { match_mode, min_average_badge, max_average_badge, min_unix_timestamp, max_unix_timestamp } = toApiFilters(f, window);
+  return { match_mode, min_average_badge, max_average_badge, min_unix_timestamp, max_unix_timestamp };
 };
 
 /** Patch posts that mark a change to the game (the forum's dated notes and Steam posts titled as updates), as trend markers. */
@@ -113,15 +136,41 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
     return out;
   }
 
+  /**
+   * The time range for these filters. Patch days come from the API; if that call fails the City Never Sleeps date
+   * built into patchWindow.ts is used, so numbers are still never mixed across the patch.
+   */
+  async function windowOf(f: Filters, signal?: AbortSignal): Promise<PatchWindow> {
+    const days = await soft(api.bigPatchDays(signal), signal);
+    return resolveWindow(f.window, bigDaysToUnix(days), Math.floor(Date.now() / 1000));
+  }
+
+  /** Remembers when each set of numbers was first fetched, so pages can print "fetched X ago". Kept for an hour, like the API cache. */
+  const fetchTimes = new Map<string, number>();
+  function fetchedAt(key: string): number {
+    const now = Date.now();
+    const old = fetchTimes.get(key);
+    if (old !== undefined && now - old < 60 * 60 * 1000) return old;
+    fetchTimes.set(key, now);
+    return now;
+  }
+  const keyOf = (f: Filters, extra = '') => `${f.mode}|${f.queue}|${f.rank}|${f.window}|${extra}`;
+
   /** Every hero with its numbers for these filters. The API's calls are cached, so the hero, tier and trend pages share them. */
   async function liveTier(f: Filters, signal?: AbortSignal) {
-    const [ids, stats] = await Promise.all([heroIds(signal), api.heroStats(toApiFilters(f), signal)]);
+    const [ids, window] = await Promise.all([heroIds(signal), windowOf(f, signal)]);
+    const q = toApiFilters(f, window);
     const brawl = f.mode === 'street_brawl';
-    const [bans, daily] = await Promise.all([
-      brawl ? Promise.resolve(null) : soft(api.heroBanStats(banFilters(f), signal), signal),
-      soft(api.heroStats({ ...toApiFilters(f), bucket: 'start_time_day', min_unix_timestamp: todayUtc() - 14 * DAY }, signal), signal),
+    const [daily, bans] = await Promise.all([
+      api.heroStats({ ...q, bucket: 'start_time_day' }, signal),
+      brawl ? Promise.resolve(null) : soft(api.heroBanStats(banFilters(f, window), signal), signal),
     ]);
-    return { ids, rows: buildTierRows({ stats, bans, daily, ids }) };
+    const result = buildTierRows({ daily, bans, ids });
+    const meta: DataMeta = { matches: result.games, window, latestDay: result.latestDay, fetchedAt: fetchedAt(keyOf(f, 'tier')) };
+    const where = `${f.queue} ${brawl ? 'Street Brawl' : 'Standard'}, ${f.rank === 'all' ? 'all ranks' : f.rank}, ${f.window}`;
+    noteDropped(`tier-hidden|${keyOf(f)}`, `Heroes not ranked for having under ${MIN_GAMES.hero} games (${where})`, result.hidden.length);
+    noteDropped(`tier-unknown|${keyOf(f)}`, `Hero ids from the API that Broadway has no page for, left out (${where}): ${result.unknownIds.join(', ')}`, result.unknownIds.length);
+    return { ids, window, meta, ...result };
   }
 
   /** Profiles and ranks for a set of accounts; whichever call fails is simply missing from the answer. */
@@ -137,28 +186,30 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
 
     async heroOverview(slug, f, signal) {
       if (!getHero(slug)) return null;
-      const { ids, rows } = await liveTier(f, signal);
+      const { ids, rows, window, meta } = await liveTier(f, signal);
       const heroId = ids.idBySlug(slug);
       if (heroId === undefined || !rows.some((r) => r.slug === slug)) return null;
       let matchups: MatchupGroup[] = [];
       if (f.mode === 'standard') {
-        const filters = toApiFilters(f);
+        // min_matches 1: the hero's baseline needs every game, thin matchups are filtered (and counted) afterwards
+        const filters = toApiFilters(f, window);
         const [counters, synergy] = await Promise.all([
-          soft(api.heroCounterStats({ ...filters, same_lane_filter: false, min_matches: 50 }, signal), signal),
-          soft(api.heroSynergyStats({ ...filters, same_lane_filter: true, min_matches: 50 }, signal), signal),
+          soft(api.heroCounterStats({ ...filters, same_lane_filter: false, min_matches: 1 }, signal), signal),
+          soft(api.heroSynergyStats({ ...filters, same_lane_filter: true, min_matches: 1 }, signal), signal),
         ]);
         const lookupHero = { byId: (id: number) => { const s = ids.slugById(id); const h = s ? getHero(s) : undefined; return h ? { slug: h.slug, name: h.name } : undefined; } };
-        matchups = [
-          ...(counters ? buildPickColumns(heroId, counters, lookupHero) : []),
-          ...(synergy ? [buildSynergyColumn(heroId, synergy, lookupHero)].filter((g): g is MatchupGroup => g !== null) : []),
-        ];
+        const picks = counters ? buildPickColumns(heroId, counters, lookupHero) : null;
+        const lane = synergy ? buildSynergyColumn(heroId, synergy, lookupHero) : null;
+        matchups = [...(picks?.groups ?? []), ...(lane?.group ? [lane.group] : [])].filter((g) => g.entries.length > 0);
+        noteDropped(`matchups-hidden|${slug}|${keyOf(f)}`, `Matchups and lane partners of ${getHero(slug)?.name ?? slug} hidden for having under ${MIN_GAMES.matchup} games`, (picks?.hidden ?? 0) + (lane?.hidden ?? 0));
       }
-      return liveOverview(slug, rows, matchups);
+      const overview = liveOverview(slug, rows, matchups);
+      return overview ? { ...overview, meta } : null;
     },
 
     async tierList(f, signal) {
-      const { rows } = await liveTier(f, signal);
-      return { rows, note: rows.length ? undefined : 'Not enough games with these filters yet.' };
+      const { rows, hidden, prior, meta } = await liveTier(f, signal);
+      return { rows, hidden, prior, meta, note: rows.length ? undefined : 'Not enough games with these filters yet.' };
     },
 
     async leaderboard(region, heroSlug, signal) {
@@ -230,12 +281,70 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       const ids = await heroIds(signal);
       const id = ids.idBySlug(slug);
       if (id === undefined) return null;
-      const since = todayUtc() - 120 * DAY;
+      // Same daily rows as the tier list, so the chart never crosses the patch boundary and costs no extra request.
+      const window = await windowOf(f, signal);
       const [rows, patches] = await Promise.all([
-        api.heroStats({ ...toApiFilters(f), bucket: 'start_time_day', min_unix_timestamp: since }, signal),
+        api.heroStats({ ...toApiFilters(f, window), bucket: 'start_time_day' }, signal),
         soft(api.patches(signal), signal),
       ]);
       return normalizeTrend(rows, id, patchDates(patches ?? []));
+    },
+
+    // One request: every hero's record at every rank level (bucket = average badge of the match, 11 = Initiate 1 ... 116 = Eternus 6).
+    async heroByRank(slug, f, signal) {
+      const [ids, window] = await Promise.all([heroIds(signal), windowOf(f, signal)]);
+      const id = ids.idBySlug(slug);
+      if (id === undefined) return null;
+      const rows = await api.heroStats({ ...toApiFilters({ ...f, rank: 'all' }, window), bucket: 'avg_badge' }, signal);
+      const perTier = new Map<number, { wins: number; matches: number }>();
+      let wins = 0, matches = 0, allPicks = 0;
+      for (const r of rows) {
+        const tier = Math.floor(r.bucket / 10);
+        if (tier < 1 || tier > RANKS.length) continue; // bucket 0 = games with no rank recorded
+        if (r.hero_id === id) {
+          const a = perTier.get(tier) ?? { wins: 0, matches: 0 };
+          a.wins += r.wins; a.matches += r.matches;
+          perTier.set(tier, a);
+          wins += r.wins; matches += r.matches;
+        }
+        allPicks += r.matches;
+      }
+      if (matches < MIN_GAMES.hero) return null;
+      const overall = wins / matches;
+      // each rank is shrunk toward this hero's own overall rate: "no difference between ranks" is the starting guess
+      const prior = { mean: overall, strength: 250 };
+      const slices: RankSlice[] = [];
+      let hidden = 0;
+      for (let tier = 1; tier <= RANKS.length; tier++) {
+        const a = perTier.get(tier);
+        if (!a || a.matches < MIN_GAMES.bracket) { hidden++; continue; }
+        const rate = rateView(a.wins, a.matches, prior);
+        slices.push({ rank: RANKS[RANKS.length - tier], rate, delta: Math.round((rate.shrunk - overall * 100) * 10) / 10 });
+      }
+      noteDropped(`rank-hidden|${slug}|${keyOf(f)}`, `Ranks hidden on ${getHero(slug)?.name ?? slug}'s by-rank strip for having under ${MIN_GAMES.bracket} games`, hidden);
+      return { overall: Math.round(overall * 1000) / 10, slices, hidden, meta: { matches: Math.round(allPicks / 12), window, fetchedAt: fetchedAt(keyOf(f, 'byrank')) } };
+    },
+
+    // Five requests, one per part of the game, each split by the buyer's net worth at purchase.
+    async heroItems(slug, f, signal) {
+      if (f.mode !== 'standard') return null;
+      const [ids, window] = await Promise.all([heroIds(signal), windowOf(f, signal)]);
+      const id = ids.idBySlug(slug);
+      if (id === undefined) return null;
+      const q = toApiFilters(f, window);
+      const bands = await Promise.all(TIME_BANDS.map((b) =>
+        api.itemStats({ ...q, hero_id: id, bucket: `net_worth_by_${NET_WORTH_STEP}`, min_bought_at_s: b.from, max_bought_at_s: b.to }, signal)));
+      const { items, hidden, purchases } = itemEffects(bands);
+      const names = itemNames as Record<string, string>;
+      const known = items.filter((i) => names[String(i.itemId)]);
+      const heroName = getHero(slug)?.name ?? slug;
+      noteDropped(`items-hidden|${slug}|${keyOf(f)}`, `Items on ${heroName} hidden for having under ${MIN_GAMES.item} purchases`, hidden);
+      noteDropped(`items-unknown|${slug}|${keyOf(f)}`, `Item ids on ${heroName} that Broadway has no name for, left out: ${items.filter((i) => !names[String(i.itemId)]).map((i) => i.itemId).join(', ')}`, items.length - known.length);
+      if (!known.length) return null;
+      return {
+        items: known.map((i) => ({ ...i, name: names[String(i.itemId)] })), hidden, purchases,
+        meta: { matches: purchases, window, fetchedAt: fetchedAt(keyOf(f, `items|${slug}`)) },
+      };
     },
 
     // Published in-game builds (/v1/builds) with their games and wins (/v1/analytics/hero-build-stats). Two rounds of
@@ -247,7 +356,7 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       const [top, weekly, stats] = await Promise.all([
         api.builds({ hero_id: id, limit: 12 }, signal),
         soft(api.builds({ hero_id: id, sort_by: 'weekly_favorites', limit: 6 }, signal), signal),
-        soft(api.heroBuildStats(id, { ...toApiFilters(f), min_matches: 10 }, signal), signal),
+        soft(api.heroBuildStats(id, { ...toApiFilters(f, await windowOf(f, signal)), min_matches: 10 }, signal), signal),
       ]);
       const byId = new Map((stats ?? []).map((r) => [r.hero_build_id, r]));
       // the most played and best performing builds may not be among the most favorited: fetch those few by id
@@ -310,7 +419,7 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
       const ida = ids.idBySlug(a), idb = ids.idBySlug(b);
       if (ida === undefined || idb === undefined) return null;
       // same_lane_filter=false so the record covers whole matches, not just lane opponents.
-      const rows = await api.heroCounterStats({ ...toApiFilters(f), same_lane_filter: false, min_matches: 1 }, signal);
+      const rows = await api.heroCounterStats({ ...toApiFilters(f, await windowOf(f, signal)), same_lane_filter: false, min_matches: 1 }, signal);
       const row = rows.find((r) => r.hero_id === ida && r.enemy_hero_id === idb);
       return row ? { matches: row.matches_played, winsA: row.wins } : null;
     },

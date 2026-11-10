@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { metaPicks } from './MetaNow';
 import type { TierRow } from '../data/tiers';
+import { rateView } from '../lib/stats';
 
 const row = (slug: string, winRate: number, pickRate: number, matches: number, delta?: number): TierRow =>
-  ({ slug, tier: 'A', winRate, pickRate, matches, delta, score: 50 });
+  ({ slug, tier: 'A', winRate, pickRate, matches, delta, score: 1, strength: 1, presence: 0, rate: rateView(Math.round((winRate / 100) * matches), matches) });
 
 describe('metaPicks', () => {
   const rows = [
