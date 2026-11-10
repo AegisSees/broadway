@@ -1,21 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { filterMatches, fmtClock, fmtSouls, MIN_RANKS, netWorthShare, normalizeMatches, sampleMatches } from './matches';
-import { embedUrl, normalizeStreams, sampleStreams } from './streams';
+import { filterMatches, fmtClock, fmtSouls, MIN_RANKS, netWorthShare, normalizeMatches, type LiveMatch } from './matches';
+import { embedUrl, normalizeStreams } from './streams';
 
-describe('sample matches', () => {
-  const NOW = 2_000_000_000;
-  const list = sampleMatches(NOW, 12);
-  it('has twelve distinct heroes per game, six a side, and a start time in the past', () => {
-    expect(list.length).toBe(12);
-    for (const m of list) {
-      const heroes = m.teams.flatMap((t) => t.players.map((p) => p.heroSlug));
-      expect(heroes.length).toBe(12);
-      expect(new Set(heroes).size).toBe(12);
-      expect(m.teams.every((t) => t.players.length === 6)).toBe(true);
-      expect(m.illustrative).toBe(true);
-    }
-    expect(new Set(list.map((m) => m.id)).size).toBe(12);
-  });
+/** Three hand-written games, enough to check filtering and sorting. */
+const game = (id: string, mode: LiveMatch['mode'], avgBadge: number, nw: [number, number]): LiveMatch => ({
+  id, mode, startedAt: 1_000 + Number(id), avgBadge,
+  teams: [
+    { id: 'hidden-king', label: 'Hidden King', players: [], netWorth: nw[0] },
+    { id: 'archmother', label: 'Archmother', players: [], netWorth: nw[1] },
+  ],
+});
+
+describe('filtering live matches', () => {
+  const list = [game('1', 'standard', 64, [30_000, 20_000]), game('2', 'street_brawl', 0, [10_000, 10_000]), game('3', 'standard', 104, [45_000, 55_000])];
   it('filters by mode and minimum rank, and sorts', () => {
     const brawl = filterMatches(list, { mode: 'street_brawl', minBadge: 0, sort: 'newest' });
     expect(brawl.every((m) => m.mode === 'street_brawl')).toBe(true);
@@ -54,7 +51,6 @@ describe('normalizeMatches (feed shape checked 8 Oct 2026)', () => {
     expect(m.teams[0].players[0].accountId).toBe(9);
     expect(m.teams[1].players.map((p) => p.heroSlug)).toEqual(['abrams']); // unknown hero 99 is dropped
     expect(m.teams[0].netWorth).toBe(5000);
-    expect(m.illustrative).toBe(false);
   });
   it('reads standard and ranked from the numbers, and still understands an older mode name', () => {
     const p = [{ team: 0, hero_id: 1 }, { team: 1, hero_id: 2 }];
@@ -69,13 +65,6 @@ describe('normalizeMatches (feed shape checked 8 Oct 2026)', () => {
 });
 
 describe('streams', () => {
-  it('has invented channels with unique names and heroes, busiest first', () => {
-    const s = sampleStreams(12);
-    expect(new Set(s.map((x) => x.channel)).size).toBe(12);
-    expect(new Set(s.map((x) => x.heroSlug)).size).toBe(12);
-    expect(s.every((x) => x.illustrative && !x.thumbnail)).toBe(true);
-    expect(s.map((x) => x.viewers)).toEqual([...s.map((x) => x.viewers)].sort((a, b) => b - a));
-  });
   it('normalises the proxy list, sizes thumbnails and refuses odd channel names', () => {
     const out = normalizeStreams({ streams: [
       { id: '1', channel: 'Fox_One', name: 'Fox One', title: 'Hi', viewers: 10, language: 'EN', thumbnail: 'https://x/{width}x{height}.jpg' },

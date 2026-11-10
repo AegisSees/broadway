@@ -43,7 +43,7 @@ function ShelfItem({ it }: { it: BuildItemStat }) {
 }
 
 /**
- * The build as a board of sections (the author's own, or laning / mid / late for samples): each a dark box with its
+ * The build as a board of sections (the author's own): each a dark box with its
  * item count and soul cost, items as cards tinted by category with the tier in the corner, in buy order. Two short
  * sections in a row share a line. The author's notes sit behind each item's tooltip and, all at once, behind the
  * toggle underneath.
@@ -136,7 +136,7 @@ export default function BuildBoard({ builds, heroName }: { builds: HeroBuild[]; 
         <span className="lbl">Build code</span>
         <CopyCode code={b.code} />
         <Link className="chip" to={plannerLink(b)}>Open in planner {'→'}</Link>
-        <small>{b.sample}{b.illustrative ? ' · sample code, not a real in-game build' : ''}</small>
+        <small>{b.sample}</small>
       </div>
 
       <BuildPhases build={b} />

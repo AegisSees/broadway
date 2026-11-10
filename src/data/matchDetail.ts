@@ -107,8 +107,6 @@ export interface MatchDetail {
   /** Net worth of the Hidden King's team minus the Archmother's at each sample, oldest first. */
   lead: { t: number; v: number }[];
   bans: string[];
-  /** True when this is built-in sample data rather than the real game with this id. */
-  illustrative: boolean;
 }
 
 const num = (v: unknown): number | undefined => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
@@ -215,7 +213,7 @@ export function leadCurve(a: readonly MatchPlayer[], b: readonly MatchPlayer[]):
   return out;
 }
 
-export function normalizeMatch(raw: MatchMetadataRaw, ids: HeroIdMap, opts: { illustrative?: boolean } = {}): MatchDetail {
+export function normalizeMatch(raw: MatchMetadataRaw, ids: HeroIdMap): MatchDetail {
   const players = raw.players.map((p) => playerOf(p, raw.winning_team, ids))
     .sort((a, b) => (a.side === b.side ? a.slot - b.slot : a.side === 'hidden-king' ? -1 : 1));
   const winner = sideOf(raw.winning_team);
@@ -245,7 +243,6 @@ export function normalizeMatch(raw: MatchMetadataRaw, ids: HeroIdMap, opts: { il
     avgBadge: raw.average_badge && raw.average_badge > 0 ? raw.average_badge : avgBadgeOf(players, 6),
     lead: leadCurve(hk.players, am.players),
     bans: (raw.banned_hero_ids ?? []).map((id) => ids.slugById(id)).filter((s): s is string => !!s),
-    illustrative: !!opts.illustrative,
   };
 }
 

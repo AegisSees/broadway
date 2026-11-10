@@ -53,23 +53,22 @@ npm run build      # typecheck + production build into dist/
 
 ## Repository
 
-- `api-samples/` is tracked on purpose: the unit tests and the Sample-mode match page read it. `npm run probe:api` refreshes it.
+- `api-samples/` is tracked on purpose: the unit tests read these saved real responses. The site never does. `npm run probe:api` refreshes it.
 - Never commit `.env.local` (Twitch keys live there). `.env.example` is the template.
 - `src/assets/` holds Valve's hero art, fonts, rank badges, item icons and the City Never Sleeps page assets (`src/assets/city/`, `ui/grain-detail.webp`, `ui/film-dust.webp`), taken from a game install and the official update page. They remain Valve's property (see the note at the top).
 - `dist/` and `dist-standalone/` are build output and are not tracked. `npm run build:standalone` rebuilds the single-file `index.html`.
 
 ## Data: read this before launch
 
-Broadway shows **live data from the Deadlock API by default**. `src/data/source.ts` defines the `DataSource` interface and three
-implementations:
+Every number Broadway shows comes from the Deadlock API. There is no sample mode and no fallback data: when a
+call fails, the page shows an error or an empty state, and the header chip reads "API offline".
 
-| Source | When | What it does |
-|---|---|---|
-| live (`createLiveSource`) | default | Calls the API and maps real responses (shapes verified 8 Oct 2026, tests in `liveMap.test.ts`). |
-| fixture (`fixtureSource`) | header chip → Sample, or `VITE_DATA_SOURCE=fixture` | Invented, clearly labelled samples for design work and offline demos. |
-| hybrid (`createHybridSource`) | wraps live | If a live call fails, that section falls back to its labelled sample and the chip says Offline. **Player pages are never faked**: a failed lookup shows an error. |
+`src/data/source.ts` defines the `DataSource` interface and its one implementation, `createLiveSource`, which calls the
+API and maps real responses (shapes verified 8 Oct 2026, tests in `liveMap.test.ts`). `withHealth` wraps it so the header
+knows when the API stops answering.
 
-Builds, skill order, guides, damage breakdown and Street Brawl high rolls have no live mapping yet, so they stay on labelled samples.
+`src/noMockData.test.ts` fails the test run if any shipped file imports a saved API response, a test helper, a fixture
+or a fake-data generator.
 
 `src/api/client.ts` is a typed client written from the Deadlock API OpenAPI spec (api.deadlock-api.com/openapi.json).
 It caches identical queries for 6 hours (the server does the same), de-duplicates in-flight requests and retries once on 429.
@@ -94,18 +93,13 @@ It caches identical queries for 6 hours (the server does the same), de-duplicate
 src/
   api/        typed client, rank -> API filter mapping, matchup ranking (pure, tested)
   components/ Shell, SearchBox, Controls, WinTrend, BuildBoard, SkillTree, MatchupColumn, HeroFace, RankBadge
-  data/       roster (portraits), fixtures, data sources (live / sample / hybrid), player + leaderboard + tier mapping, ability icons
+  data/       roster (portraits), the live data source, player + leaderboard + tier mapping, ability icons
   lib/        stats helpers, search, Steam ID parsing, URL filters
   pages/      Home, TierListPage, HeroDirectory, HeroPage, BuildsHub, PlannerPage, MatchesPage, StreamsPage, LeaderboardPage, RanksPage, PlayerLookup, PlayerPage, NotFound
   styles/     base (tokens), shell, pages, city (the flat-label "city never sleeps" skin), player (Steam pages, data chip, top-bar fit; loaded last)
 server/       proxy.mjs (caching proxy + /streams), streams.mjs (Twitch lookup, tested)
   assets/     fonts, art, hero portraits, ability icons, rank badges
 ```
-
-## Sample data
-
-Invented and labelled as samples on the page whenever they appear: every build (items, numbers, authors, likes) and its code, skill order, guides, and the streams list. In Sample mode (or when the API is unreachable) the tier list, leaderboard ladder, rank distribution, win-rate trends and live matches are samples too.
-Build codes start with `sample-` so they cannot be mistaken for real in-game build ids. Sample mode makes no network request.
 
 ## Next steps
 

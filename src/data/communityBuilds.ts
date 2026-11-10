@@ -126,7 +126,6 @@ export function normalizeBuild(raw: BuildRaw, ctx: BuildContext): HeroBuild | nu
     phases,
     skill: skillFromOrder(raw, slug),
     sample: played ? `${played.matches.toLocaleString('en-US')} games with this build · version ${hb.version}` : `Published in-game build · version ${hb.version}`,
-    illustrative: false,
   };
 }
 

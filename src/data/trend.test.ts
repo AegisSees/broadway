@@ -1,32 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { DAY, normalizeTrend, patchMarks, sampleTrend, trendSummary, trendView } from './trend';
+import { DAY, normalizeTrend, patchMarks, trendSummary, trendView, type HeroTrend } from './trend';
 
 const END = Math.floor(Date.UTC(2026, 9, 8) / 1000 / DAY) * DAY;
 
-describe('sampleTrend', () => {
-  it('is deterministic, daily, ends today and keeps win rate in a believable band', () => {
-    const a = sampleTrend('haze', END);
-    expect(JSON.stringify(a)).toBe(JSON.stringify(sampleTrend('haze', END)));
-    expect(a.points.length).toBe(140);
-    expect(a.points[a.points.length - 1].t).toBe(END);
-    expect(a.points.every((p, i) => i === 0 || p.t - a.points[i - 1].t === DAY)).toBe(true);
-    expect(a.points.every((p) => p.winRate >= 42 && p.winRate <= 61)).toBe(true);
-    expect(a.patches.length).toBeGreaterThanOrEqual(4);
-    expect(a.patches.every((p) => p.t <= END && p.t >= a.points[0].t)).toBe(true);
-    expect(a.illustrative).toBe(true);
-  });
-});
-
-describe('sampleTrend anchor', () => {
-  it('shifts the curve so the last week matches a win rate shown elsewhere on the page', () => {
-    const t = sampleTrend('haze', END, 140, 53.4);
-    const s = trendSummary(t)!;
-    expect(Math.abs(s.current - 53.4)).toBeLessThanOrEqual(0.1);
-  });
-});
+/** A plain 140-day series with four patch days, written out by a formula so the expected values are easy to see. */
+function series(days = 140): HeroTrend {
+  const points = Array.from({ length: days }, (_, i) => ({ t: END - (days - 1 - i) * DAY, winRate: 48 + (i % 5), matches: 100 + i }));
+  const patches = [100, 70, 40, 10].map((ago) => ({ t: END - ago * DAY, label: '' }));
+  return { points, patches };
+}
 
 describe('trendView', () => {
-  const t = sampleTrend('abrams', END);
+  const t = series();
   it('cuts the last four weeks', () => {
     const v = trendView(t, '4w');
     expect(v.points.length).toBe(28);
@@ -45,12 +30,12 @@ describe('trendView', () => {
 describe('trendSummary', () => {
   it('weights the last week by matches and compares it with the week before', () => {
     const points = Array.from({ length: 14 }, (_, i) => ({ t: END - (13 - i) * DAY, winRate: i < 7 ? 50 : 52, matches: 100 }));
-    const s = trendSummary({ points, patches: [], illustrative: true })!;
+    const s = trendSummary({ points, patches: [] })!;
     expect(s.current).toBe(52);
     expect(s.delta).toBe(2);
     expect(s.matchesWeek).toBe(700);
   });
-  it('returns null for an empty series', () => { expect(trendSummary({ points: [], patches: [], illustrative: true })).toBeNull(); });
+  it('returns null for an empty series', () => { expect(trendSummary({ points: [], patches: [] })).toBeNull(); });
 });
 
 describe('live normalising', () => {
@@ -64,7 +49,6 @@ describe('live normalising', () => {
     ];
     const t = normalizeTrend(rows, 1, [])!;
     expect(t.points.map((p) => [p.t, p.winRate, p.matches])).toEqual([[END - DAY, 50, 200], [END, 60, 200]]);
-    expect(t.illustrative).toBe(false);
     expect(normalizeTrend([], 1, [])).toBeNull();
   });
   it('reads patch dates from several field spellings and ignores junk', () => {

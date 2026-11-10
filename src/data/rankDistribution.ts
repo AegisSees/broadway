@@ -9,32 +9,9 @@ export interface RankDistribution {
   rows: { level: number; count: number }[];
   /** Players still in their placement matches, when the source knows. */
   placements?: number;
-  /** True when the numbers are generated for design review. */
-  illustrative: boolean;
 }
 
 export const ALL_LEVELS: number[] = Array.from({ length: 66 }, (_, i) => (Math.floor(i / 6) + 1) * 10 + (i % 6) + 1);
-
-// Relative share of ranked players per tier, lowest first. Invented for the sample, shaped like a normal ranked ladder.
-const TIER_WEIGHT = [3.5, 15, 12.8, 11.2, 10.6, 9.6, 8.8, 10.2, 5.4, 2.2, 0.7];
-const SUB_WEIGHT = [1.0, 0.9, 0.95, 1.0, 1.1, 1.6];
-// Eternus is split by percentile of its own players: I is the bottom 25%, VI the top 5%.
-const ETERNUS_SPLIT = [0.25, 0.25, 0.2, 0.15, 0.1, 0.05];
-
-export function sampleDistribution(): RankDistribution {
-  const total = 92000;
-  const wsum = TIER_WEIGHT.reduce((a, b) => a + b, 0);
-  const subSum = SUB_WEIGHT.reduce((a, b) => a + b, 0);
-  const rows = ALL_LEVELS.map((level) => {
-    const t = Math.floor(level / 10), s = level % 10;
-    const tierPlayers = (TIER_WEIGHT[t - 1] / wsum) * total;
-    const share = t === 11 ? ETERNUS_SPLIT[s - 1] : SUB_WEIGHT[s - 1] / subSum;
-    // a small deterministic wobble so the bars are not perfectly regular
-    const wobble = 1 + (((level * 37) % 11) - 5) / 90;
-    return { level, count: Math.round(tierPlayers * share * wobble) };
-  });
-  return { unit: 'players', rows, placements: 9400, illustrative: true };
-}
 
 /** /v1/players/rank/distribution (checked 8 Oct 2026): how many players sit at each of the 66 levels right now. */
 export function normalizePlayerDistribution(rows: readonly RankDistributionRow[]): RankDistribution {
@@ -43,7 +20,7 @@ export function normalizePlayerDistribution(rows: readonly RankDistributionRow[]
     const level = r.badge > 0 ? r.badge : r.rank * 10 + r.subrank;
     if (level > 0) by.set(level, (by.get(level) ?? 0) + (r.players ?? 0));
   }
-  return { unit: 'players', rows: ALL_LEVELS.map((level) => ({ level, count: by.get(level) ?? 0 })), illustrative: false };
+  return { unit: 'players', rows: ALL_LEVELS.map((level) => ({ level, count: by.get(level) ?? 0 })) };
 }
 
 interface RawBucket { badge_level?: number | null; total_matches?: number | null; matches?: number | null; players?: number | null }
@@ -53,7 +30,7 @@ export function normalizeDistribution(raw: unknown): RankDistribution {
   const list: RawBucket[] = Array.isArray(raw) ? raw : Array.isArray((raw as { entries?: unknown })?.entries) ? (raw as { entries: RawBucket[] }).entries : [];
   const by = new Map<number, number>();
   for (const r of list) if (r.badge_level) by.set(r.badge_level, (by.get(r.badge_level) ?? 0) + (r.total_matches ?? r.matches ?? r.players ?? 0));
-  return { unit: 'games', rows: ALL_LEVELS.map((level) => ({ level, count: by.get(level) ?? 0 })), illustrative: false };
+  return { unit: 'games', rows: ALL_LEVELS.map((level) => ({ level, count: by.get(level) ?? 0 })) };
 }
 
 export interface DistributionStats {

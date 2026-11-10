@@ -34,7 +34,7 @@ function HeroCard({ r, query }: { r: TierRow; query: string }) {
   );
 }
 
-/** Every hero grouped S+ to D, with a sortable table view. Sample data until the live source is connected. */
+/** Every hero grouped S+ to D, with a sortable table view. */
 export default function TierListPage() {
   useTitle('Tier list');
   const [filters, setFilters] = useFilters();
@@ -77,13 +77,12 @@ export default function TierListPage() {
       <Controls filters={filters} onChange={setFilters} />
       {state.status === 'loading' && <p className="muted" role="status">Reading the standings…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load the tier list</h3><p>{state.message}. Try again in a moment.</p></div>}
-      {list?.illustrative && <div className="notice"><b>Illustrative data.</b> This list is a generated sample for design review, not real game statistics. Tiers weigh win rate most, then pick rate, so a hero nobody plays cannot sit at the top on a lucky streak.{brawl ? ' Street Brawl is scored on its own, separate from Standard.' : ''}</div>}
-      {list && !list.illustrative && (
+      {list && (
         <p className="muted tl-how">
           Live from the Deadlock API. Tiers weigh win rate most (80%), then pick rate (20%), so a hero nobody plays cannot sit at the top on a lucky streak. Pick and ban rate are the share of games a hero is in or banned from; a game has twelve heroes, so pick rates add up to 1,200%.{brawl ? ' Street Brawl is scored on its own, separate from Standard.' : ''}
         </p>
       )}
-      {list && !list.illustrative && rows.length === 0 && <div className="panel empty"><h3>Nothing to rank yet</h3><p>{list.note ?? 'No hero has enough games with these filters.'}</p></div>}
+      {list && rows.length === 0 && <div className="panel empty"><h3>Nothing to rank yet</h3><p>{list.note ?? 'No hero has enough games with these filters.'}</p></div>}
 
       {list && rows.length > 0 && (view === 'tiers' ? (
         <div className="tl-rows">

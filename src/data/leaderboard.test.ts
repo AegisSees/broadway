@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { badgeLabel, badgeParts, normalizeLeaderboard, sampleLeaderboard } from './leaderboard';
+import { badgeLabel, badgeParts, normalizeLeaderboard } from './leaderboard';
 
 describe('leaderboard', () => {
-  it('builds a deterministic 500-row sample with unique handles', () => {
-    const a = sampleLeaderboard('Europe', null);
-    expect(a).toHaveLength(500);
-    expect(a[0].rank).toBe(1);
-    expect(new Set(a.map((r) => r.name)).size).toBe(500);
-    expect(sampleLeaderboard('Europe', null)[10].name).toBe(a[10].name);
-    expect(sampleLeaderboard('Europe', 'haze')[0].topHeroes[0]).toBe('haze');
-  });
   it('splits badge levels', () => {
     expect(badgeParts(116)).toMatchObject({ rank: 'Eternus', sub: 6 });
     expect(badgeLabel(116)).toBe('Eternus VI');

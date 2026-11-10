@@ -379,7 +379,7 @@ export default function PlayerPage() {
   useTitle(c ? c.name : 'Player');
 
   useEffect(() => {
-    if (c && !c.empty && !c.illustrative) rememberPlayer({ accountId: c.accountId, name: c.name, avatar: c.avatar });
+    if (c && !c.empty) rememberPlayer({ accountId: c.accountId, name: c.name, avatar: c.avatar });
   }, [c]);
 
   const alt = useMemo(() => (sp.get('alt') ?? '').split(',').map((s) => Number(s)).filter((n) => Number.isInteger(n) && n > 0), [sp]);
@@ -414,7 +414,6 @@ export default function PlayerPage() {
     )}
     {c && !c.empty && (
       <>
-        {c.illustrative && <div className="notice"><b>Illustrative player.</b> Name, rank and games are invented from the account number for design review. Switch to live data in the header to see the real record.</div>}
         {alt.length > 0 && <AltAccounts ids={alt} self={c.accountId} />}
         <ProfileHead core={c} matches={matches?.matches ?? null} onRefresh={() => setTries((n) => n + 1)} />
         <nav className="tabs ph-tabs" aria-label="Page sections">
@@ -434,7 +433,7 @@ export default function PlayerPage() {
             {mates.status === 'ready' && <div id="mates"><Mates mates={mates.value} /></div>}
             <p className="muted pl-fine">
               Records are all-time and cover every queue. Win rate counts a game as won when the player’s team won. Data from the Deadlock API
-              {c.illustrative ? '.' : `; ${fmtInt(c.totals?.matches ?? 0)} games on record.`}
+              {`; ${fmtInt(c.totals?.matches ?? 0)} games on record.`}
             </p>
           </aside>
           <div className="pl-main">
@@ -447,7 +446,7 @@ export default function PlayerPage() {
             <Heroes heroes={c.heroes} />
 
             <SectionHeading id="rank" title="Rank over time" />
-            {matches && <RankHistory points={matches.history} illustrative={c.illustrative} />}
+            {matches && <RankHistory points={matches.history} />}
           </div>
         </div>
       </>

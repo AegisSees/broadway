@@ -107,7 +107,7 @@ export default function ComparePage() {
           </div>
         )}
         {h2h.status === 'ready' && !h2h.value && (
-          <p className="muted">{dataSource.id === 'fixture' ? 'Their win rate against each other appears here once live match data is connected.' : 'Not enough matches between these two heroes with the current filters.'}</p>
+          <p className="muted">Not enough matches between these two heroes with the current filters.</p>
         )}
         <p className="h2h-links"><Link className="chip" to={`/planner?hero=${a}`}>Plan a {getHero(a)?.name} build {'→'}</Link><Link className="chip" to={`/planner?hero=${b}`}>Plan a {getHero(b)?.name} build {'→'}</Link></p>
       </section>

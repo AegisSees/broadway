@@ -381,7 +381,6 @@ export default function MatchPage() {
 
       {m && selected && (
         <>
-          {m.illustrative && <div className="notice"><b>Sample game.</b> Sample mode shows one saved real game for every match link, with generated player names. Switch to live data in the header to open the real match.</div>}
           <Head m={m} />
           <Highlights m={m} names={names} onPick={pick} />
           <LeadChart m={m} />

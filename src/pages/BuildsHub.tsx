@@ -44,7 +44,7 @@ function BuildCard({ b, open, onToggle }: { b: HeroBuild; open: boolean; onToggl
           {b.winRate !== null && <div><dt>Win rate</dt><dd className={b.winRate >= 50 ? 'up' : 'down'}>{fmtPct(b.winRate)}</dd></div>}
           {b.matches !== null && <div><dt>Matches</dt><dd>{fmtInt(b.matches)}</dd></div>}
           <div><dt>Items</dt><dd>{itemCount(b)}</dd></div>
-          {b.likes !== undefined && <div><dt>{b.illustrative ? 'Likes' : 'Favorites'}</dt><dd><span className="heart" aria-hidden="true">{'♥'}</span> {fmtInt(b.likes)}</dd></div>}
+          {b.likes !== undefined && <div><dt>Favorites</dt><dd><span className="heart" aria-hidden="true">{'♥'}</span> {fmtInt(b.likes)}</dd></div>}
         </dl>
         <div className="bb-tags">{b.tags.map((t) => <span key={t} className="tagchip">{t}</span>)}</div>
         <div className="bc-foot">
@@ -115,7 +115,6 @@ export default function BuildsHub() {
         {all && <span className="hub-count">{fmtInt(list.length)} builds{filter !== 'all' ? ` · ${FILTER_LABEL[filter]}` : ''}</span>}
       </div>
 
-      {all && all.some((b) => b.illustrative) && <div className="notice"><b>Illustrative builds.</b> Titles, authors, items and codes are invented samples. Codes start with “sample-” so they can’t be mistaken for real in-game builds.</div>}
       {state.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load builds</h3><p>{state.message}.</p></div>}
       {state.status === 'ready' && !all && <div className="panel empty"><h3>No builds to show</h3><p>No published builds came back just now. The planner still works: <Link className="chip" to="/planner">Open the planner {'→'}</Link></p></div>}

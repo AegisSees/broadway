@@ -24,9 +24,6 @@ import { useTitle } from '../lib/useTitle';
 import NotFound from './NotFound';
 import FavStar from '../components/FavStar';
 import HeroTags from '../components/HeroTags';
-import DraftPlanner from '../components/DraftPlanner';
-import HighRolls from '../components/HighRolls';
-import TrendsPanel from '../components/TrendsPanel';
 import HeroStatsPanel from '../components/HeroStatsPanel';
 import { getHeroBg, getHeroStats } from '../data/heroStats';
 import { getHeroColor } from '../data/heroColors';
@@ -35,15 +32,6 @@ import StatPlates from '../components/StatPlates';
 import { HeroFaq, Lore } from '../components/NewHeroExtras';
 import { getNewcomer, isOut, releaseDay, releaseWeekday } from '../data/newHeroes';
 import { getLore } from '../data/heroLore';
-
-function CopyChip({ id }: { id: string }) {
-  const [done, setDone] = useState(false);
-  return (
-    <button type="button" className="chip" onClick={() => { void navigator.clipboard?.writeText(id).then(() => { setDone(true); setTimeout(() => setDone(false), 1500); }); }}>
-      {done ? 'Copied' : `#${id} · copy`}
-    </button>
-  );
-}
 
 function Stats({ o }: { o: HeroOverview }) {
   const tier = o.tier ?? tierFromWinRate(o.winRate);
@@ -85,7 +73,6 @@ export default function HeroPage() {
   const abilities = getAbilities(hero.slug);
   const wordmark = getWordmark(hero.slug);
   const overview = state.status === 'ready' ? state.value : null;
-  const isHaze = hero.slug === 'haze';
   const lore = getLore(hero.slug);
   /* City Never Sleeps heroes only get the "new hero" plate, intro and FAQ until they unlock; once out they are
      ordinary heroes (the patch after their release folded them into the regular roster) */
@@ -94,9 +81,8 @@ export default function HeroPage() {
   const brawl = filters.mode === 'street_brawl';
   const tabs: { id: string; label: string }[] = [
     { id: 'overview', label: 'Overview' },
-    { id: 'builds', label: brawl && overview?.highRolls ? 'High rolls' : 'Builds' },
+    { id: 'builds', label: 'Builds' },
     ...(!brawl && overview ? [{ id: 'matchups', label: 'Matchups' }] : []),
-    ...(overview && (overview.trends || overview.damage) ? [{ id: 'trends', label: 'Pick rate' }] : []),
     ...(getHeroStats(hero.slug) ? [{ id: 'stats', label: 'Base stats' }] : []),
     ...(abilities ? [{ id: 'abilities', label: 'Abilities' }] : []),
   ];
@@ -150,16 +136,10 @@ export default function HeroPage() {
           <div className="notice hero-note">
             <b>Headline numbers and matchups</b>
             <span>
-              {dataSource.id === 'fixture'
-                ? `are only in the sample set for Haze (Standard, Ranked, All ranks, plus Street Brawl). ${hero.name}'s trend and builds below are illustrative samples too.`
-                : `need more matches for ${hero.name} with these filters. Try All ranks or another queue.`}
-              {isHaze && <> <button type="button" className="chip" onClick={() => setFilters({ mode: 'standard', queue: 'ranked', rank: 'all' })}>Reset filters</button></>}
-              {!isHaze && dataSource.id === 'fixture' && <> <Link to="/hero/haze" className="chip">See the Haze sample page</Link></>}
+              need more matches for {hero.name} with these filters. Try All ranks or another queue.
+              {' '}<button type="button" className="chip" onClick={() => setFilters({ mode: 'standard', queue: 'ranked', rank: 'all' })}>Reset filters</button>
             </span>
           </div>
-        )}
-        {overview?.provenance === 'illustrative' && (
-          <div className="notice"><b>Illustrative data.</b> Numbers on this page are samples for design review, not real game statistics.</div>
         )}
         {overview && <Stats o={overview} />}
 
@@ -177,41 +157,15 @@ export default function HeroPage() {
           ? <WinTrend key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}`} heroName={hero.name} trend={trend.value} />
           : <div className="panel empty"><h3>No history yet</h3><p>Daily win rate for {hero.name} isn't available from this data source yet.</p></div>)}
 
-        {brawl && overview?.highRolls && (
-          <>
-            <SectionHeading id="builds" title="Street Brawl high rolls" />
-            <DraftPlanner tiers={overview.highRolls} heroName={hero.name} />
-            <div style={{ height: 18 }} />
-            <HighRolls tiers={overview.highRolls} heroName={hero.name} heroIcon={hero.icon} />
-          </>
-        )}
-
         {!brawl && (
           <>
             <SectionHeading id="builds" title="Top builds" />
             {builds.status === 'loading' && <p className="muted" role="status">Loading builds…</p>}
             {builds.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn't load builds</h3><p>{builds.message}.</p></div>}
-            {builds.status === 'ready' && builds.value?.some((b) => b.illustrative) && overview?.provenance === 'live' && (
-              <div className="notice"><b>Sample builds.</b> The numbers above come from real games, but the published builds couldn’t be loaded just now, so the builds below are illustrative.</div>
-            )}
             {builds.status === 'ready' && (builds.value
               ? <BuildBoard key={`${hero.slug}${filters.mode}${filters.queue}${filters.rank}`} builds={builds.value} heroName={hero.name} />
               : <div className="panel empty"><h3>No published builds yet</h3><p>Nobody has published a {hero.name} build in the game’s build browser yet. Check back soon, or plan your own.</p></div>)}
             <p className="bb-more"><Link className="chip" to={`/builds?hero=${hero.slug}`}>Browse every {hero.name} build {'→'}</Link><Link className="chip" to={`/planner?hero=${hero.slug}`}>Plan your own {'→'}</Link></p>
-
-            {overview && overview.guides.length > 0 && (
-              <div className="panel pad guides" id="guides">
-                <h3>Published guides</h3>
-                <small>Community guides {'·'} Standard {'·'} saved snapshot</small>
-                {overview.guides.slice(0, 3).map((g) => (
-                  <div className="guide" key={g.id}>
-                    <span className="t">{g.title}</span>
-                    <small>By {g.author} {'·'} Updated {g.updated}</small>
-                    <div className="chips">{g.tags.map((t) => <span key={t} className="chip" style={{ cursor: 'default' }}>{t}</span>)}<CopyChip id={g.id} /></div>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {overview && (
               <>
@@ -227,12 +181,6 @@ export default function HeroPage() {
           </>
         )}
 
-        {overview && (overview.trends || overview.damage) && (
-          <>
-            <SectionHeading id="trends" title="Pick rate & damage" />
-            <TrendsPanel heroSlug={hero.slug} heroName={hero.name} trends={overview.trends} damage={overview.damage} />
-          </>
-        )}
         {getHeroStats(hero.slug) && (
           <div id="stats" className="stats-anchor">
             <SectionHeading title="Base stats" />

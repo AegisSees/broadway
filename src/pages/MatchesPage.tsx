@@ -108,7 +108,7 @@ export default function MatchesPage() {
   const all = state.status === 'ready' ? state.value : null;
   const minBadge = MIN_RANKS.find((r) => r.id === minId)?.min ?? 0;
   const [shown, setShown] = useState(PAGE);
-  const live = !!all && all.length > 0 && !all[0].illustrative;
+  const live = !!all && all.length > 0;
 
   // The feed has hero picks but no names or ranks. Look those up for the games being shown; ranking or filtering by rank
   // needs every game's ranks, so it reads them all (a few seconds the first time, cached after).
@@ -155,7 +155,6 @@ export default function MatchesPage() {
         {ago !== null && <span className="hub-count" role="status">Updated {ago < 5 ? 'just now' : `${ago}s ago`}</span>}
       </div>
 
-      {all && all.length > 0 && all[0].illustrative && <div className="notice"><b>Illustrative matches.</b> Players, heroes, clocks and scores are invented samples that tick like a real game. Switch to live data in the header to see real games.</div>}
       {reading && <p className="muted" role="status">{needAll ? `Reading the ranks of ${toLook.length} games…` : 'Looking up names and ranks…'}</p>}
       {state.status === 'loading' && <p className="muted" role="status">Looking for live games…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load live matches</h3><p>{state.message}. It will try again in {REFRESH_MS / 1000} seconds.</p></div>}

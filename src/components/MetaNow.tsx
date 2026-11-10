@@ -48,7 +48,7 @@ export default function MetaNow({ list }: { list: TierList | null }) {
   const games = list.rows.reduce((n, r) => n + r.matches, 0);
   return (
     <section className="meta-now" aria-labelledby="meta-now-h">
-      <div className="dotline"><span>Standard {'·'} Ranked {'·'} {list.illustrative ? 'illustrative sample' : 'live'}</span></div>
+      <div className="dotline"><span>Standard {'·'} Ranked {'·'} live</span></div>
       <h2 id="meta-now-h" className="meta-now-title">The meta <em>right now</em></h2>
       <div className="mn-row">
         {picks.map((p, i) => {

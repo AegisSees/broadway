@@ -13,7 +13,6 @@ import { rankBadge } from '../data/ranks';
 import Spotlight from '../components/Spotlight';
 import Intro from '../components/Intro';
 import MetaNow from '../components/MetaNow';
-import { SAMPLE_MOVERS, SAMPLE_PATCH_NOTES } from '../data/fixtures';
 import { dataSource } from '../data/source';
 import { DEFAULT_FILTERS } from '../data/types';
 import { useAsync } from '../data/useAsync';
@@ -109,16 +108,8 @@ function Patches() {
         </div>
       ))}
       {notes && notes.length > 0 && <p className="patch-src"><small>From Valve’s update posts. Broadway links to the originals rather than restating numbers.</small></p>}
-      {(state.status === 'error' || (state.status === 'ready' && (!notes || notes.length === 0))) && (
-        <>
-          {SAMPLE_PATCH_NOTES.map((p) => (
-            <div className="patch" key={p.title}>
-              <span className={`tag-pill ${p.tag}`}>{p.tag === 'adj' ? 'Adjust' : p.tag}</span><b>{p.title}</b><br /><small>{p.body}</small>
-            </div>
-          ))}
-          <p className="patch-src"><small>Example entries. Real update posts appear with live data.</small></p>
-        </>
-      )}
+      {state.status === 'error' && <p className="muted" role="alert">Couldn’t load the update posts.</p>}
+      {state.status === 'ready' && (!notes || notes.length === 0) && <p className="muted">No update posts right now.</p>}
     </aside>
   );
 }
@@ -128,14 +119,14 @@ function useMarquee() {
   const state = useAsync((signal) => dataSource.tierList(DEFAULT_FILTERS, signal), []);
   const list = state.status === 'ready' ? state.value : null;
   const top: TierRow[] = list ? list.rows.slice(0, 8) : [];
-  const movers = list && !list.illustrative
+  const movers = list
     ? (() => {
         const withDelta = list.rows.filter((r) => r.delta !== undefined && Math.abs(r.delta) >= 0.1 && r.matches >= 2000);
         const up = [...withDelta].sort((a, b) => (b.delta ?? 0) - (a.delta ?? 0)).slice(0, 2);
         const down = [...withDelta].sort((a, b) => (a.delta ?? 0) - (b.delta ?? 0)).filter((r) => !up.includes(r)).slice(0, 2);
         return [...up.filter((r) => (r.delta ?? 0) > 0), ...down.filter((r) => (r.delta ?? 0) < 0)].map((r) => ({ slug: r.slug, delta: r.delta ?? 0 }));
       })()
-    : SAMPLE_MOVERS;
+    : [];
   return { state, list, top, movers };
 }
 
@@ -176,7 +167,7 @@ export default function Home() {
         <Tiles />
         <div className="home-grid">
           <section className="panel">
-            <div className="eyebrow">Standard {'·'} Ranked {'·'} {tierList && !tierList.illustrative ? 'live' : 'illustrative sample'}</div>
+            <div className="eyebrow">Standard {'·'} Ranked {'·'} live</div>
             <h2>On the marquee</h2>
             {tierState.status === 'loading' && <p className="muted" role="status">Reading the standings…</p>}
             {tierState.status === 'error' && <p role="alert">Couldn’t load the standings: {tierState.message}.</p>}
@@ -197,7 +188,7 @@ export default function Home() {
           <div style={{ display: 'grid', gap: 18, alignContent: 'start' }}>
             <Patches />
             {movers.length > 0 && <section className="panel">
-              <div className="eyebrow">This week {'·'} {tierList && !tierList.illustrative ? 'live' : 'sample'}</div>
+              <div className="eyebrow">This week {'·'} live</div>
               <h2>Biggest movers</h2>
               <div className="strip">
                 {movers.map((m) => { const h = getHero(m.slug); return h && (

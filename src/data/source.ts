@@ -2,37 +2,33 @@ import { ApiError, DeadlockApi } from '../api/client';
 import { toApiFilters } from '../api/filters';
 import { buildPickColumns, buildSynergyColumn } from '../api/matchups';
 import type { BuildRaw, PlayerRankRaw, SteamProfile } from '../api/types';
-import { dataMode, reportDegraded, reportHealthy } from './dataMode';
+import { reportDegraded, reportHealthy } from './dataHealth';
 import { buildHeroIdMap, type HeroIdMap } from './heroIds';
 import { liveOverview } from './liveHero';
 import { normalizePatches, type PatchNote } from './patches';
 import { getHero } from './roster';
-import { HAZE_BRAWL, HAZE_OVERVIEW } from './fixtures';
 import type { Filters, HeroOverview, MatchupGroup } from './types';
 import {
-  MAX_CANDIDATES, normalizeLeaderboard, resolveCandidates, sampleAvatar, sampleLeaderboard, type CandidateInfo, type LeaderboardEntry, type PlayerExtras, type Region,
+  MAX_CANDIDATES, normalizeLeaderboard, resolveCandidates, type CandidateInfo, type LeaderboardEntry, type PlayerExtras, type Region,
 } from './leaderboard';
-import { normalizePlayerDistribution, sampleDistribution, type RankDistribution } from './rankDistribution';
-import { allSampleBuilds, sampleHeroBuilds, type HeroBuild } from './builds';
+import { normalizePlayerDistribution, type RankDistribution } from './rankDistribution';
+import { type HeroBuild } from './builds';
 import { BEST_MIN_GAMES, buildResultScore, heroBuildTabs, normalizeBuild } from './communityBuilds';
-import { normalizeTrend, patchMarks, sampleTrend, todayUtc, DAY, type HeroTrend } from './trend';
-import { normalizeMatches, sampleMatches, type LiveMatch } from './matches';
-import { normalizeStreams, sampleStreams, type LiveStream } from './streams';
+import { normalizeTrend, patchMarks, todayUtc, DAY, type HeroTrend } from './trend';
+import { normalizeMatches, type LiveMatch } from './matches';
+import { normalizeStreams, type LiveStream } from './streams';
 import {
-  buildCore, hitFromProfile, normalizeHistory, normalizeRank, sampleCore, sampleMatches as samplePlayerMatches, sampleMates, sampleName,
-  type PlayerCore, type PlayerHit, type PlayerMate, type PlayerMatches,
+  buildCore, hitFromProfile, normalizeHistory, normalizeRank, type PlayerCore, type PlayerHit, type PlayerMate, type PlayerMatches,
 } from './player';
-import { sampleTierList } from './sampleTiers';
 import { avgBadgeOf, normalizeMatch, type MatchDetail } from './matchDetail';
-import { sampleMatchDetail } from './sampleMatch';
 import { buildTierRows, type TierList } from './tiers';
 
 /** Head-to-head record between two heroes: wins for `a` over `b`. */
 export interface HeadToHead { matches: number; winsA: number }
 
 export interface DataSource {
-  /** "live" asks the Deadlock API (and falls back to a labelled sample when it cannot be reached); "fixture" is samples only. */
-  id: 'fixture' | 'live';
+  /** There is one source: the Deadlock API. */
+  id: 'live';
   /** Resolves null when this source has nothing for the hero + filters (the UI shows an honest empty state). */
   heroOverview(slug: string, filters: Filters, signal?: AbortSignal): Promise<HeroOverview | null>;
   /** Every hero with win, pick and ban rate, tier and 7-day change. */
@@ -54,7 +50,7 @@ export interface DataSource {
   liveMatches(signal?: AbortSignal): Promise<LiveMatch[] | null>;
   /** Streams of the game that are live right now. Null when the source has no streams feed. */
   liveStreams(signal?: AbortSignal): Promise<LiveStream[] | null>;
-  /** The game's latest update posts, newest first. Null when the source has none (the page shows its sample block). */
+  /** The game's latest update posts, newest first. Null when the source has none. */
   patchNotes(signal?: AbortSignal): Promise<PatchNote[] | null>;
 
   // ---- Players ----
@@ -73,89 +69,9 @@ export interface DataSource {
    * players' badges going in (games where fewer than half the lobby has one are left out). Used to place a player by the lobbies matchmaking gives them.
    */
   lobbyRanks(accountId: number, matchIds: readonly number[], signal?: AbortSignal): Promise<Map<number, number>>;
-  /** One finished game in full. Rejects with a 404 ApiError when the id is unknown. The sample source answers any id with its labelled sample game. */
+  /** One finished game in full. Rejects with a 404 ApiError when the id is unknown. */
   matchDetail(matchId: number, signal?: AbortSignal): Promise<MatchDetail>;
 }
-
-// ---------------------------------------------------------------------------------------------------------
-// Samples
-// ---------------------------------------------------------------------------------------------------------
-
-/** Illustrative data: clearly labelled samples, available for Haze on Standard / Ranked / All ranks. */
-export const fixtureSource: DataSource = {
-  id: 'fixture',
-  async heroOverview(slug, f) {
-    if (slug !== 'haze') return null;
-    if (f.mode === 'street_brawl') return HAZE_BRAWL;
-    return f.queue === 'ranked' && f.rank === 'all' ? HAZE_OVERVIEW : null;
-  },
-  async tierList(f) {
-    return { rows: sampleTierList(f), illustrative: true };
-  },
-  async leaderboard(region, heroSlug) {
-    return sampleLeaderboard(region, heroSlug);
-  },
-  async headToHead() {
-    return null;
-  },
-  async playerExtras() {
-    return new Map();
-  },
-  async rankDistribution() {
-    return sampleDistribution();
-  },
-  async heroTrend(slug) {
-    return getHero(slug) ? sampleTrend(slug, todayUtc(), 140, slug === 'haze' ? HAZE_OVERVIEW.winRate : undefined) : null;
-  },
-  async heroBuilds(slug) {
-    const list = sampleHeroBuilds(slug);
-    return list.length ? list : null;
-  },
-  async allBuilds() {
-    return allSampleBuilds();
-  },
-  async liveMatches() {
-    return sampleMatches();
-  },
-  async liveStreams() {
-    return sampleStreams();
-  },
-  async patchNotes() {
-    return null;
-  },
-  async player(accountId) {
-    return sampleCore(accountId);
-  },
-  async playerMatches(accountId) {
-    return samplePlayerMatches(accountId);
-  },
-  async playerMates(accountId) {
-    return sampleMates(accountId);
-  },
-  async searchPlayers() {
-    return [];
-  },
-  async playerHits(ids) {
-    return new Map(ids.map((id) => { const name = sampleName(id); return [id, { accountId: id, name, avatar: sampleAvatar(name) }]; }));
-  },
-  async matchDetail(matchId) {
-    return sampleMatchDetail(matchId);
-  },
-  async lobbyRanks(accountId, matchIds) {
-    // the sample lobbies sit within a few levels of the sample player's rank
-    const lines = new Map(samplePlayerMatches(accountId).matches.map((m) => [m.id, m]));
-    const own = sampleCore(accountId).rank?.badge;
-    const out = new Map<number, number>();
-    for (const id of matchIds) {
-      const b = lines.get(id)?.badge ? own : undefined;
-      if (!b) continue;
-      const idx = Math.floor(b / 10) * 6 + (b % 10) - 1 + ((id * 7919) % 7) - 3;
-      const i = Math.min(71, Math.max(6, idx));
-      out.set(id, Math.floor(i / 6) * 10 + (i % 6) + 1);
-    }
-    return out;
-  },
-};
 
 // ---------------------------------------------------------------------------------------------------------
 // Live
@@ -242,7 +158,7 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
 
     async tierList(f, signal) {
       const { rows } = await liveTier(f, signal);
-      return { rows, illustrative: false, note: rows.length ? undefined : 'Not enough games with these filters yet.' };
+      return { rows, note: rows.length ? undefined : 'Not enough games with these filters yet.' };
     },
 
     async leaderboard(region, heroSlug, signal) {
@@ -468,29 +384,15 @@ export function createLiveSource(api = new DeadlockApi()): DataSource {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-// Live with labelled samples where the live version is missing or unreachable
+// The one source the site runs on
 // ---------------------------------------------------------------------------------------------------------
 
 /**
- * What the site actually runs on when the data mode is "live". Lists that the API cannot be reached for fall back to
- * the labelled sample (and the header says so); the player pages never do, because a made-up profile for a real account
- * is worse than an error. Build data is not connected yet, so builds stay on labelled samples.
+ * Wraps every call of the live source so the header can tell visitors when the Deadlock API is not answering.
+ * It never replaces a failed call with anything: the error reaches the page, which shows its own error state.
+ * A 4xx answer (for example "player not found") is the API working, so it does not count as an outage.
  */
-export function createHybridSource(live: DataSource, sample: DataSource): DataSource {
-  async function guard<T>(call: () => Promise<T>, fallback: () => Promise<T>, signal?: AbortSignal, rethrowIfNoSample = false): Promise<T> {
-    try {
-      const v = await call();
-      reportHealthy();
-      return v;
-    } catch (e) {
-      if (isAbort(e, signal)) throw e;
-      const s = await fallback();
-      if (rethrowIfNoSample && s == null) throw e;
-      reportDegraded(e instanceof Error ? e.message : 'The Deadlock API could not be reached');
-      return s;
-    }
-  }
-  /** Player lookups are never replaced by samples. A failure still shows in the header chip, unless the API simply answered "not found". */
+export function withHealth(live: DataSource): DataSource {
   async function watch<T>(call: () => Promise<T>, signal?: AbortSignal): Promise<T> {
     try {
       const v = await call();
@@ -503,25 +405,16 @@ export function createHybridSource(live: DataSource, sample: DataSource): DataSo
       throw e;
     }
   }
-  return {
-    ...live,
-    player: (id, signal) => watch(() => live.player(id, signal), signal),
-    playerMatches: (id, signal) => watch(() => live.playerMatches(id, signal), signal),
-    playerMates: (id, signal) => watch(() => live.playerMates(id, signal), signal),
-    matchDetail: (id, signal) => watch(() => live.matchDetail(id, signal), signal),
-    lobbyRanks: (id, ids, signal) => watch(() => live.lobbyRanks(id, ids, signal), signal),
-    searchPlayers: (q, signal) => watch(() => live.searchPlayers(q, signal), signal),
-    heroOverview: (slug, f, signal) => guard(() => live.heroOverview(slug, f, signal), () => sample.heroOverview(slug, f, signal), signal, true),
-    tierList: (f, signal) => guard(() => live.tierList(f, signal), () => sample.tierList(f, signal), signal),
-    leaderboard: (region, hero, signal) => guard(() => live.leaderboard(region, hero, signal), () => sample.leaderboard(region, hero, signal), signal),
-    rankDistribution: (f, signal) => guard(() => live.rankDistribution(f, signal), () => sample.rankDistribution(f, signal), signal),
-    heroTrend: (slug, f, signal) => guard(() => live.heroTrend(slug, f, signal), () => sample.heroTrend(slug, f, signal), signal, true),
-    liveMatches: (signal) => guard(() => live.liveMatches(signal), () => sample.liveMatches(signal), signal),
-    patchNotes: (signal) => guard(() => live.patchNotes(signal), () => sample.patchNotes(signal), signal),
-    heroBuilds: (slug, f, signal) => guard(() => live.heroBuilds(slug, f, signal), () => sample.heroBuilds(slug, f, signal), signal),
-    allBuilds: (signal, hero) => guard(() => live.allBuilds(signal, hero), () => sample.allBuilds(signal, hero), signal),
-    liveStreams: async (signal) => (await live.liveStreams(signal).catch((e) => { if (isAbort(e, signal)) throw e; return null; })) ?? sample.liveStreams(signal),
-  };
+  const wrapped: Record<string, unknown> = { ...live };
+  for (const [name, fn] of Object.entries(live)) {
+    if (typeof fn !== 'function') continue;
+    // every DataSource method takes its AbortSignal as the last argument
+    wrapped[name] = (...args: unknown[]) => {
+      const last = args[args.length - 1];
+      return watch(() => (fn as (...a: unknown[]) => Promise<unknown>).apply(live, args), last instanceof AbortSignal ? last : undefined);
+    };
+  }
+  return wrapped as unknown as DataSource;
 }
 
-export const dataSource: DataSource = dataMode === 'live' ? createHybridSource(createLiveSource(), fixtureSource) : fixtureSource;
+export const dataSource: DataSource = withHealth(createLiveSource());

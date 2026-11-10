@@ -2,8 +2,6 @@ import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Kicker from '../components/Kicker';
 import { SiteFooter } from '../components/Shell';
-import { getHeroBg } from '../data/heroStats';
-import { getHero } from '../data/roster';
 import { dataSource } from '../data/source';
 import { embedUrl, LANG_NAME, type LiveStream } from '../data/streams';
 import { fmtClock } from '../data/matches';
@@ -15,14 +13,7 @@ const channelUrl = (c: string) => `https://www.twitch.tv/${encodeURIComponent(c)
 const k = (n: number) => (n >= 10_000 ? `${Math.round(n / 1000)}K` : n >= 1000 ? `${Math.round(n / 100) / 10}K` : String(n));
 
 function Thumb({ s }: { s: LiveStream }) {
-  const bg = s.heroSlug ? getHeroBg(s.heroSlug) : undefined;
-  const hero = getHero(s.heroSlug);
-  return (
-    <div className="st-thumb" style={bg ? { backgroundImage: `url(${bg})` } : undefined}>
-      {s.thumbnail && <img src={s.thumbnail} alt="" loading="lazy" />}
-      {!s.thumbnail && hero?.render && <img className="render" src={hero.render} alt="" loading="lazy" />}
-    </div>
-  );
+  return <div className="st-thumb">{s.thumbnail && <img src={s.thumbnail} alt="" loading="lazy" />}</div>;
 }
 
 function StreamCard({ s, now, onWatch, featured }: { s: LiveStream; now: number; onWatch: (s: LiveStream) => void; featured: boolean }) {
@@ -39,9 +30,8 @@ function StreamCard({ s, now, onWatch, featured }: { s: LiveStream; now: number;
         <p title={s.title}>{s.title}</p>
         <div className="st-meta"><span className="tagchip">{LANG_NAME[s.language] ?? s.language.toUpperCase()}</span></div>
         <div className="st-actions">
-          {!s.illustrative && <button type="button" className="chip" onClick={() => onWatch(s)}>Watch here</button>}
-          {!s.illustrative && <a className="chip" href={channelUrl(s.channel)} target="_blank" rel="noreferrer noopener">Open on Twitch {'↗'}</a>}
-          {s.illustrative && <span className="muted st-sample">Sample channel</span>}
+          <button type="button" className="chip" onClick={() => onWatch(s)}>Watch here</button>
+          <a className="chip" href={channelUrl(s.channel)} target="_blank" rel="noreferrer noopener">Open on Twitch {'↗'}</a>
         </div>
       </div>
     </article>
@@ -70,7 +60,7 @@ export default function StreamsPage() {
       </div>
       <p className="muted mx-lead">People streaming Deadlock right now, busiest first. Watch from here or jump to their channel.</p>
 
-      {watching && !watching.illustrative && (
+      {watching && (
         <div className="st-embed panel">
           <div className="st-embed-head"><b>{watching.name}</b><span className="muted">{watching.title}</span><button type="button" className="chip" onClick={() => setWatching(null)}>Close player</button></div>
           <div className="st-frame"><iframe title={`${watching.name} on Twitch`} src={embedUrl(watching.channel, host)} allowFullScreen loading="lazy" /></div>
@@ -85,7 +75,6 @@ export default function StreamsPage() {
         </div>
       )}
 
-      {all && all.length > 0 && all.every((s) => s.illustrative) && <div className="notice"><b>Illustrative streams.</b> Channels, titles and viewer counts are invented, so nothing here links out. Real streams appear once the streams service is connected (see the README).</div>}
       {state.status === 'loading' && <p className="muted" role="status">Looking for live streams…</p>}
       {state.status === 'error' && <div className="panel empty" role="alert"><h3>Couldn’t load streams</h3><p>{state.message}. It will try again in a minute.</p></div>}
       {state.status === 'ready' && !all && <div className="panel empty"><h3>Streams aren’t connected yet</h3><p>Livestreams need Broadway’s small streams service, which asks Twitch who is live. See the README for the two settings it needs.</p></div>}

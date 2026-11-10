@@ -1,8 +1,4 @@
-import { HEROES } from './roster';
-import { getHeroStats } from './heroStats';
-import { FIRST, SECOND } from './leaderboard';
 import { TIER_NUMBER } from './ranks';
-import { between, hash, pick, rng } from '../lib/prng';
 
 /**
  * Live matches. The sample generates invented games (invented handles, hero picks and numbers) that tick like real
@@ -38,7 +34,6 @@ export interface LiveMatch {
   queue?: 'ranked' | 'unranked';
   spectators?: number;
   teams: [LiveTeam, LiveTeam];
-  illustrative: boolean;
 }
 
 export const TEAM_LABEL: Record<TeamId, string> = { 'hidden-king': 'Hidden King', archmother: 'Archmother' };
@@ -53,45 +48,6 @@ export const fmtClock = (seconds: number): string => {
 
 /** 312400 -> "312K". Net worth is in souls. */
 export const fmtSouls = (n: number): string => (n >= 1000 ? `${Math.round(n / 100) / 10}K`.replace(/\.0K$/, 'K') : String(Math.round(n)));
-
-// ---------------------------------------------------------------------------------------------------------
-// Sample matches
-// ---------------------------------------------------------------------------------------------------------
-
-const PLAYABLE = HEROES.filter((h) => !h.unreleased && getHeroStats(h.slug)).map((h) => h.slug);
-const BOOT = Math.floor(Date.now() / 1000);
-
-/** A fixed set of invented live games. Start times are fixed at page load, so the clocks keep counting across refreshes. */
-export function sampleMatches(nowS = Math.floor(Date.now() / 1000), count = 12): LiveMatch[] {
-  const out: LiveMatch[] = [];
-  for (let i = 0; i < count; i++) {
-    const r = rng(hash(`match:${i}`));
-    const heroes: string[] = [];
-    while (heroes.length < 12) { const h = pick(r, PLAYABLE); if (!heroes.includes(h)) heroes.push(h); }
-    const startedAt = BOOT - Math.round(between(r, 120, 2700));
-    const minutes = Math.max(1, (nowS - startedAt) / 60);
-    const skew = (r() - 0.5) * 0.3;
-    const mkTeam = (id: TeamId, from: number, lean: number): LiveTeam => {
-      const players = heroes.slice(from, from + 6).map((heroSlug) => ({
-        heroSlug,
-        name: `${pick(r, FIRST)}${pick(r, SECOND)}`,
-        netWorth: Math.round(minutes * between(r, 420, 640) * (1 + lean)),
-      }));
-      return { id, label: TEAM_LABEL[id], players, netWorth: players.reduce((n, p) => n + (p.netWorth ?? 0), 0) };
-    };
-    const tier = 6 + Math.floor(r() * 6);
-    out.push({
-      id: String(70_000_000 + Math.floor(r() * 9_000_000)),
-      mode: i % 5 === 4 ? 'street_brawl' : 'standard',
-      startedAt,
-      avgBadge: tier * 10 + 1 + Math.floor(r() * 6),
-      spectators: Math.round(between(r, 0, 1) ** 3 * 900),
-      teams: [mkTeam('hidden-king', 0, skew), mkTeam('archmother', 6, -skew)],
-      illustrative: true,
-    });
-  }
-  return out;
-}
 
 // ---------------------------------------------------------------------------------------------------------
 // Live feed normalising
@@ -140,7 +96,6 @@ export function normalizeMatches(raw: unknown, heroSlugById: (id: number) => str
         { id: 'hidden-king', label: TEAM_LABEL['hidden-king'], players: a, netWorth: m.net_worth_team_0 ?? 0 },
         { id: 'archmother', label: TEAM_LABEL.archmother, players: b, netWorth: m.net_worth_team_1 ?? 0 },
       ],
-      illustrative: false,
     });
   }
   return out;

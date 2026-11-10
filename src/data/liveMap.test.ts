@@ -96,7 +96,6 @@ describe('rank distribution of players', () => {
   const d = normalizePlayerDistribution(distRaw as unknown as RankDistributionRow[]);
   it('covers all 66 levels as players', () => {
     expect(d.unit).toBe('players');
-    expect(d.illustrative).toBe(false);
     expect(d.rows.map((r) => r.level)).toEqual(ALL_LEVELS);
     expect(d.rows.reduce((n, r) => n + r.count, 0)).toBe((distRaw as unknown as RankDistributionRow[]).reduce((n, r) => n + r.players, 0));
     expect(distributionStats(d).tiers).toHaveLength(11);
@@ -110,7 +109,7 @@ describe('live matches', () => {
     expect(list).toHaveLength(raw.length);
     expect(list.filter((m) => m.mode === 'street_brawl').length).toBe(raw.filter((m) => m.game_mode === 4).length);
     expect(list.some((m) => m.mode === 'street_brawl')).toBe(true);
-    for (const m of list) { expect(m.teams[0].players.length + m.teams[1].players.length).toBeGreaterThan(0); expect(m.illustrative).toBe(false); expect(m.avgBadge).toBe(0); }
+    for (const m of list) { expect(m.teams[0].players.length + m.teams[1].players.length).toBeGreaterThan(0); expect(m.avgBadge).toBe(0); }
     expect(list.find((m) => m.queue === 'ranked') ?? list.find((m) => m.queue === 'unranked')).toBeTruthy();
   });
   it('fills names and a lobby average from looked-up players', () => {
@@ -145,11 +144,10 @@ describe('leaderboard rows', () => {
     expect(shared?.accountId).toBeUndefined();
     expect(shared!.candidates!.length).toBeGreaterThan(1);
   });
-  it('links to the player, to a name search, or nowhere for samples', () => {
+  it('links to the player, to a name search, never nowhere', () => {
     expect(playerHref({ name: 'x', accountId: 7 })).toBe('/player/7');
     expect(playerHref({ name: 'x', accountId: 7, alt: [8, 9] })).toBe('/player/7?alt=8,9');
     expect(playerHref({ name: 'a b' })).toBe('/player?q=a%20b');
-    expect(playerHref({ name: 'x', sample: true })).toBeNull();
   });
   it('picks the active, highest-ranked account among accounts sharing a name', () => {
     const info = new Map([[1, { matches30d: 4, badge: 116 }], [2, { matches30d: 90, badge: 112 }], [3, { matches30d: 120, badge: 115 }]]);
@@ -197,7 +195,6 @@ describe('player profile', () => {
     expect(c.totals!.matches).toBeGreaterThan(0);
     expect(c.heroes[0].matches).toBeGreaterThanOrEqual(c.heroes[c.heroes.length - 1].matches);
     expect(c.empty).toBe(false);
-    expect(c.illustrative).toBe(false);
   });
   it('is empty when the API knows nothing, and never invents a name', () => {
     const c = buildCore(42, { ids });

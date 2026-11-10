@@ -2,7 +2,6 @@ import Tip from './Tip';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDraftChance } from './DraftOdds';
-import { heroIdOf } from '../ml/predict';
 import { HeroFace } from './HeroFace';
 import { ItemIcon, MvpTag } from './MatchBits';
 import { getHeroColor } from '../data/heroColors';
@@ -20,21 +19,6 @@ import { fmtInt } from '../lib/stats';
 const k1 = (n: number | undefined) => (n === undefined ? '–' : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(Math.round(n)));
 type Names = Map<number, PlayerHit>;
 
-/**
- * Sample mode serves one saved real game for every match id, and the player whose page this is was not in it.
- * So that the card still reads correctly, the sample's player on the right side takes this player's place: same
- * account, hero and line. Live games are never touched.
- */
-export function placeSelf(m: MatchDetail, line: PlayerMatchLine, accountId: number): MatchDetail {
-  if (!m.illustrative || m.players.some((p) => p.accountId === accountId)) return m;
-  const stand = m.players.find((p) => p.won === line.won) ?? m.players[0];
-  const me: MatchPlayer = {
-    ...stand, accountId, heroSlug: line.heroSlug, heroId: line.heroId || heroIdOf(line.heroSlug) || stand.heroId, kills: line.kills, deaths: line.deaths, assists: line.assists,
-    netWorth: line.netWorth, lastHits: line.lastHits, level: line.level,
-  };
-  const swap = (p: MatchPlayer) => (p === stand ? me : p);
-  return { ...m, players: m.players.map(swap), teams: m.teams.map((t) => ({ ...t, players: t.players.map(swap) })) as MatchDetail['teams'] };
-}
 
 /**
  * The hero's card in the mood of the game: bloodied (critical) for a loss, normal for a win, proud (gloat) for a win
@@ -228,7 +212,7 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
   const near = useNear(ref, prefetch);
   const want = open || near;
   const detail = useAsync((signal) => (want ? dataSource.matchDetail(line.id, signal) : Promise.resolve(null)), [line.id, want]);
-  const m = useMemo(() => (detail.status === 'ready' && detail.value ? placeSelf(detail.value, line, accountId) : null), [detail, line, accountId]);
+  const m = useMemo(() => (detail.status === 'ready' && detail.value ? detail.value : null), [detail, line, accountId]);
   const ids = useMemo(() => (m ? m.players.map((p) => p.accountId) : []), [m]);
   const people = useAsync((signal) => (ids.length ? dataSource.playerHits(ids, signal) : Promise.resolve(new Map<number, PlayerHit>())), [ids.join(',')]);
   const names: Names = people.status === 'ready' ? people.value : new Map();
@@ -281,7 +265,6 @@ export default function PlayerMatchCard({ m: line, accountId, prefetch }: { m: P
           {m && tab === 'board' && <Board m={m} me={accountId} names={names} />}
           {m && tab === 'me' && (me ? <Mine m={m} p={me} /> : <p className="muted">This player isn’t in the game file.</p>)}
           {m && tab === 'build' && (me ? <Build p={me} /> : <p className="muted">This player isn’t in the game file.</p>)}
-          {m?.illustrative && <p className="pc-note muted">Sample game: the lobby is one saved real game with made-up names, shown for every match in sample mode.</p>}
         </div>
       )}
     </li>

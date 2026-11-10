@@ -37,7 +37,7 @@ const tierName = (t: number) => badgeParts(t * 10 + 1).rank;
  * Rank over time: the rank a player held going into each ranked game, drawn on a ladder of rank bands (each band is one
  * rank, split into its six levels). Rank only changes between games, so the line steps rather than slopes.
  */
-export default function RankHistory({ points, illustrative = false }: { points: readonly RankPoint[]; illustrative?: boolean }) {
+export default function RankHistory({ points }: { points: readonly RankPoint[] }) {
   const [range, setRange] = useState<RangeId>('50');
   const [hover, setHover] = useState<number | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -143,7 +143,7 @@ export default function RankHistory({ points, illustrative = false }: { points: 
           </div>
         )}
       </div>
-      <p className="wt-note">{illustrative ? 'Illustrative sample: this history is generated for design review. ' : ''}Each point is the rank shown going into a ranked game. Eternus levels follow the percentile of Eternus itself.</p>
+      <p className="wt-note">Each point is the rank shown going into a ranked game. Eternus levels follow the percentile of Eternus itself.</p>
     </div>
   );
 }

@@ -150,7 +150,7 @@ function Board({ region, regionLabel, hero, label, page, onPage }: { region: Reg
   }, [slice, extras]);
 
   // players the lookups found nothing for (no rank, record or avatar) are left out once the lookups are done (V)
-  const known = extras.status !== 'ready' ? merged : merged.filter((e) => e.sample || e.badge > 0 || e.wins !== undefined);
+  const known = extras.status !== 'ready' ? merged : merged.filter((e) => e.badge > 0 || e.wins !== undefined);
   const hidden = merged.length - known.length;
   const showTop = cur === 1 && !q.trim() && known.length >= 5;
   const tableRows = showTop ? known.slice(5) : known;
@@ -167,8 +167,7 @@ function Board({ region, regionLabel, hero, label, page, onPage }: { region: Reg
           <input type="search" placeholder="Find a player in this list" value={q} onChange={(e) => { setQ(e.target.value); onPage(1); }} />
         </label>
       </div>
-      {rows.some((r) => r.sample) && <div className="notice lb-note"><b>Illustrative ladder.</b> Handles, avatars and records are invented. Switch to live data in the header to see real players.</div>}
-      {rows.length > 0 && !rows[0].sample && extras.status === 'loading' && <p className="muted lb-msg" role="status">Looking up avatars, ranks and records…</p>}
+      {rows.length > 0 && extras.status === 'loading' && <p className="muted lb-msg" role="status">Looking up avatars, ranks and records…</p>}
       {state.status === 'loading' && <p className="muted lb-msg" role="status">Loading the ladder…</p>}
       {state.status === 'error' && <p className="lb-msg" role="alert">Couldn't load this leaderboard: {state.message}.</p>}
       {state.status === 'ready' && rows.length === 0 && <p className="muted lb-msg">No leaderboard entries for this selection yet.</p>}

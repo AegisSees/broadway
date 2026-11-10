@@ -166,7 +166,7 @@ export default function WinTrend({ heroName, trend }: { heroName: string; trend:
           </div>
         )}
       </div>
-      <p className="wt-note">{trend.illustrative ? 'Illustrative sample: the curve and patch dates are invented for design review. ' : ''}Green sits above 50% and red below. Dashed lines mark patch days.</p>
+      <p className="wt-note">Green sits above 50% and red below. Dashed lines mark patch days.</p>
     </div>
   );
 }

@@ -154,9 +154,6 @@ export default function SearchBox({ large = false }: { large?: boolean }) {
           {others.filter((r) => r.kind === 'player').map(row)}
           {finds.map(row)}
           {results.length === 0 && <li className="none" role="presentation">No heroes match. Paste a Steam ID or profile link to open a player.</li>}
-          {dataSource.id === 'fixture' && heroResults.length > 0 && (
-            <li className="none" role="presentation"><small>Player name search needs live data. Steam IDs work now.</small></li>
-          )}
         </ul>
       )}
     </div>

@@ -47,7 +47,3 @@ export function normalizePatches(raw: readonly PatchEntry[] | null | undefined):
   }
   return out.sort((a, b) => b.date - a.date);
 }
-
-export const SAMPLE_PATCHES: PatchNote[] = [
-  { title: 'Example update', date: 1_791_000_000, link: 'https://store.steampowered.com/news/app/1422450', source: 'steam', excerpt: 'Sample entry. With live data on, this shows the game’s real update posts and links to the originals.' },
-];

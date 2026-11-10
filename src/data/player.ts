@@ -1,9 +1,7 @@
 import type { MatchHistoryRow, PlayerHeroStatsRow, PlayerRankRaw, SteamProfile } from '../api/types';
-import { hash, pick, rng } from '../lib/prng';
 import { steamProfileUrl } from '../lib/steam';
 import type { HeroIdMap } from './heroIds';
-import { badgeLabel, badgeParts, FIRST, sampleAvatar, SECOND } from './leaderboard';
-import { HEROES } from './roster';
+import { badgeLabel, badgeParts } from './leaderboard';
 
 /**
  * A player, built from the Deadlock API's player endpoints (all checked against the live service on 8 Oct 2026):
@@ -68,7 +66,6 @@ export interface PlayerCore {
   heroes: PlayerHeroLine[];
   /** True when the API knows nothing about this account (no profile, no record, no matches). */
   empty: boolean;
-  illustrative: boolean;
 }
 
 export interface PlayerMatchLine {
@@ -240,7 +237,6 @@ export function buildCore(accountId: number, parts: { steam?: SteamProfile | nul
     totals,
     heroes: normalizeHeroLines(rows, parts.ids),
     empty: !steam && !totals && !rank,
-    illustrative: false,
   };
 }
 
@@ -286,87 +282,4 @@ export function heroesIn(matches: readonly PlayerMatchLine[]): { slug: string; m
     by.set(m.heroSlug, a);
   }
   return [...by.entries()].map(([slug, v]) => ({ slug, ...v })).sort((a, b) => b.matches - a.matches);
-}
-
-// ---------------------------------------------------------------------------------------------------------
-// Illustrative player. Invented from the account number so the page can be designed and tested offline. It is
-// never shown for a real account when the live source is on: a failed lookup is an error, not a made-up profile.
-// ---------------------------------------------------------------------------------------------------------
-
-const PLAYABLE = HEROES.filter((h) => !h.unreleased).map((h) => h.slug);
-
-export function sampleName(accountId: number): string {
-  const r = rng(hash(`player:${accountId}`));
-  return `${pick(r, FIRST)}${pick(r, SECOND)}`;
-}
-
-export function sampleCore(accountId: number): PlayerCore {
-  const r = rng(hash(`player:${accountId}`));
-  const name = sampleName(accountId);
-  const badge = (6 + Math.floor(r() * 6)) * 10 + 1 + Math.floor(r() * 6);
-  const picks = new Set<string>();
-  while (picks.size < 9) picks.add(pick(r, PLAYABLE));
-  const heroes: PlayerHeroLine[] = [...picks].map((slug, i) => {
-    const matches = Math.max(4, Math.round((140 / (i + 1.4)) * (0.7 + r() * 0.6)));
-    const wins = Math.round(matches * (0.46 + r() * 0.14));
-    const seconds = matches * Math.round(1500 + r() * 900);
-    return { slug, matches, wins, kills: Math.round(matches * (6 + r() * 6)), deaths: Math.round(matches * (4 + r() * 4)), assists: Math.round(matches * (8 + r() * 8)), seconds, lastPlayed: Math.floor(Date.now() / 1000) - Math.round(r() * 20) * 86400, accuracy: 0.4 + r() * 0.25, netWorthPerMin: 1100 + r() * 500 };
-  }).sort((a, b) => b.matches - a.matches);
-  return {
-    accountId, name, avatar: sampleAvatar(name), profileUrl: steamProfileUrl(accountId), matches30d: 40 + Math.floor(r() * 160),
-    rank: normalizeRank({ badge, rank: Math.floor(badge / 10), subrank: badge % 10 }), totals: playerTotals(heroes.map((h) => ({ account_id: accountId, hero_id: 0, matches_played: h.matches, wins: h.wins, last_played: h.lastPlayed, time_played: h.seconds, kills: h.kills, deaths: h.deaths, assists: h.assists }))),
-    heroes, empty: false, illustrative: true,
-  };
-}
-
-export function sampleMatches(accountId: number, core = sampleCore(accountId)): PlayerMatches {
-  const r = rng(hash(`history:${accountId}`));
-  const now = Math.floor(Date.now() / 1000);
-  const heroes = core.heroes.map((h) => h.slug);
-  const count = 140;
-  const finalBadge = core.rank?.badge ?? 81;
-  let badge = Math.max(21, finalBadge - 14);
-  let t = now - 2 * 3600;
-  const lines: PlayerMatchLine[] = [];
-  for (let i = 0; i < count; i++) {
-    t -= Math.round(1800 + r() * 14000);
-    const kind: QueueKind = r() < 0.72 ? 'ranked' : r() < 0.75 ? 'unranked' : 'brawl';
-    const slug = heroes[Math.floor(r() ** 1.7 * heroes.length)];
-    const won = r() < 0.53;
-    const dur = Math.round(1300 + r() * 1700);
-    lines.push({
-      id: 112_000_000 - i * 37 - Math.floor(r() * 30), heroId: 0, heroSlug: slug, start: t, durationS: dur, won, kind,
-      kills: Math.round(3 + r() * 14), deaths: Math.round(1 + r() * 9), assists: Math.round(4 + r() * 18), netWorth: Math.round(dur * (22 + r() * 14)), lastHits: Math.round(dur / 60 * (4 + r() * 4)), denies: Math.round(dur / 60 * (0.04 + r() * 0.1)), level: 22 + Math.floor(r() * 14),
-      rankDelta: kind === 'ranked' ? (won ? 300 : -300) : undefined, badge: kind === 'ranked' ? badge : undefined, abandoned: false,
-    });
-  }
-  // lines are newest first; walk oldest to newest to move the rank, then reverse.
-  const ordered = [...lines].reverse();
-  for (const m of ordered) {
-    if (m.kind !== 'ranked') continue;
-    m.badge = badge;
-    if (m.won && r() < 0.28 && badge % 10 < 6 && badge < finalBadge) badge++;
-    else if (!m.won && r() < 0.18 && badge % 10 > 1) badge--;
-  }
-  const history = ordered.filter((m) => m.badge !== undefined).map((m) => ({ t: m.start, badge: m.badge! }));
-  return { matches: lines, history };
-}
-
-export function sampleMates(accountId: number): PlayerMate[] {
-  const r = rng(hash(`mates:${accountId}`));
-  return Array.from({ length: 6 }, (_, i) => {
-    const n = 5 + Math.round((60 / (i + 1)) * (0.6 + r() * 0.8));
-    const id = 1_000_000 + Math.floor(r() * 800_000_000);
-    const name = sampleName(id);
-    return { accountId: id, name, avatar: sampleAvatar(name), matches: n, wins: Math.round(n * (0.42 + r() * 0.2)) };
-  });
-}
-
-/** The current run of results, newest game first: three wins in a row is { won: true, n: 3 }. Abandoned losses count. */
-export function streakOf(matches: readonly PlayerMatchLine[]): { won: boolean; n: number } | null {
-  if (!matches.length) return null;
-  const won = matches[0].won;
-  let n = 0;
-  while (n < matches.length && matches[n].won === won) n++;
-  return { won, n };
 }

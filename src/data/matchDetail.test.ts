@@ -16,7 +16,6 @@ describe('normalizeMatch on a real ranked game', () => {
     expect(m.durationS).toBe(1719);
     expect(m.kind).toBe('ranked');
     expect(m.winner).toBe('hidden-king');
-    expect(m.illustrative).toBe(false);
     expect(m.avgBadge).toBe(114);
   });
 

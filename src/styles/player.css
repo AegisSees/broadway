@@ -13,7 +13,6 @@
 .data-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
 .data-chip.live { color: var(--ink-2); } .data-chip.live i { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 28%, transparent); }
 .data-chip.warn { color: var(--bad); } .data-chip.warn i { background: var(--bad); }
-.data-chip.sample i { background: var(--brass); }
 .data-chip:hover { color: var(--ink); border-color: var(--brass); }
 
 /* ---------- small additions on existing pages ---------- */

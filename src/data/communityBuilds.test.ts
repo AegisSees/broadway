@@ -19,7 +19,6 @@ describe('published builds (shape from api-samples/builds.json)', () => {
   it('keeps the author’s sections and every item we know, in order and once', () => {
     expect(b.heroSlug).toBe('bebop');
     expect(b.code).toBe('1084');
-    expect(b.illustrative).toBe(false);
     expect(b.phases.map((p) => p.label)).toEqual(['Early', 'Mid game', 'Late game', 'EXTRA USEFULL']);
     const names = buildItemNames(b);
     expect(new Set(names).size).toBe(names.length);
@@ -104,7 +103,6 @@ describe('live source builds', () => {
     expect(tabs?.[0].code).toBe('1242');
     expect(tabs?.[0].tab).toBe('Best results');
     expect(tabs?.find((t) => t.tab === 'Most favorited')?.code).toBe('1084');
-    expect(tabs?.every((t) => !t.illustrative)).toBe(true);
   });
 
   it('answers null for a hero with no published builds', async () => {

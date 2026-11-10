@@ -117,7 +117,6 @@ export interface HeroOverview {
   trends?: TrendPoint[];
   damage?: DamageBreakdown;
   highRolls?: HighRollTier[];
-  provenance: 'illustrative' | 'live';
 }
 
 export interface Ability {

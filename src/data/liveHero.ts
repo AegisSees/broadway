@@ -22,6 +22,5 @@ export function liveOverview(slug: string, tiers: readonly TierRow[], matchups: 
     builds: [],
     matchups,
     guides: [],
-    provenance: 'live',
   };
 }

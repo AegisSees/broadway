@@ -60,11 +60,10 @@ export default function PlayerLookup({ problem }: { problem?: string }) {
       {q && (
         <section aria-label="Search results" className="pl-results">
           <div className="section-heading"><span className="star">{'✦'}</span><h2>{search ? <>Players named “{search}”</> : 'Opening…'}</h2></div>
-          {dataSource.id === 'fixture' && <div className="notice"><b>Sample mode.</b> Searching by name needs live data. Switch to live in the header, or paste a Steam ID, which always works.</div>}
           {state.status === 'loading' && search.length >= 3 && <p className="muted" role="status">Searching…</p>}
           {state.status === 'error' && <div className="panel empty" role="alert"><h3>Search failed</h3><p>{state.message}.</p></div>}
           {search.length > 0 && search.length < 3 && <p className="muted">Type at least three letters.</p>}
-          {state.status === 'ready' && search.length >= 3 && hits.length === 0 && dataSource.id !== 'fixture' && (
+          {state.status === 'ready' && search.length >= 3 && hits.length === 0 && (
             <div className="panel empty"><h3>Nobody by that name</h3><p>The Deadlock API has no Steam name matching “{search}”. Try fewer letters, or paste the player’s Steam ID.</p></div>
           )}
           {hits.length > 0 && (

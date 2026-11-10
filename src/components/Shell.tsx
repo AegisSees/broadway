@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import SearchBox from './SearchBox';
 import ThemeToggle from './ThemeToggle';
-import { dataMode, switchDataMode, useDataHealth } from '../data/dataMode';
+import { useDataHealth } from '../data/dataHealth';
 import { pageArtFor } from '../lib/pageArt';
 import { useReveal } from '../lib/reveal';
 import { AUTHOR } from '../lib/credit';
@@ -61,21 +61,18 @@ function MoreMenu() {
   );
 }
 
-/** Says whether the numbers are live or samples, and switches between them. A failed live call that fell back to samples shows here too. */
+/** Shows that the numbers are live, and warns when the Deadlock API is not answering. It is a status light, not a switch. */
 function DataChip() {
   const health = useDataHealth();
-  const live = dataMode === 'live';
-  const state = !live ? 'sample' : health.degraded ? 'warn' : 'live';
-  const label = state === 'sample' ? 'Sample data' : state === 'warn' ? 'Offline' : 'Live data';
-  const title = state === 'sample'
-    ? 'Showing built-in sample data. Click to switch to live data from the Deadlock API.'
-    : state === 'warn'
-      ? `The Deadlock API could not be reached (${health.reason ?? 'no answer'}), so some pages show labelled samples. Click to switch to sample data.`
-      : 'Showing live data from the Deadlock API. Click to switch to the built-in sample data.';
+  const state = health.degraded ? 'warn' : 'live';
+  const label = health.degraded ? 'API offline' : 'Live data';
+  const title = health.degraded
+    ? `The Deadlock API could not be reached (${health.reason ?? 'no answer'}). Pages that need it show an error until it is back.`
+    : 'Every number on this site comes from the Deadlock API.';
   return (
-    <button type="button" className={`data-chip ${state}`} title={title} aria-label={`${label}. ${title}`} onClick={() => switchDataMode(live ? 'sample' : 'live')}>
+    <span className={`data-chip ${state}`} title={title} role="status" aria-label={`${label}. ${title}`}>
       <i aria-hidden="true" /><span>{label}</span>
-    </button>
+    </span>
   );
 }
 
@@ -128,7 +125,7 @@ export function SiteFooter() {
     <footer className="site-foot">
       <span>{'✦'} Broadway is an independent fan project{AUTHOR ? ` by ${AUTHOR}` : ''}, not made or endorsed by Valve. Deadlock is a trademark of Valve Corporation.</span>
       <span>
-        <Link to="/about">About &amp; methodology</Link> · {dataMode === 'live' ? 'Live data from' : 'Sample mode. Live data comes from'} the <a href="https://github.com/deadlock-api/deadlock-api" rel="noreferrer">Deadlock API</a> (MIT).
+        <Link to="/about">About &amp; methodology</Link> · Live data from the <a href="https://github.com/deadlock-api/deadlock-api" rel="noreferrer">Deadlock API</a> (MIT).
       </span>
     </footer>
   );

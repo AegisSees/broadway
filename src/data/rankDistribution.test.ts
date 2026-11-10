@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_LEVELS, distributionStats, normalizeDistribution, sampleDistribution } from './rankDistribution';
+import saved from '../../api-samples/rank-distribution.json';
+import { ALL_LEVELS, distributionStats, normalizeDistribution, normalizePlayerDistribution } from './rankDistribution';
+
+// the real distribution, saved from /v1/players/rank/distribution
+const real = () => normalizePlayerDistribution(saved);
 
 describe('rank distribution', () => {
   it('covers all 66 levels and totals add up', () => {
-    const d = sampleDistribution();
+    const d = real();
     expect(d.rows).toHaveLength(66);
     expect(ALL_LEVELS[0]).toBe(11);
     expect(ALL_LEVELS[65]).toBe(116);
@@ -14,7 +18,7 @@ describe('rank distribution', () => {
     expect(st.byLevel.get(116)!.top).toBeLessThan(0.2);
   });
   it('finds a median in the middle of the ladder', () => {
-    const m = distributionStats(sampleDistribution()).median;
+    const m = distributionStats(real()).median;
     expect(Math.floor(m / 10)).toBeGreaterThanOrEqual(4);
     expect(Math.floor(m / 10)).toBeLessThanOrEqual(6);
   });

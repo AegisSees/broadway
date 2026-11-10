@@ -1,7 +1,5 @@
 import { RANKS } from './types';
-import { HEROES } from './roster';
 import { ROMAN, TIER_NUMBER } from './ranks';
-import { hash, rng } from '../lib/prng';
 import type { LeaderboardEntryRaw, LeaderboardRaw } from '../api/types';
 
 /** Leaderboard regions as the Deadlock API names them (path segment of /v1/leaderboard/{region}). */
@@ -28,8 +26,6 @@ export interface LeaderboardEntry {
   candidates?: number[];
   /** Other accounts with the same name, when `accountId` is a best guess rather than certain. */
   alt?: number[];
-  /** True for the invented ladder, so pages can label it. */
-  sample?: boolean;
   /** Badge level 0-116: tier in the leading digits, level 1-6 in the last digit (116 = Eternus star). */
   badge: number;
   /** Hero slugs, most played first. */
@@ -77,10 +73,9 @@ export function resolveCandidates(candidates: readonly number[], info: ReadonlyM
   return { accountId: best, alt: candidates.filter((c) => c !== best), certain: active.length === 1 };
 }
 
-/** Where a row's name leads: the player page when the account is known, a name search when it is not, nowhere for the invented sample. */
-export function playerHref(e: Pick<LeaderboardEntry, 'accountId' | 'alt' | 'name' | 'sample'>): string | null {
+/** Where a row's name leads: the player page when the account is known, a name search when it is not. */
+export function playerHref(e: Pick<LeaderboardEntry, 'accountId' | 'alt' | 'name'>): string | null {
   if (e.accountId !== undefined) return `/player/${e.accountId}${e.alt?.length ? `?alt=${e.alt.slice(0, 11).join(',')}` : ''}`;
-  if (e.sample) return null;
   return `/player?q=${encodeURIComponent(e.name)}`;
 }
 
@@ -88,21 +83,6 @@ export const winRate = (e: { wins?: number; losses?: number }): number | null =>
   const n = (e.wins ?? 0) + (e.losses ?? 0);
   return e.wins === undefined || e.losses === undefined || n === 0 ? null : (e.wins / n) * 100;
 };
-
-/** A small deterministic placeholder avatar (mirrored 5x5 pattern). Used only for the invented sample ladder. */
-export function sampleAvatar(seed: string): string {
-  const r = rng(hash(`avatar:${seed}`));
-  const hue = Math.floor(r() * 360);
-  let cells = '';
-  for (let y = 0; y < 5; y++) for (let x = 0; x < 3; x++) {
-    if (r() < 0.55) {
-      cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-      if (x < 2) cells += `<rect x="${4 - x}" y="${y}" width="1" height="1"/>`;
-    }
-  }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 6 6"><rect x="-0.5" y="-0.5" width="6" height="6" fill="hsl(${hue} 35% 18%)"/><g fill="hsl(${hue} 70% 62%)">${cells}</g></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
 
 const tierName = (t: number): string => (t === 0 ? 'Obscurus' : RANKS[RANKS.length - t] ?? 'Obscurus');
 
@@ -116,46 +96,6 @@ export function badgeParts(level: number): { rank: string; tier: number; sub: nu
 export function badgeLabel(level: number): string {
   const { rank, sub } = badgeParts(level);
   return sub ? `${rank} ${ROMAN[sub]}` : rank;
-}
-
-// ---------------------------------------------------------------------------------------------------------
-// Illustrative ladder. Handles are invented and generated, never real players. Used until live data is on.
-// ---------------------------------------------------------------------------------------------------------
-
-export const FIRST = ['Gutter', 'Velvet', 'Ashen', 'Back-Alley', 'Midnight', 'Copper', 'Hollow', 'Quiet', 'Neon', 'Cinder', 'Rooftop', 'Marrow', 'Salt', 'Paper', 'Iron', 'Crooked', 'Last-Call', 'Smoke', 'Brass', 'Pale'];
-export const SECOND = ['Saint', 'Fox', 'Courier', 'Alibi', 'Tailor', 'Magpie', 'Locksmith', 'Ledger', 'Crow', 'Piano', 'Bishop', 'Ferryman', 'Matchbook', 'Wren', 'Informant', 'Gambit', 'Cabbie', 'Heron', 'Ghost', 'Rook'];
-
-const PLAYABLE = HEROES.filter((h) => !h.unreleased).map((h) => h.slug);
-
-/** Deterministic sample ladder for a region, optionally for one hero. 500 rows, rank 1 first. */
-export function sampleLeaderboard(region: Region, heroSlug: string | null): LeaderboardEntry[] {
-  const rand = rng(hash(`${region}:${heroSlug ?? '*'}`));
-  const used = new Set<string>();
-  const out: LeaderboardEntry[] = [];
-  for (let rank = 1; rank <= MAX_ROWS; rank++) {
-    let name = '';
-    do {
-      name = `${FIRST[Math.floor(rand() * FIRST.length)]}${SECOND[Math.floor(rand() * SECOND.length)]}${rand() < 0.45 ? Math.floor(rand() * 99) : ''}`;
-    } while (used.has(name));
-    used.add(name);
-    const heroes = new Set<string>();
-    if (heroSlug) heroes.add(heroSlug);
-    while (heroes.size < 3) heroes.add(PLAYABLE[Math.floor(rand() * PLAYABLE.length)]);
-    const matches = heroSlug ? 40 + Math.floor(rand() * 260) : 120 + Math.floor(rand() * 700);
-    const wr = Math.min(0.72, Math.max(0.46, 0.5 + 0.17 * (1 - rank / 600) + (rand() - 0.5) * 0.07));
-    const wins = Math.round(matches * wr);
-    out.push({
-      rank,
-      name,
-      badge: Math.max(111, 116 - Math.floor((rank - 1) / 90)),
-      topHeroes: [...heroes],
-      avatar: sampleAvatar(name),
-      sample: true,
-      wins,
-      losses: matches - wins,
-    });
-  }
-  return out;
 }
 
 // ---------------------------------------------------------------------------------------------------------

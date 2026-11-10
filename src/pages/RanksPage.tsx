@@ -97,7 +97,6 @@ export default function RanksPage() {
 
       {dist && st && (
         <>
-          {dist.illustrative && <div className="notice"><b>Illustrative data.</b> These bars are generated to show the layout, not real player counts. Real numbers appear once live data is connected.</div>}
           {dist.unit === 'games' && <div className="notice"><b>Games, not players.</b> The API reports how many games were played at each rank, so a very active player counts many times.</div>}
 
           <div className="rx-stats">

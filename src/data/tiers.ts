@@ -16,7 +16,7 @@ export interface TierRow {
   score: number;
 }
 
-export interface TierList { rows: TierRow[]; illustrative: boolean; note?: string }
+export interface TierList { rows: TierRow[]; note?: string }
 
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 const sd = (xs: number[]) => Math.sqrt(mean(xs.map((x) => (x - mean(xs)) ** 2))) || 1;
@@ -30,9 +30,9 @@ export const TIER_NOTES: Record<Tier, string> = {
 
 /**
  * Scores every hero (80% win rate, 20% pick rate, both as distance from the average in standard deviations) and cuts the
- * tiers by share. `pinHaze` is only for the illustrative sample, which keeps the demo hero where its page says it is.
+ * tiers by share.
  */
-export function scoreAndTier(rows: TierRow[], pinHaze = false): TierRow[] {
+export function scoreAndTier(rows: TierRow[]): TierRow[] {
   const wm = mean(rows.map((r) => r.winRate)), ws = sd(rows.map((r) => r.winRate));
   const pm = mean(rows.map((r) => r.pickRate)), ps = sd(rows.map((r) => r.pickRate));
   const scored = rows.map((r) => {
@@ -48,7 +48,7 @@ export function scoreAndTier(rows: TierRow[], pinHaze = false): TierRow[] {
     at += n;
   }
   for (const slug of ranked.slice(at)) cut[slug] = 'D';
-  return scored.map((r) => ({ ...r, tier: pinHaze && r.slug === 'haze' ? 'S' : cut[r.slug] ?? 'B' }));
+  return scored.map((r) => ({ ...r, tier: cut[r.slug] ?? 'B' }));
 }
 
 const DAY = 86400;

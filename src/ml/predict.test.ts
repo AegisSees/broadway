@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import history from '../../api-samples/match-history.json';
 import type { MatchHistoryRow } from '../api/types';
-import { normalizeHistory, sampleMatches } from '../data/player';
-import { sampleMatchDetail } from '../data/sampleMatch';
+import { normalizeHistory } from '../data/player';
+import { savedMatchDetail } from '../test/savedMatch';
 import type { Models } from './models';
 import {
   bestPicks, biggestSwing, countersTo, draftChance, draftTerms, heroIdOf, matchDraftChance, matchupsOf, playstyleOf, profileOf,
@@ -54,8 +54,8 @@ describe('site predictions', () => {
     expect(teamBadge([90, 100, 110, undefined, undefined, undefined])).toBe(100);
   });
 
-  it('draws a win-chance curve over the sample game that ends with the winner ahead', () => {
-    const m = sampleMatchDetail(1);
+  it('draws a win-chance curve over the saved game that ends with the winner ahead', () => {
+    const m = savedMatchDetail(1);
     expect(matchDraftChance(draft, m)).not.toBeNull();
     const pts = winCurve(live, m, draft);
     expect(pts.length).toBeGreaterThan(4);
@@ -99,11 +99,5 @@ describe('site predictions', () => {
     expect(r).not.toBeNull();
     expect(r!.low).toBeLessThanOrEqual(r!.badge);
     expect(r!.high).toBeGreaterThanOrEqual(r!.badge);
-  });
-
-  it('works on the illustrative player too', () => {
-    const lines = sampleMatches(4242).matches;
-    expect(playstyleOf(playstyle, lines)).not.toBeNull();
-    expect(rankGuess(rank, lines)?.fromRanked).toBe(true);
   });
 });

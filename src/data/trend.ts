@@ -1,4 +1,3 @@
-import { hash, rng } from '../lib/prng';
 
 /** One day of results for a hero. `t` is the UTC midnight that starts the day, in unix seconds. */
 export interface TrendPoint { t: number; winRate: number; matches: number }
@@ -8,7 +7,6 @@ export interface HeroTrend {
   points: TrendPoint[];
   /** Patch release days, oldest first. */
   patches: PatchMark[];
-  illustrative: boolean;
 }
 
 export type TrendRange = 'all' | '4w' | 'patch';
@@ -19,40 +17,6 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export const fmtDay = (t: number): string => { const d = new Date(t * 1000); return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`; };
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
-
-/**
- * Illustrative daily series ending on `endT`, with invented patch dates. Win rate drifts slowly, jumps a little at
- * each patch and carries day-to-day noise, like a real hero. Deterministic per hero so it never flickers. When `anchor`
- * is given (a win rate the page already shows elsewhere) the whole curve is shifted so its last week averages to it.
- */
-export function sampleTrend(slug: string, endT: number, days = 140, anchor?: number): HeroTrend {
-  const r = rng(hash(`trend:${slug}`));
-  const patches: PatchMark[] = [];
-  let t = endT - Math.round(6 + r() * 8) * DAY;
-  while (t > endT - days * DAY + 6 * DAY) {
-    patches.unshift({ t, label: fmtDay(t) });
-    t -= Math.round(12 + r() * 14) * DAY;
-  }
-  const patchSet = new Set(patches.map((p) => p.t));
-  let level = 49 + r() * 4.5;
-  const base = level;
-  const popularity = 600 + r() * 2600;
-  const points: TrendPoint[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const day = endT - i * DAY;
-    if (patchSet.has(day)) level += (r() - 0.5) * 3.2;
-    level += (base - level) * 0.015 + (r() - 0.5) * 0.35;
-    const matches = Math.round(popularity * (0.78 + r() * 0.44));
-    points.push({ t: day, matches, winRate: r2(Math.min(61, Math.max(42, level + (r() - 0.5) * 1.5))) });
-  }
-  if (anchor !== undefined) {
-    const week = points.slice(-7);
-    const m = week.reduce((n, p) => n + p.matches, 0);
-    const shift = anchor - week.reduce((n, p) => n + p.winRate * p.matches, 0) / m;
-    for (const p of points) p.winRate = r2(Math.min(64, Math.max(40, p.winRate + shift)));
-  }
-  return { points, patches, illustrative: true };
-}
 
 /**
  * The newest bucket is usually today, which is still being played: a few dozen games where an ordinary day has thousands,
@@ -80,7 +44,7 @@ export function normalizeTrend(rows: DayRow[], heroId: number, patches: PatchMar
     byDay.set(day, a);
   }
   const points = dropPartialLastDay([...byDay.entries()].sort((a, b) => a[0] - b[0]).map(([t, a]) => ({ t, matches: a.m, winRate: r2((a.w / a.m) * 100) })));
-  return points.length >= 2 ? { points, patches: patches.filter((p) => p.t >= points[0].t && p.t <= points[points.length - 1].t), illustrative: false } : null;
+  return points.length >= 2 ? { points, patches: patches.filter((p) => p.t >= points[0].t && p.t <= points[points.length - 1].t) } : null;
 }
 
 /** Reads a patch date out of whatever field the patch feed uses. Tolerant on purpose: the shape is not verified. */

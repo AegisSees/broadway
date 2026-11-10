@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { avgBadgeOf } from './matchDetail';
-import { placement, sampleCore, sampleMatches, shownRank } from './player';
-import { sampleMatchDetail } from './sampleMatch';
-import { fixtureSource } from './source';
+import { placement, shownRank, type PlayerCore, type PlayerMatchLine } from './player';
+import { savedMatchDetail } from '../test/savedMatch';
 
 describe('lobby ranks', () => {
   it('averages badges only when enough players have one', () => {
@@ -11,7 +10,7 @@ describe('lobby ranks', () => {
   });
 
   it('fills the match and team averages from the players when the API sends 0', () => {
-    const m = sampleMatchDetail(1);
+    const m = savedMatchDetail(1);
     expect(m.avgBadge).toBeGreaterThan(0);
     for (const t of m.teams) expect(t.avgBadge).toBeGreaterThan(0);
   });
@@ -22,19 +21,15 @@ describe('lobby ranks', () => {
   });
 
   it('falls back to the badge of the newest ranked game when the rank lookup is empty', () => {
-    const lines = sampleMatches(4242).matches;
-    const core = { ...sampleCore(4242), rank: null };
+    const line = (id: number, kind: PlayerMatchLine['kind'], badge?: number): PlayerMatchLine => ({
+      id, heroId: 1, heroSlug: 'haze', start: 1_000 - id, durationS: 1800, won: true, kind, kills: 1, deaths: 1, assists: 1,
+      netWorth: 1, lastHits: 1, level: 1, abandoned: false, badge,
+    });
+    const lines = [line(1, 'unranked'), line(2, 'ranked', 94), line(3, 'ranked', 85)];
+    const core = { rank: null } as unknown as PlayerCore;
     const r = shownRank(core, lines);
-    expect(r?.badge).toBe(lines.find((m) => m.kind === 'ranked')!.badge);
+    expect(r?.badge).toBe(94);
     expect(r?.fromHistory).toBeGreaterThan(0);
     expect(shownRank(core, lines.filter((m) => m.kind !== 'ranked'))).toBeNull();
-  });
-
-  it('gives sample lobbies near the sample player', async () => {
-    const lines = sampleMatches(4242).matches.filter((m) => m.kind === 'ranked').slice(0, 20);
-    const got = await fixtureSource.lobbyRanks(4242, lines.map((m) => m.id));
-    expect(got.size).toBe(lines.length);
-    const own = sampleCore(4242).rank!.badge;
-    for (const m of lines) expect(Math.abs(Math.floor(got.get(m.id)! / 10) - Math.floor(own / 10))).toBeLessThanOrEqual(1);
   });
 });
