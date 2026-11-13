@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broadway, direction A: home</title><link rel="stylesheet" href="a.css"></head><body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="a-home.html">Broadway</a>
+  <nav aria-label="Main">
+    <a class="l-b" href="a-hero.html">Heroes</a><a class="l-b" href="#">Tier list</a>
+    <a class="l-g" href="#">Builds</a><a class="l-g" href="#">Items</a><a class="l-g" href="#">Draft</a>
+    <a class="l-y" href="#">Players</a><a class="l-y" href="#">Matches</a>
+  </nav>
+  <div class="tools"><button class="btn" type="button" aria-label="Switch theme" onclick="var d=document.documentElement;d.dataset.theme=d.dataset.theme==='king'?'arch':'king'">Theme</button><button class="btn menu-btn" type="button">Menu</button></div>
+</div></header>
+<main>
+<section class="stage"><div class="wrap">
+  <h1>Find your Edge, Rule Manhattan</h1>
+  <form class="search" role="search" onsubmit="return false"><label class="sr" for="q">Search</label><input id="q" placeholder="Search a hero, item or player"><button type="submit">Search</button></form>
+  <p class="stamp" id="stamp"></p>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <header><h2>Top of the patch</h2><a class="more l-b" href="#">Full tier list</a></header>
+  <ol class="bill" id="bill"></ol>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <header><h2>Moving this week</h2><span class="muted">Only changes too large to be chance</span></header>
+  <div class="movers"><div><h3>Rising</h3><ul class="rows" id="up"></ul></div><div><h3>Falling</h3><ul class="rows" id="down"></ul></div></div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <div class="lines">
+    <a class="l-b" href="a-hero.html" style="--img:url('../../src/assets/lanes/broadway-lolo-noir.webp')"><small>Broadway line</small><h3>Heroes</h3><p>Tiers, matchups and win rate by rank.</p></a>
+    <a class="l-g" href="#" style="--img:url('../../src/assets/lanes/greenwich-park.webp')"><small>Greenwich line</small><h3>Builds</h3><p>Items that win, builds and the planner.</p></a>
+    <a class="l-y" href="#" style="--img:url('../../src/assets/lanes/york-exchange.webp')"><small>York line</small><h3>Players</h3><p>Profiles, matches and the ladder.</p></a>
+  </div>
+</div></section>
+</main>
+<footer><div class="wrap"><span>Not affiliated with Valve. Game assets © Valve Corporation.</span><span><a href="#">About and method</a></span></div></footer>
+<script src="data.js"></script><script src="mock.js"></script>
+<script>
+$('#stamp').innerHTML = stampText(D.tier.meta, 'ranked matches');
+$('#bill').innerHTML = D.tier.rows.slice(0, 5).map((r, i) => `<li><a href="a-hero.html">
+  <div class="pic"><img src="${A}${i === 0 ? 'gloat' : 'heroes'}/${r.slug}.${i === 0 ? 'webp' : 'png'}" alt=""></div><span class="place num">${i + 1}</span>
+  <div class="meta"><h3>${nameOf(r.slug)}</h3>${tierBadge(r.tier, 72)}
+  <span class="wr num">${pct(r.winRate)}</span><span class="muted num picked">${pct(r.pickRate)} picked</span>
+  ${rangeBar(r.rate)}<small>Range ${r.rate.low} to ${r.rate.high}% · ${int(r.matches)} matches</small></div></a></li>`).join('');
+const sure = D.tier.rows.filter((r) => r.deltaSure);
+const row = (r) => `<li><img src="${A}icons/${r.slug}.png" alt=""><b>${nameOf(r.slug)}</b><span class="muted num">now ${pct(r.winRate)}</span><span class="big num ${r.delta > 0 ? 'good' : 'bad'}">${delta(r.delta)}</span></li>`;
+$('#up').innerHTML = sure.filter((r) => r.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 4).map(row).join('');
+$('#down').innerHTML = sure.filter((r) => r.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 4).map(row).join('');
+</script></body></html>

@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broadway, direction B: home</title><link rel="stylesheet" href="b.css"></head><body>
+<aside class="rail">
+  <a class="brand" href="b-home.html">Broadway<small>Find your Edge, Rule Manhattan</small></a>
+  <label><span class="sr">Search</span><input placeholder="Search hero, item, player"></label>
+  <nav aria-label="Main"><ul class="map">
+    <li class="line-name label l-b">Broadway line</li>
+    <li class="l-b first" aria-current="page"><a href="b-home.html">Tier list</a></li><li class="l-b last" ><a href="b-hero.html">Heroes</a></li>
+    <li class="line-name label l-g">Greenwich line</li>
+    <li class="l-g first"><a href="#">Builds</a></li><li class="l-g"><a href="#">Items</a></li><li class="l-g last"><a href="#">Draft</a></li>
+    <li class="line-name label l-y">York line</li>
+    <li class="l-y first"><a href="#">Players</a></li><li class="l-y"><a href="#">Matches</a></li><li class="l-y last"><a href="#">Leaderboard</a></li>
+  </ul></nav>
+  <div class="foot"><button class="btn" type="button" onclick="var d=document.documentElement;d.dataset.theme=d.dataset.theme===&quot;king&quot;?&quot;arch&quot;:&quot;king&quot;">Switch theme</button></div>
+  <button class="btn menu-btn" type="button">Menu</button>
+</aside>
+<main>
+<section class="mast"><div class="wrap">
+  <h1>Find your Edge, Rule Manhattan</h1>
+  <p class="dateline" id="dateline"></p>
+</div></section>
+<section class="block"><div class="wrap"><div class="cols">
+  <div>
+    <header><h2>The standings</h2><a class="more" href="#">All 44 heroes</a></header>
+    <div class="scroll"><table><thead><tr><th>Hero</th><th>Tier</th><th>Score</th><th>Win rate</th><th class="hide-sm">95% range, 42 to 58%</th><th class="hide-sm">Picked</th><th class="hide-sm">Matches</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="note">Score is win rate above 50%, pulled back when the sample is small, plus a little for being picked often. <a href="#" style="color:var(--accent)">How it works</a></p>
+  </div>
+  <aside class="side">
+    <h3>Rising this week</h3><ul class="list" id="up"></ul>
+    <h3>Falling this week</h3><ul class="list" id="down"></ul>
+    <p class="note">Only changes too large to be chance are listed.</p>
+  </aside>
+</div></div></section>
+</main>
+<footer><div class="wrap"><span>Not affiliated with Valve. Game assets © Valve Corporation.</span><span><a href="#">About and method</a></span></div></footer>
+<script src="data.js"></script><script src="mock.js"></script>
+<script>
+const today = new Date(D.takenAt).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+$('#dateline').innerHTML = `<span><b>${today}</b></span><span>Patch: City Never Sleeps</span><span>${stampText(D.tier.meta, 'ranked matches')}</span>`;
+let last = '';
+$('#rows').innerHTML = D.tier.rows.slice(0, 16).map((r, i) => { const cut = last && last !== r.tier; last = r.tier; return `<tr class="${cut ? 'cut' : ''}">
+  <td><a class="who" href="b-hero.html"><span class="place num">${i + 1}</span><img src="${A}icons/${r.slug}.png" alt="">${nameOf(r.slug)}</a></td>
+  <td>${tierBadge(r.tier, 60)}</td><td class="strong">${delta(r.score)}</td><td class="strong">${pct(r.winRate)}</td>
+  <td class="hide-sm">${rangeBar(r.rate)}</td><td class="hide-sm muted">${pct(r.pickRate)}</td><td class="hide-sm muted">${int(r.matches)}</td></tr>`; }).join('');
+const sure = D.tier.rows.filter((r) => r.deltaSure);
+const row = (r) => `<li><img src="${A}icons/${r.slug}.png" alt=""><span><b>${nameOf(r.slug)}</b><small>now ${pct(r.winRate)}</small></span><span class="strong num ${r.delta > 0 ? 'good' : 'bad'}">${delta(r.delta)}</span></li>`;
+$('#up').innerHTML = sure.filter((r) => r.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5).map(row).join('');
+$('#down').innerHTML = sure.filter((r) => r.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5).map(row).join('');
+</script></body></html>

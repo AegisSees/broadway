@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broadway, direction A: hero</title><link rel="stylesheet" href="a.css"></head><body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="a-home.html">Broadway</a>
+  <nav aria-label="Main">
+    <a class="l-b" href="a-hero.html">Heroes</a><a class="l-b" href="#">Tier list</a>
+    <a class="l-g" href="#">Builds</a><a class="l-g" href="#">Items</a><a class="l-g" href="#">Draft</a>
+    <a class="l-y" href="#">Players</a><a class="l-y" href="#">Matches</a>
+  </nav>
+  <div class="tools"><button class="btn" type="button" aria-label="Switch theme" onclick="var d=document.documentElement;d.dataset.theme=d.dataset.theme==='king'?'arch':'king'">Theme</button><button class="btn menu-btn" type="button">Menu</button></div>
+</div></header>
+<main>
+<section class="hstage" style="--hero-bg:var(--stage)"><div class="wrap">
+  <div class="copy">
+    <p class="crumbs"><a href="#">Heroes</a> / Haze</p>
+    <h1><img class="wordmark" src="../../src/assets/names/haze.svg" alt="Haze"></h1>
+    <div class="focal"><span class="wr num" id="wr"></span><dl><dt>Win rate</dt><dd id="range"></dd><dd class="muted" id="games"></dd></dl></div>
+    <dl class="facts" id="facts"></dl>
+  </div>
+  <img class="render" src="../../src/assets/art/haze-art.webp" alt="">
+</div></section>
+<div class="wrap filters">
+  <select aria-label="Queue"><option>Ranked</option><option>Unranked</option></select>
+  <select aria-label="Rank"><option>All ranks</option><option>Initiate to Acolyte</option><option>Sentinel to Ritualist</option><option>Emissary and Oracle</option><option>Phantom and above</option></select>
+  <select aria-label="Time window"><option>This patch</option><option>Last 14 days</option><option>Last 7 days</option><option>Previous patch</option></select>
+  <p class="stamp" id="stamp"></p>
+</div>
+<nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#trend" aria-current="true">Overview</a><a href="#ranks">By rank</a><a href="#items">Items</a><a href="#matchups">Matchups</a><a href="#">Builds</a><a href="#">Abilities</a></div></nav>
+
+<section class="block" id="trend"><div class="wrap"><header><h2>Win rate this patch</h2></header><div class="panel" id="trendbox"></div></div></section>
+<section class="block" id="ranks"><div class="wrap"><header><h2>By rank</h2><span class="muted">Against Haze's own average</span></header><div class="panel"><ol class="ranks" id="ranklist"></ol><p class="note">Strongest in the lowest ranks and about two points weaker at the very top.</p></div></div></section>
+<section class="block" id="items"><div class="wrap"><header><h2>Items that win</h2><span class="muted">Same stage of the game, same net worth</span></header>
+  <div class="panel"><table><thead><tr><th>Item</th><th>Adjusted</th><th>Margin</th><th class="hide-sm">Raw</th><th class="hide-sm">Purchases</th></tr></thead><tbody id="itemrows"></tbody></table></div></div></section>
+<section class="block" id="matchups"><div class="wrap"><header><h2>Matchups</h2><span class="muted">Points against Haze's usual win rate</span></header><div class="mus" id="mus"></div></div></section>
+</main>
+<footer><div class="wrap"><span>Not affiliated with Valve. Game assets © Valve Corporation.</span><span><a href="#">About and method</a></span></div></footer>
+<script src="data.js"></script><script src="mock.js"></script>
+<script>
+const h = D.haze, me = D.tier.rows.find((r) => r.slug === 'haze');
+$('#wr').textContent = pct(h.winRate);
+$('#range').textContent = `Range ${h.rate.low} to ${h.rate.high}%`;
+$('#games').textContent = int(h.matches) + ' matches';
+$('#stamp').innerHTML = stampText(h.meta);
+$('#facts').innerHTML = `<div><dt>Tier</dt><dd>${tierBadge(h.tier, 84)}</dd></div><div><dt>Tier score</dt><dd class="num">${delta(h.score)}</dd></div><div><dt>Picked</dt><dd class="num">${pct(h.pickRate)}</dd></div><div><dt>Banned</dt><dd class="num">${pct(h.banRate)}</dd></div>`;
+$('#trendbox').innerHTML = trendSvg(D.trend.points);
+const slices = D.byRank.slices, RANKN = { Initiate: 1, Seeker: 2, Acolyte: 3, Sentinel: 4, Mystic: 5, Ritualist: 6, Emissary: 7, Oracle: 8, Phantom: 9, Ascendant: 10, Eternus: 11 };
+$('#ranklist').innerHTML = slices.map((s) => { const hgt = Math.min(48, Math.abs(s.delta) * 22); return `<li><img src="${A}rank/rank${RANKN[s.rank]}.webp" alt=""><small>${s.rank}</small><span class="col"><i class="${s.delta < 0 ? 'neg' : ''}" style="height:${hgt}px;${s.delta < 0 ? 'top:50%' : 'bottom:50%'}"></i></span><b class="num">${delta(s.delta)}</b><small class="num">${pct(s.rate.shrunk)}</small></li>`; }).join('');
+const itemRow = (i) => `<tr><td><span class="it"><img src="${A}items/${itemSlug(i.name)}.png" alt="">${i.name}</span></td><td><span class="big ${i.shownDelta > 0 ? 'good' : 'bad'}">${delta(i.shownDelta)}</span></td><td class="muted">±${i.margin.toFixed(1)}</td><td class="muted hide-sm">${delta(i.rawDelta)}</td><td class="muted hide-sm">${int(i.matches)}</td></tr>`;
+$('#itemrows').innerHTML = D.items.items.slice(0, 8).map(itemRow).join('') + '<tr class="gap"><td colspan="5">Lowest on Haze</td></tr>' + D.items.items.slice(-4).reverse().map(itemRow).join('');
+const slugOf = (n) => Object.keys(D.names).find((s) => D.names[s] === n);
+$('#mus').innerHTML = h.matchups.map((g) => `<div class="panel"><h3>${g.title.replace('{hero}', 'Haze')}</h3><ul class="rows">${g.entries.map((e) => `<li><img src="${A}icons/${slugOf(e.name)}.png" alt=""><span><b>${e.name}</b><small>${int(e.matches)} matches</small></span><span class="big num ${g.tone}">${e.display}</span></li>`).join('')}</ul></div>`).join('');
+</script></body></html>
